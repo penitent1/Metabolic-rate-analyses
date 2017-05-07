@@ -1,5 +1,6 @@
 library(ggplot2)
 library(knitr)
+
 smr.data <-read.csv(file.choose())
 head(smr.data)
 
