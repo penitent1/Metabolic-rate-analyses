@@ -1,4 +1,4 @@
-getwd()
+#getwd()
 
 #install.packages("fishMO2.tar.gz")
 
