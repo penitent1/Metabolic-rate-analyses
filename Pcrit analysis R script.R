@@ -257,3 +257,63 @@ do <- pcrit.data$DO
 mo2<- pcrit.data$MO2
 
 plot(do, mo2)
+
+########
+### ARHA #4 "Top/Low Clip" Tail clip ID
+########
+
+smr.data <-read.csv(file.choose())
+head(smr.data)
+
+### NFB0014: Scalyhead sculpin (ARHA) #4: Fin clip ID = Top/Low clip
+
+probe14 <- smr.data[smr.data$probe == 'NFB0014', ]
+probe14.arha <- probe14[probe14$spps == 'arha', ]
+head(probe14.arha)
+str(probe14.arha)
+
+### Leaving off data recorded at less than 15 hrs in respirometry trial
+
+probe14.15plus.arha <- probe14[probe14$time.hrs > 15, ]
+probe14.15plus.arha
+head(probe14.15plus.arha)
+str(probe14.15plus.arha)
+
+smr <- calcSMR(probe14.15plus.arha$mo2)
+smr
+#> smr
+#$mlnd
+#1 
+#1.509849
+
+## $CVmlnd
+## 1 
+## 27.34414
+smr.check.best <- as.numeric(ifelse(smr$CVmlnd > 5.4, smr$quant[4], smr$mlnd)) # as recommended in Chabot et al. 2016
+smr.check.best
+## > smr.check.best
+## [1] 1.572816
+
+### Pcrit data: Semi-closed Pcrit for "Top/Low-Clip" ARHA
+
+pcrit.data <-read.csv(file.choose())
+head(pcrit.data)
+
+calcO2crit(pcrit.data, 2.50)
+#?calcO2crit
+
+#> calcO2crit(pcrit.data, 2.20)
+#$o2crit
+#[1] 11.3 >> 11.3% Air Sat USING!! ALL data (not post-2sigma analysis)
+#> calcO2crit(pcrit.data, 2.20)
+#$o2crit
+#[1] 11.4 >> 11.4% Air sat using 2-sigma analysis data - no difference!
+
+### In torr
+#> (11.3/100)*102.4*760*0.2095/101.325
+#[1] 24.29729
+
+do <- pcrit.data$DO
+mo2<- pcrit.data$MO2
+
+plot(do, mo2)
