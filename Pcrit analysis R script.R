@@ -317,3 +317,63 @@ do <- pcrit.data$DO
 mo2<- pcrit.data$MO2
 
 plot(do, mo2)
+
+########
+### CLGL Trial #1&2: "Top Clip" Tail clip ID, Pcrit CLOSED vs SEMI-CLOSED comparison
+########
+
+smr.data <-read.csv(file.choose())
+head(smr.data)
+
+### NFB0009: Mosshead sculpin (CLGL): Fin clip ID = Top clip, SMR = 3 day measurment
+
+probe09 <- smr.data[smr.data$probe == 'NFB0009', ]
+probe09.arha <- probe14[probe14$spps == 'clgl', ]
+head(probe09.clgl)
+str(probe09.clgl)
+
+### Leaving off data recorded at less than 15 hrs in respirometry trial
+
+probe09.15plus.clgl <- probe09[probe09$time.hrs > 15, ]
+probe09.15plus.clgl
+head(probe09.15plus.clgl)
+str(probe09.15plus.clgl)
+
+smr <- calcSMR(probe09.15plus.clgl$mo2)
+smr
+#> smr
+#$mlnd
+#1 
+#1.509849
+
+## $CVmlnd
+## 1 
+## 27.34414
+smr.check.best <- as.numeric(ifelse(smr$CVmlnd > 5.4, smr$quant[4], smr$mlnd)) # as recommended in Chabot et al. 2016
+smr.check.best
+## > smr.check.best
+## [1] 1.572816
+
+### Pcrit data: Closed Pcrit for "Top-Clip" CLGL
+
+pcrit.data <-read.csv(file.choose())
+head(pcrit.data)
+
+calcO2crit(pcrit.data, 2.50)
+#?calcO2crit
+
+#> calcO2crit(pcrit.data, 2.20)
+#$o2crit
+#[1] 11.3 >> 11.3% Air Sat USING!! ALL data (not post-2sigma analysis)
+#> calcO2crit(pcrit.data, 2.20)
+#$o2crit
+#[1] 11.4 >> 11.4% Air sat using 2-sigma analysis data - no difference!
+
+### In torr
+#> (11.3/100)*102.4*760*0.2095/101.325
+#[1] 24.29729
+
+do <- pcrit.data$DO
+mo2<- pcrit.data$MO2
+
+plot(do, mo2)
