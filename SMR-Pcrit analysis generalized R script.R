@@ -13,15 +13,15 @@ head(smr.data)
 
 ### NFB00--: Specify probe and species for analysis
 
-probe12 <- smr.data[smr.data$probe == 'NFB0012', ] # Update as appropriate
-probe12.olma <- probe12[probe12$spps == 'olma', ] # Update as appropriate
-probe12.olma.trial3 <- probe12.olma[probe12.olma$trial.no == '3', ] # Update as appropriate
-head(probe12.olma.trial3) # Update as appropriate
-str(probe12.olma.trial3) # Update as appropriate
+probe09 <- smr.data[smr.data$probe == 'NFB0009', ] # Update as appropriate
+probe09.clgl <- probe09[probe09$spps == 'clgl', ] # Update as appropriate
+probe09.clgl.trial1 <- probe09.clgl[probe09.clgl$trial.no == '1', ] # Update as appropriate
+head(probe09.clgl.trial1) # Update as appropriate
+str(probe09.clgl.trial1) # Update as appropriate
 
 ### SMR estimate function
 
-smr <- calcSMR(probe12.olma.trial3$mo2) # Update as appropriate
+smr <- calcSMR(probe09.clgl.trial1$mo2) # Update as appropriate
 smr
 #> smr
 #$mlnd
@@ -41,10 +41,10 @@ smr.check.best
 pcrit.data <-read.csv(file.choose())
 head(pcrit.data)
 
-calcO2crit(pcrit.data, 1.32) # Enter value of SMR obtained above here, after "pcrit.data
+calcO2crit(pcrit.data, 3.27) # Enter value of SMR obtained above here, after "pcrit.data
 #?calcO2crit
 
-plotO2crit(calcO2crit(pcrit.data, 1.32))
+plotO2crit(calcO2crit(pcrit.data, 3.27))
 
 ### In torr
 #> (O2crit.%sat/100)*P.ATM.KPA*760*0.2095/101.325
