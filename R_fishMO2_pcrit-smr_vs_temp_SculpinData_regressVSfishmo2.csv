@@ -5,7 +5,7 @@ date,spps,fish.id,mass,probe,trial.no,p.crit.type,smr.raw,CVmlnd,best.smr,pcrit.
 29-Apr-17,olma,2,7.5,NFB0014,3,semi-closed,2.15,5.48,2.06,23.7,22.6,35.8
 6-May-17,clgl,1,8.1,NFB0009,2,closed,2.02,6.98,1.91,43.2,41.9,54.5
 6-May-17,clgl,2,15.7,NFB0014,2,closed,2.6,19.2,2.13,27.9,23.3,33.1
-6-May-17,olma,1,7.5,NFB0010,4,closed,,,,,,
+6-May-17,olma,1,7.5,NFB0010,4,closed,2.21,10.99,2.02,,,
 6-May-17,olma,2,5.8,NFB0012,4,closed,,,,,,
 21-Apr-17,olma,,,NFB0009,2,closed,,,,,,
 21-Apr-17,olma,,,NFB0012,2,closed,,,,,,

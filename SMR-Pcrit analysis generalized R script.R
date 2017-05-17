@@ -13,15 +13,15 @@ head(smr.data)
 
 ### NFB00--: Specify probe and species for analysis
 
-probe14 <- smr.data[smr.data$probe == 'NFB0014', ] # Update as appropriate
-probe14.clgl <- probe14[probe14$spps == 'clgl', ] # Update as appropriate
-probe14.clgl.trial2 <- probe14.clgl[probe14.clgl$trial.no == '2', ] # Update as appropriate
-head(probe14.clgl.trial2) # Update as appropriate
-str(probe14.clgl.trial2) # Update as appropriate
+probe10 <- smr.data[smr.data$probe == 'NFB0010', ] # Update as appropriate
+probe10.olma <- probe10[probe10$spps == 'olma', ] # Update as appropriate
+probe10.olma.trial4 <- probe10.olma[probe10.olma$trial.no == '4', ] # Update as appropriate
+head(probe10.olma.trial4) # Update as appropriate
+str(probe10.olma.trial4) # Update as appropriate
 
 ### SMR estimate function
 
-smr <- calcSMR(probe14.clgl.trial2$mo2) # Update as appropriate
+smr <- calcSMR(probe10.olma.trial4$mo2) # Update as appropriate
 smr
 #> smr
 #$mlnd
