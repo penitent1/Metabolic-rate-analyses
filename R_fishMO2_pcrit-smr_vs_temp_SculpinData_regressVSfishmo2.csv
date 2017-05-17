@@ -1,0 +1,9 @@
+date,spps,fish.id,mass,probe,trial.no,p.crit.type,smr.raw,best.smr,pcrit.rawsmr,pcrit.bestsmr,p.crit.regress
+29-Apr-17,clgl,1,16.4,NFB0010,1,semi-closed,3.27,3.1,38.5,36.7,56.4
+29-Apr-17,clgl,2,8.4,NFB0009,1,semi-closed,2.27,2.14,35.6,34.3,36.9
+29-Apr-17,olma,1,5.9,NFB0012,3,semi-closed,,,,,
+29-Apr-17,olma,2,7.5,NFB0014,3,semi-closed,1.33,1.32,10.1,9.9,
+6-May-17,clgl,1,8.1,NFB0009,2,closed,,,,,
+6-May-17,clgl,2,15.7,NFB0014,2,closed,,,,,
+6-May-17,olma,1,7.5,NFB0010,4,closed,,,,,
+6-May-17,olma,2,5.8,NFB0012,4,closed,,,,,
