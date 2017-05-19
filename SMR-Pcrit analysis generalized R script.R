@@ -1,4 +1,5 @@
-install.packages("ggthemes", dependencies = TRUE)
+#install.packages("ggthemes", dependencies = TRUE)
+
 library(ggplot2)
 library(ggthemes)
 library(mclust)
@@ -99,10 +100,38 @@ pcrit.bestsmr.lines_plot <- ggplot(pcrit.data,
                                 y=pcrit.bestsmr, 
                             )) + 
   geom_line(aes(group = fish.id.mass, 
-                color = factor(fish.id.mass),
-                size = 1)) +
-  labs(title="Pcrit type for each fish tested - olma and clgl",
+                color = factor(fish.id.mass)),
+            size = 2) +   ### Specify SIZE (ie thickness) of lines OUTSIDE of "aes()" function
+  labs(title="Pcrit type for each fish tested - Tidepool and Mosshead sculpins",
        x = "Pcrit type",
        y = "Pcrit (torr)")
 
-pcrit.bestsmr.lines_plot + theme_base()  ## Print plot
+## Print plot
+pcrit.bestsmr.lines_plot +
+  scale_shape_discrete(name="Fish\nIdentity",
+                          breaks=c("clgl.big", "clgl.small", "olma.big"),
+                          labels=c("Mosshead 1", "Mosshead 2", "Tidepool 1")) + 
+  theme_base()
+
+
+##################################################################################
+
+# Specify colour and shape
+plot.pcrit.bestsmr <- ggplot(data=pcrit.data, aes(x=pcrit.type, 
+                                   y=pcrit.bestsmr, 
+                                   group=fish.id.mass, 
+                                   shape=fish.id.mass, 
+                                   colour=fish.id.mass)) + 
+  geom_line() + 
+  geom_point() +
+  labs(title="Pcrit type for each fish tested - Tidepool and Mosshead sculpins",
+       x = "Pcrit type",
+       y = "Pcrit (torr)")
+plot.pcrit.bestsmr +
+  scale_colour_discrete(name = "Fish ID",
+                        breaks = c("clgl.big", "clgl.small", "olma.big"),
+                        labels = c("Mosshead 1", " Mosshead 2", "Tidepool 1")) +
+  scale_shape_discrete(name = "Fish ID",
+                       breaks = c("clgl.big", "clgl.small", "olma.big"),
+                       labels = c("Mosshead 1", " Mosshead 2", "Tidepool 1")) +
+  theme_base()
