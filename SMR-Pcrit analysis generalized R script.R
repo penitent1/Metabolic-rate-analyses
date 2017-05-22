@@ -18,27 +18,43 @@ head(smr.data)
 ### NFB00--: Specify probe and species for analysis
 
 probe12 <- smr.data[smr.data$probe == 'NFB0012', ] # Update as appropriate
-probe12.arha <- probe12[probe12$spps == 'arha', ] # Update as appropriate
-probe12.arha.trial1 <- probe12.arha[probe12.arha$trial.no == '1', ] # Update as appropriate
-head(probe12.arha.trial1) # Update as appropriate
-str(probe12.arha.trial1) # Update as appropriate
+probe12.olma <- probe12[probe12$spps == 'olma', ] # Update as appropriate
+probe12.olma.trial4 <- probe12.olma[probe12.olma$trial.no == '4', ] # Update as appropriate
+head(probe12.olma.trial4) # Update as appropriate
+str(probe12.olma.trial4) # Update as appropriate
 
 ### SMR estimate function
 
-smr <- calcSMR(probe12.arha.trial1$mo2) # Update as appropriate
+smr <- calcSMR(probe12.olma.trial2$mo2) # Update as appropriate
 smr
-#> smr
-#$mlnd
-#1 
-#1.330412
 
-## $CVmlnd
-## 1 
-## 7.251364
 smr.check.best <- as.numeric(ifelse(smr$CVmlnd > 5.4, smr$quant[4], smr$mlnd)) # as recommended in Chabot et al. 2016
 smr.check.best
-## > smr.check.best
-## [1] 1.315862
+
+  #######################
+  ## Subset and create datasets for comparing 16 hr vs "16+ hr" SMR estimates
+  #######################
+
+smr.data.16hr <- smr.data[smr.data$time.hrs < 16, ]
+head(smr.data.16hr)
+
+# smr.data.16hr$time.hrs[smr.data.16hr$spps == "arha"] # Update as appropriate
+
+### NFB00--: Specify probe and species for analysis
+
+probe14 <- smr.data.16hr[smr.data.16hr$probe == 'NFB0014', ] # Update as appropriate
+probe14.olma <- probe14[probe14$spps == 'olma', ] # Update as appropriate
+probe14.olma.trial2 <- probe14.olma[probe14.olma$trial.no == '2', ] # Update as appropriate
+head(probe14.olma.trial2) # Update as appropriate
+str(probe14.olma.trial2) # Update as appropriate
+
+### SMR estimate function
+
+smr <- calcSMR(probe14.olma.trial2$mo2) # Update as appropriate
+smr
+
+smr.check.best <- as.numeric(ifelse(smr$CVmlnd > 5.4, smr$quant[4], smr$mlnd)) # as recommended in Chabot et al. 2016
+smr.check.best
 
 ### Estimate Pcrit using the SMR obtained above
 
@@ -51,7 +67,7 @@ calcO2crit(pcrit.data, 1.18) # Enter value of SMR obtained above here, after "pc
 plotO2crit(calcO2crit(pcrit.data, 1.18))
 
 ### In torr
-#> (O2crit.%sat/100)*P.ATM.KPA*760*0.2095/101.325
+# (O2crit.%sat/100)*P.ATM.KPA*760*0.2095/101.325
 
 ###################################################
 ###################################################
@@ -66,72 +82,306 @@ plotO2crit(calcO2crit(pcrit.data, 1.18))
 pcrit.data <-read.csv(file.choose())
 head(pcrit.data)
 str(pcrit.data)
-#pcrit.data$pcrit.bestsmr <- as.numeric(pcrit.data$pcrit.bestsmr)
+
+# Variable objects for use in plotting
 
 fish.id.mass <- pcrit.data$fish.id.mass
 spps <- pcrit.data$spps
 pcrit.type <- pcrit.data$p.crit.type
 pcrit.bestsmr <- pcrit.data$pcrit.bestsmr
 pcrit.regress <- pcrit.data$p.crit.regress
-
-### Plot data to visualize whether "pcrit type" affects pcrit measurements.
-
-### Stripchart of the Pcrit versus type of Pcrit - thanks Melissa!
-
-pcrit.bestsmr_plot <- ggplot(pcrit.data, 
-                                    aes(x=pcrit.type, 
-                                        y=pcrit.bestsmr, 
-                                        color=fish.id.mass
-                                    )) + 
-  geom_jitter(position=position_jitter(0.2))+
-  labs(title="Pcrit type for each fish tested - olma and clgl",
-       x = "Pcrit type",
-       y = "Pcrit (torr)")
-pcrit.bestsmr_plot
-#pcrit.bestsmr_plot + stat_summary(fun.data = mean_sdl, 
-#                                         fun.args = list(mult = 1),
-#                                         geom = "pointrange",
-#                                         color = "black")
-
-### Stripchart of the Ventilation amplitude vs salinity with lines connecting fish
-
-pcrit.bestsmr.lines_plot <- ggplot(pcrit.data, 
-                            aes(x=pcrit.type, 
-                                y=pcrit.bestsmr, 
-                            )) + 
-  geom_line(aes(group = fish.id.mass, 
-                color = factor(fish.id.mass)),
-            size = 2) +   ### Specify SIZE (ie thickness) of lines OUTSIDE of "aes()" function
-  labs(title="Pcrit type for each fish tested - Tidepool and Mosshead sculpins",
-       x = "Pcrit type",
-       y = "Pcrit (torr)")
-
-## Print plot
-pcrit.bestsmr.lines_plot +
-  scale_shape_discrete(name="Fish\nIdentity",
-                          breaks=c("clgl.big", "clgl.small", "olma.big"),
-                          labels=c("Mosshead 1", "Mosshead 2", "Tidepool 1")) + 
-  theme_base()
-
+smr.time <- pcrit.data$smr.time
+smr.best <- pcrit.data$best.smr
 
 ##################################################################################
+### Plot data to visualize whether "pcrit type" affects pcrit measurements.
+##################################################################################
 
-# Specify colour and shape
+  ### Plot: Pcrit via "best smr" fishMO2 o2crit estimate
+
 plot.pcrit.bestsmr <- ggplot(data=pcrit.data, aes(x=pcrit.type, 
                                    y=pcrit.bestsmr, 
                                    group=fish.id.mass, 
                                    shape=fish.id.mass, 
                                    colour=fish.id.mass)) + 
-  geom_line() + 
-  geom_point() +
-  labs(title="Pcrit type for each fish tested - Tidepool and Mosshead sculpins",
+  geom_line(size = 1.5) + 
+  geom_point(size = 3) +
+  labs(title="Pcrit via SMR estimate",
        x = "Pcrit type",
        y = "Pcrit (torr)")
 plot.pcrit.bestsmr +
   scale_colour_discrete(name = "Fish ID",
                         breaks = c("clgl.big", "clgl.small", "olma.big"),
-                        labels = c("Mosshead 1", " Mosshead 2", "Tidepool 1")) +
+                        labels = c("Mosshead 1", "Mosshead 2", "Tidepool 1")) +
   scale_shape_discrete(name = "Fish ID",
                        breaks = c("clgl.big", "clgl.small", "olma.big"),
-                       labels = c("Mosshead 1", " Mosshead 2", "Tidepool 1")) +
+                       labels = c("Mosshead 1", "Mosshead 2", "Tidepool 1")) +
   theme_base()
+
+  ### Plot: Pcrit via "REGRESS" estimate
+
+plot.pcrit.regress <- ggplot(data=pcrit.data, aes(x=pcrit.type, 
+                                                  y=pcrit.regress, 
+                                                  group=fish.id.mass, 
+                                                  shape=fish.id.mass, 
+                                                  colour=fish.id.mass)) + 
+  geom_line(size = 1.5) + 
+  geom_point(size = 3) +
+  labs(title="Pcrit via the REGRESS program",
+       x = "Pcrit type",
+       y = "Pcrit (torr)")
+plot.pcrit.regress +
+  scale_colour_discrete(name = "Fish ID",
+                        breaks = c("clgl.big", "clgl.small", "olma.big"),
+                        labels = c("Mosshead 1", "Mosshead 2", "Tidepool 1")) +
+  scale_shape_discrete(name = "Fish ID",
+                       breaks = c("clgl.big", "clgl.small", "olma.big"),
+                       labels = c("Mosshead 1", "Mosshead 2", "Tidepool 1")) +
+  theme_base()
+
+  ###
+  ### Plot: SMR estimates following 16hr vs 45hr measurement period - DIFFERENT TRIALS!
+  ###
+
+plot.smr.time <- ggplot(data=smr.16v45.data, aes(x=smr.time, 
+                                                  y=best.smr, 
+                                                  group=fish.id.mass[smr.time.cat$date == '6-May-17'], 
+                                                  shape=fish.id.mass[smr.time.cat$date == '6-May-17'], 
+                                                  colour=fish.id.mass[smr.time.cat$date == '6-May-17'])) + 
+  geom_line(size = 1.5) + 
+  geom_point(size = 3) +
+  labs(title="SMR estimated after 16 or 45 hours of measurement",
+       x = "Measurement time (hrs)",
+       y = "SMR (umol O2/g/hr)")
+plot.smr.time +
+  scale_colour_discrete(name = "Fish ID",
+                        breaks = c("clgl.big", "clgl.small", "olma.big"),
+                        labels = c("Mosshead 1", "Mosshead 2", "Tidepool 1")) +
+  scale_shape_discrete(name = "Fish ID",
+                       breaks = c("clgl.big", "clgl.small", "olma.big"),
+                       labels = c("Mosshead 1", "Mosshead 2", "Tidepool 1")) +
+  theme_base()
+
+######################################
+######################################
+######################################
+    ###
+    ### OLMA trial 2: 18 - April - 2017
+    ###
+######################################
+######################################
+######################################
+
+# Y values for plot - OLMA trial 2
+smr.16.16plus.olma.trial2 <- smr.16v45.data$best.smr[smr.16v45.data$date == "18-Apr-17"]
+# X values for plot - OLMA trial 2
+time.category.smr.olma.trial2 <- smr.16v45.data$smr.time.cat[smr.16v45.data$date == "18-Apr-17"]
+# Grouping variable - OLMA trial 2
+fishid.forplot.olma.trial2 <- smr.16v45.data$fish.id.mass[smr.16v45.data$date == "18-Apr-17"]
+######
+
+df.16hr.16plus.olma.t2 <- data.frame(smr.16.16plus.olma.trial2,
+                                     time.category.smr.olma.trial2,
+                                     fishid.forplot.olma.trial2)
+
+plot.smr.time <- ggplot(data=df.16hr.16plus.olma.t2, aes(x=time.category.smr.olma.trial2, 
+                                             y=smr.16.16plus.olma.trial2, 
+                                             group=fishid.forplot.olma.trial2, 
+                                             shape=fishid.forplot.olma.trial2, 
+                                             colour=fishid.forplot.olma.trial2)) + 
+  geom_line(size = 1.5) + 
+  geom_point(size = 3) +
+  labs(title="SMR estimated after 16\nor 16+ hours of measurement",
+       x = "Measurement time (hrs)",
+       y = "SMR (umol O2/g/hr)")
+plot.smr.time +
+  scale_colour_discrete(name = "Fish ID",
+                        breaks = c("olma.big", "olma.med", "olma.small"),
+                        labels = c("Tidepool 1", "Tidepool 2", "Tidepool 3")) +
+  scale_shape_discrete(name = "Fish ID",
+                       breaks = c("olma.big", "olma.med", "olma.small"),
+                       labels = c("Tidepool 1", "Tidepool 2", "Tidepool 3")) +
+  theme_base()
+
+######################################
+    ###
+    ### END plot for OLMA trial 2: 18-Apr-2017
+    ###
+######################################
+
+######################################
+######################################
+######################################
+###
+### OLMA trial 4/CLGL trial 2: 6 - May - 2017
+###
+######################################
+######################################
+######################################
+
+# Y values for plot - OLMA trial 4/CLGL trial 2
+smr.16.16plus.6may <- smr.16v45.data$best.smr[smr.16v45.data$date == "6-May-17"]
+# X values for plot - OLMA trial 4/CLGL trial 2
+time.category.smr.6may <- smr.16v45.data$smr.time.cat[smr.16v45.data$date == "6-May-17"]
+# Grouping variable - OLMA trial 4/CLGL trial 2
+fishid.forplot.6may <- smr.16v45.data$fish.id.mass[smr.16v45.data$date == "6-May-17"]
+######
+
+df.16hr.16plus.6may <- data.frame(smr.16.16plus.6may,
+                                     time.category.smr.6may,
+                                     fishid.forplot.6may)
+
+plot.smr.time <- ggplot(data=df.16hr.16plus.6may, aes(x=time.category.smr.6may, 
+                                                         y=smr.16.16plus.6may, 
+                                                         group=fishid.forplot.6may, 
+                                                         shape=fishid.forplot.6may, 
+                                                         colour=fishid.forplot.6may)) + 
+  geom_line(size = 1.5) + 
+  geom_point(size = 3) +
+  labs(title="SMR estimated after 16\nor 16+ hours of measurement",
+       x = "Measurement time (hrs)",
+       y = "SMR (umol O2/g/hr)")
+plot.smr.time +
+  scale_colour_discrete(name = "Fish ID",
+                        breaks = c("clgl.big", "clgl.small", "olma.big", "olma.small"),
+                        labels = c("Mosshead 1", "Mosshead 2", "Tidepool 1", "Tidepool 2")) +
+  scale_shape_discrete(name = "Fish ID",
+                       breaks = c("clgl.big", "clgl.small", "olma.big", "olma.small"),
+                       labels = c("Mosshead 1", "Mosshead 2", "Tidepool 1", "Tidepool 2")) +
+  theme_base()
+
+######################################
+###
+### END plot for OLMA trial 4/CLGL trial 2: 6-May-2017
+###
+######################################
+
+######################################
+######################################
+######################################
+###
+### ARHA trial 1: 5 - May - 2017
+###
+######################################
+######################################
+######################################
+
+# Y values for plot - ARHA trial 1
+smr.16.16plus.5may <- smr.16v45.data$best.smr[smr.16v45.data$date == "5-May-17"]
+# X values for plot - ARHA trial 1
+time.category.smr.5may <- smr.16v45.data$smr.time.cat[smr.16v45.data$date == "5-May-17"]
+# Grouping variable - ARHA trial 1
+fishid.forplot.5may <- smr.16v45.data$fish.id.mass[smr.16v45.data$date == "5-May-17"]
+######
+
+df.16hr.16plus.5may <- data.frame(smr.16.16plus.5may,
+                                  time.category.smr.5may,
+                                  fishid.forplot.5may)
+
+plot.smr.time <- ggplot(data=df.16hr.16plus.5may, aes(x=time.category.smr.5may, 
+                                                      y=smr.16.16plus.5may, 
+                                                      group=fishid.forplot.5may, 
+                                                      shape=fishid.forplot.5may, 
+                                                      colour=fishid.forplot.5may)) + 
+  geom_line(size = 1.5) + 
+  geom_point(size = 3) +
+  labs(title="SMR estimated after 16\nor 16+ hours of measurement",
+       x = "Measurement time (hrs)",
+       y = "SMR (umol O2/g/hr)")
+plot.smr.time +
+  scale_colour_discrete(name = "Fish ID",
+                        breaks = c("arha.1", "arha.2", "arha.3", "arha.4"),
+                        labels = c("Scalyhead 1", "Scalyhead 2", "Scalyhead 3", "Scalyhead 4")) +
+  scale_shape_discrete(name = "Fish ID",
+                       breaks = c("arha.1", "arha.2", "arha.3", "arha.4"),
+                       labels = c("Scalyhead 1", "Scalyhead 2", "Scalyhead 3", "Scalyhead 4")) +
+  theme_base()
+
+######################################
+###
+### END plot for ARHA trial 1: 5-May-2017
+###
+######################################
+
+################################################
+################################################
+  ###
+  ### Testing for differences in Pcrit technique 
+  ### and SMR measurement period length : Paired t-test
+  ###
+################################################
+################################################
+
+pcrit.tech.data <-read.csv(file.choose())
+pcrit.tech.data
+
+# paired t-test: Pcrit technique, best-smr estimated Pcrit
+
+pcrit.closed.bestsmr <- pcrit.tech.data$pcrit.bestsmr[pcrit.tech.data$p.crit.type == "closed"]
+pcrit.semiclosed.bestsmr <- pcrit.tech.data$pcrit.bestsmr[pcrit.tech.data$p.crit.type == "semi-closed"]
+
+t.test(pcrit.closed.bestsmr,pcrit.semiclosed.bestsmr,paired=TRUE) # where y1 & y2 are numeric
+
+# paired t-test: Pcrit technique, REGRESS estimated Pcrit
+pcrit.closed.regress <- pcrit.tech.data$p.crit.regress[pcrit.tech.data$p.crit.type == "closed"]
+pcrit.semiclosed.regress <- pcrit.tech.data$p.crit.regress[pcrit.tech.data$p.crit.type == "semi-closed"]
+
+t.test(pcrit.closed.regress,pcrit.semiclosed.regress,paired=TRUE) # where y1 & y2 are numeric
+
+  ### paired t-test: 16 vs 16+ hour SMR estimates from same trial
+
+smr.tech.data <-read.csv(file.choose())
+smr.tech.data
+
+SMR.16hr.stats <- smr.tech.data$best.smr[smr.tech.data$smr.time.cat == "16hr"]
+SMR.16hrplus.stats <- smr.tech.data$best.smr[smr.tech.data$smr.time.cat == "more16hr"]
+head(SMR.16hr.stats)
+head(SMR.16hrplus.stats)
+t.test(SMR.16hr.stats,SMR.16hrplus.stats,paired=TRUE) # where y1 & y2 are numeric
+
+######################################
+######################################
+######################################
+###
+### OLMA trial 1: 18 - Apr - 2017 MO2 values over 70 hour SMR measurment period
+###
+######################################
+######################################
+######################################
+
+## dataset for "Tidepool 1": NFB0014
+
+head(probe12.olma.trial4) ## Need to update this object at head of script for each fish
+str(probe12.olma.trial4)
+
+mo2.all <- probe12.olma.trial4$mo2
+time.all <- probe12.olma.trial4$time.hrs
+time.16VS16plus <- ifelse(probe12.olma.trial4$time.hrs < 16, "16hr", "16hrPlus")
+
+df.mo2.time.all <- data.frame(mo2.all,
+                              time.all,
+                              time.16VS16plus)
+
+
+plot.mo2.all <- ggplot(data=df.mo2.time.all, aes(x=time.all, 
+                                                 y=mo2.all, 
+                                                 colour=time.16VS16plus)) + 
+  geom_point(size = 2) +
+  geom_smooth()+
+  labs(title = "45 hour measurement period: Tidepool 2",
+       x = "Measurement time (hrs)",
+       y = "MO2 (umol O2/g/hr)")
+plot.mo2.all +
+  scale_colour_discrete(name = "Measurement\nperiod",
+                        breaks = c("16hr", "16hrPlus"),
+                        labels = c("16 hours", "> 16 hours")) +
+  scale_shape_discrete(name = "Fish ID",
+                       breaks = c("16hr", "16hrPlus"),
+                       labels = c("16 hours", "> 16 hours")) +
+  theme_base()
+
+######################################
+###
+### END MO2 vs time plot: "Tidepool 1" NFB0014 18-Apr-2017
+###
+######################################
