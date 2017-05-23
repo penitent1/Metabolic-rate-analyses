@@ -1,5 +1,7 @@
 #install.packages("ggthemes", dependencies = TRUE)
 
+library(dplyr)
+library(tidyr)
 library(ggplot2)
 library(ggthemes)
 library(mclust)
@@ -61,10 +63,10 @@ smr.check.best
 pcrit.data <-read.csv(file.choose())
 head(pcrit.data)
 
-calcO2crit(pcrit.data, 1.18) # Enter value of SMR obtained above here, after "pcrit.data
+calcO2crit(pcrit.data, 1.43) # Enter value of SMR obtained above here, after "pcrit.data
 #?calcO2crit
 
-plotO2crit(calcO2crit(pcrit.data, 1.18))
+plotO2crit(calcO2crit(pcrit.data, 1.43))
 
 ### In torr
 # (O2crit.%sat/100)*P.ATM.KPA*760*0.2095/101.325
@@ -303,6 +305,52 @@ plot.smr.time +
 ###
 ######################################
 
+### Plot: Pcrit via "best smr" fishMO2 o2crit estimate: 16 hrs VS 16+ hrs
+
+pcrit.data <-read.csv(file.choose())
+head(pcrit.data)
+str(pcrit.data)
+
+# Variable objects for use in plotting
+
+fish.id.mass <- pcrit.data$fish.id.mass
+mass <- pcrit.data$mass
+spps <- pcrit.data$spps
+pcrit.calc <- pcrit.data$pcrit.calc
+pcrit <- pcrit.data$pcrit
+
+#pcrit.bestsmr.16hr <- pcrit.bestsmr[pcrit.data$smr.time.cat == "16hr"]
+#pcrit.bestsmr.16hrplus <- pcrit.bestsmr[pcrit.data$smr.time.cat == "more16hr"]
+
+plot.pcrit <- ggplot(data=pcrit.data, aes(x=pcrit.calc, 
+                                                  y=pcrit, 
+                                                  group=fish.id.mass, 
+                                                  colour=fish.id.mass)) + 
+  geom_line(size = 1.5) + 
+  geom_point(size = 3) +
+  labs(title="Pcrit via 16hrs SMR, 16+hrs SMR, REGRESS",
+       x = "Pcrit calculation method",
+       y = "Pcrit (torr)")
+plot.pcrit +
+  scale_colour_discrete(name = "Fish ID",
+                        breaks = c("olma.big.1", "arha.1", "arha.2", "arha.4",
+                                   "clgl.big", "clgl.small", "olma.big",
+                                   "olma.small"),
+                        labels = c("Tidepool 1\nday 1", "Scalyhead 1",
+                                   "Scalyhead 2", "Scalyhead 4",
+                                   "Mosshead 1", "Mosshead 2", 
+                                   "Tidepool 1\n day 2", "Tidepool 2")) +
+  scale_shape_discrete(name = "Fish ID",
+                       breaks = c("olma.big.1", "arha.1", "arha.2", "arha.4",
+                                  "clgl.big", "clgl.small", "olma.big",
+                                  "olma.small"),
+                       labels = c("Tidepool 1\nday 1", "Scalyhead 1",
+                                  "Scalyhead 2", "Scalyhead 4",
+                                  "Mosshead 1", "Mosshead 2", 
+                                  "Tidepool 1\n day 2", "Tidepool 2")) +
+  theme_base()
+
+
 ################################################
 ################################################
   ###
@@ -337,7 +385,61 @@ SMR.16hr.stats <- smr.tech.data$best.smr[smr.tech.data$smr.time.cat == "16hr"]
 SMR.16hrplus.stats <- smr.tech.data$best.smr[smr.tech.data$smr.time.cat == "more16hr"]
 head(SMR.16hr.stats)
 head(SMR.16hrplus.stats)
-t.test(SMR.16hr.stats,SMR.16hrplus.stats,paired=TRUE) # where y1 & y2 are numeric
+
+delta.smr <- SMR.16hr.stats - SMR.16hrplus.stats
+
+qqnorm(delta.smr)
+qqline(delta.smr,col="red")
+shapiro.test(delta.smr)
+boxplot(delta.smr)
+
+log.delta.smr <- log(delta.smr + 1)
+qqnorm(log.delta.smr)
+qqline(log.delta.smr, col="red")
+shapiro.test(log.delta.smr)
+boxplot(delta.smr)
+
+sqrt.delta.smr <- sqrt(delta.smr + 1)
+qqnorm(sqrt.delta.smr)
+qqline(sqrt.delta.smr, col="red")
+shapiro.test(sqrt.delta.smr)
+boxplot(sqrt.delta.smr)
+
+wilcox.test(delta.smr)
+# t.test(SMR.16hr.stats,SMR.16hrplus.stats,paired=TRUE) # where y1 & y2 are numeric
+
+### paired t-test: 16 vs 16+ hour SMR-PCRIT estimates from same trial
+
+pcrit.time.data <-read.csv(file.choose())
+pcrit.time.data
+
+pcrit.16hr.stats <- pcrit.time.data$pcrit.bestsmr[pcrit.time.data$smr.time.cat == "16hr"]
+pcrit.16hrplus.stats <- pcrit.time.data$pcrit.bestsmr[pcrit.time.data$smr.time.cat == "more16hr"]
+head(pcrit.16hr.stats)
+head(pcrit.16hrplus.stats)
+
+delta.pcrit.time <- pcrit.16hr.stats - pcrit.16hrplus.stats
+
+qqnorm(delta.pcrit.time)
+qqline(delta.pcrit.time,col="red")
+shapiro.test(delta.pcrit.time)
+boxplot(delta.pcrit.time)
+
+log.delta.pcrit.time <- log(delta.pcrit.time + 1)
+qqnorm(log.delta.pcrit.time)
+qqline(log.delta.pcrit.time, col="red")
+shapiro.test(log.delta.pcrit.time)
+boxplot(log.delta.pcrit.time)
+
+#sqrt.delta.smr <- sqrt(delta.pcrit.time + 1)
+#qqnorm(sqrt.delta.smr)
+#qqline(sqrt.delta.smr, col="red")
+#shapiro.test(sqrt.delta.smr)
+#boxplot(sqrt.delta.smr)
+
+#wilcox.test(delta.smr)
+t.test(log.delta.pcrit.time) # where y1 & y2 are numeric
+t.test()
 
 ######################################
 ######################################

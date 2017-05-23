@@ -1,0 +1,25 @@
+date,spps,fish.id,fish.id.mass,mass,probe,pcrit.calc,pcrit,trial.no,smr.time.cat,smr.time.hrs
+18-Apr-17,olma,1,olma.big.1,7.6,NFB0014,16 hr SMR,19.8,2,16hr,16
+18-Apr-17,olma,1,olma.big.1,7.6,NFB0014,16+ hr SMR,16.1,2,more16hr,70
+18-Apr-17,olma,1,olma.big.1,7.6,NFB0014,REGRESS,35.1,2,more16hr,70
+5-May-17,arha,1,arha.1,15,NFB0009,16 hr SMR,44.5,1,16hr,16
+5-May-17,arha,1,arha.1,15,NFB0009,16+ hr SMR,44.4,1,more16hr,70
+5-May-17,arha,1,arha.1,15,NFB0009,REGRESS,46.3,1,more16hr,70
+5-May-17,arha,2,arha.2,10.3,NFB0010,16 hr SMR,24,1,16hr,16
+5-May-17,arha,2,arha.2,10.3,NFB0010,16+ hr SMR,24,1,more16hr,70
+5-May-17,arha,2,arha.2,10.3,NFB0010,REGRESS,33.5,1,more16hr,70
+5-May-17,arha,4,arha.4,7.7,NFB0014,16 hr SMR,16.5,1,16hr,16
+5-May-17,arha,4,arha.4,7.7,NFB0014,16+ hr SMR,16.5,1,more16hr,70
+5-May-17,arha,4,arha.4,7.7,NFB0014,REGRESS,41.3,1,more16hr,70
+6-May-17,clgl,1,clgl.big,15.7,NFB0014,16 hr SMR,25.8,2,16hr,16
+6-May-17,clgl,1,clgl.big,15.7,NFB0014,16+ hr SMR,23.3,2,more16hr,45
+6-May-17,clgl,1,clgl.big,15.7,NFB0014,REGRESS,33.1,2,more16hr,45
+6-May-17,clgl,2,clgl.small,8.1,NFB0009,16 hr SMR,41.9,2,16hr,16
+6-May-17,clgl,2,clgl.small,8.1,NFB0009,16+ hr SMR,41.9,2,more16hr,45
+6-May-17,clgl,2,clgl.small,8.1,NFB0009,REGRESS,54.5,2,more16hr,45
+6-May-17,olma,1,olma.big,7.5,NFB0010,16 hr SMR,27.6,4,16hr,16
+6-May-17,olma,1,olma.big,7.5,NFB0010,16+ hr SMR,26.5,4,more16hr,45
+6-May-17,olma,1,olma.big,7.5,NFB0010,REGRESS,26.3,4,more16hr,45
+6-May-17,olma,2,olma.small,5.8,NFB0012,16 hr SMR,9.9,4,16hr,16
+6-May-17,olma,2,olma.small,5.8,NFB0012,16+ hr SMR,8.8,4,more16hr,45
+6-May-17,olma,2,olma.small,5.8,NFB0012,REGRESS,18.5,4,more16hr,45
