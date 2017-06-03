@@ -19,19 +19,63 @@ head(smr.data)
 
 ### NFB00--: Specify probe and species for analysis
 
-probe10 <- smr.data[smr.data$probe == 'NFB0010', ] # Update as appropriate
-probe10.arla <- probe10[probe10$spps == 'arla', ] # Update as appropriate
-probe10.arla.trial1 <- probe10.arla[probe10.arla$trial.no == '1', ] # Update as appropriate
-head(probe10.arla.trial1) # Update as appropriate
-str(probe10.arla.trial1) # Update as appropriate
+probe12 <- smr.data[smr.data$probe == 'NFB0012', ] # Update as appropriate
+probe12.arfe <- probe12[probe12$spps == 'arfe', ] # Update as appropriate
+probe12.arfe.trial1 <- probe12.arfe[probe12.arfe$trial.no == '1', ] # Update as appropriate
+head(probe12.arfe.trial1) # Update as appropriate
+str(probe12.arfe.trial1) # Update as appropriate
 
 ### SMR estimate function
 
-smr <- calcSMR(probe10.arla.trial1$mo2) # Update as appropriate
+five.hr.plus.data <- probe12.arfe.trial1[probe12.arfe.trial1$time.hrs > 5, ]
+
+smr <- calcSMR(five.hr.plus.data$mo2) # Update as appropriate
 smr
 
 smr.check.best <- as.numeric(ifelse(smr$CVmlnd > 5.4, smr$quant[4], smr$mlnd)) # as recommended in Chabot et al. 2016
 smr.check.best
+
+  #############################
+
+plot.smr <- ggplot(data=probe12.arfe.trial1, aes(x=probe12.arfe.trial1$time.hrs, 
+                                                  y=probe12.arfe.trial1$mo2)) 
+plot.smr + (geom_point(size = 2.50529)) +
+  geom_hline(yintercept = 2.50529) +
+  labs(x = "Time (hrs)",
+       y = "MO2 (umol O2/g/hr)") +
+  theme_base()
+
+#plot.pcrit.bestsmr +
+#  scale_colour_discrete(name = "Fish ID",
+#                        breaks = c("clgl.big", "clgl.small", "olma.big"),
+#                        labels = c("Mosshead 1", "Mosshead 2", "Tidepool 1")) +
+#  scale_shape_discrete(name = "Fish ID",
+#                       breaks = c("clgl.big", "clgl.small", "olma.big"),
+#                       labels = c("Mosshead 1", "Mosshead 2", "Tidepool 1")) +
+#  theme_base()
+
+  ###############################################
+  ###############################################
+  ###
+  ###   Estimate Pcrit using the SMR obtained above
+  ###
+  ###############################################
+  ###############################################
+
+pcrit.data <-read.csv(file.choose())
+head(pcrit.data)
+
+calcO2crit(pcrit.data, 2.50529) # Enter value of SMR obtained above here, after "pcrit.data
+#?calcO2crit
+
+plotO2crit(calcO2crit(pcrit.data, 2.50529))
+
+### In torr
+# (O2crit.%sat/100)*P.ATM.KPA*760*0.2095/101.325
+
+
+
+
 
   #######################
   ## Subset and create datasets for comparing 16 hr vs "16+ hr" SMR estimates
