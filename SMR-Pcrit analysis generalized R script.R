@@ -19,8 +19,8 @@ head(smr.data)
 
 ### NFB00--: Specify probe and species for analysis
 
-probe12 <- smr.data[smr.data$probe == 'NFB0012', ] # Update as appropriate
-probe12.arfe <- probe12[probe12$spps == 'arfe', ] # Update as appropriate
+probe09 <- smr.data[smr.data$probe == 'NFB0009', ] # Update as appropriate
+probe09.clgl <- probe09[probe09$spps == 'clgl', ] # Update as appropriate
 probe12.arfe.trial1 <- probe12.arfe[probe12.arfe$trial.no == '1', ] # Update as appropriate
 head(probe12.arfe.trial1) # Update as appropriate
 str(probe12.arfe.trial1) # Update as appropriate
