@@ -20,14 +20,15 @@ head(smr.data)
 ### NFB00--: Specify probe and species for analysis
 
 probe14 <- smr.data[smr.data$probe == 'NFB0014', ] # Update as appropriate
-probe14.clgl <- probe14[probe14$spps == 'clgl', ] # Update as appropriate
-probe14.clgl.trial3 <- probe14.clgl[probe14.clgl$trial.no == '3', ] # Update as appropriate
-head(probe14.clgl.trial3) # Update as appropriate
-str(probe14.clgl.trial3) # Update as appropriate
+probe14.olma <- probe14[probe14$spps == 'olma', ] # Update as appropriate
+probe14.olma.trial2 <- probe14.olma[probe14.olma$trial.no == '2', ] # Update as appropriate
+probe14.olma.trial2.16c <- probe14.olma.trial2[probe14.olma.trial2$temp == '16', ] # Update as appropriate
+head(probe14.olma.trial2.16c) # Update as appropriate
+str(probe14.olma.trial2.16c) # Update as appropriate
 
 ### SMR estimate function
 
-five.hr.plus.data <- probe14.clgl.trial3[probe14.clgl.trial3$time.hrs > 5, ]
+five.hr.plus.data <- probe14.olma.trial2.16c[probe14.olma.trial2.16c$time.hrs > 5, ]
 
 smr <- calcSMR(five.hr.plus.data$mo2) # Update as appropriate
 smr
@@ -37,10 +38,10 @@ smr.check.best
 
   #############################
 
-plot.smr <- ggplot(data=probe14.clgl.trial3, aes(x=probe14.clgl.trial3$time.hrs, 
-                                                  y=probe14.clgl.trial3$mo2)) 
+plot.smr <- ggplot(data=probe14.olma.trial2.16c, aes(x=probe14.olma.trial2.16c$time.hrs, 
+                                                  y=probe14.olma.trial2.16c$mo2)) 
 plot.smr + (geom_point(size = 1.5)) +
-  geom_hline(yintercept = 3.00) +
+  geom_hline(yintercept = 2.89) +
   labs(x = "Time (hrs)",
        y = "MO2 (umol O2/g/hr)") +
   theme_base()
@@ -65,15 +66,13 @@ plot.smr + (geom_point(size = 1.5)) +
 pcrit.data <-read.csv(file.choose())
 head(pcrit.data)
 
-calcO2crit(pcrit.data, 3) # Enter value of SMR obtained above here, after "pcrit.data
+calcO2crit(pcrit.data, 2.89) # Enter value of SMR obtained above here, after "pcrit.data
 #?calcO2crit
 
-plotO2crit(calcO2crit(pcrit.data, 3))
+plotO2crit(calcO2crit(pcrit.data, 2.89))
 
 ### In torr
 # (O2crit.%sat/100)*P.ATM.KPA*760*0.2095/101.325
-
-
 
 
 
