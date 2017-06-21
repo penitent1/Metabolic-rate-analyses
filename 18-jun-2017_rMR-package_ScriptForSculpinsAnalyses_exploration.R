@@ -14,10 +14,11 @@ sculpinMO2 <- read.csv(file.choose())
 sculpinMO2$std.time <- as.POSIXct(sculpinMO2$Time)#,
                              # format = "%d/%m/%Y %I:%M:%S %p")
 
-?as.POSIXct
-plot(sculpinMO2$Oxygen ~ sculpinMO2$std.time)
+#?as.POSIXct
+plot(sculpinMO2$Oxygen ~ sculpinMO2$std.time,
+     cex = 0.25)
 
-
+head(sculpinMO2)
 
 ### Example from package help info
 
