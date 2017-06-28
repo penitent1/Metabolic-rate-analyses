@@ -14,16 +14,16 @@ probeDrift ## "pre" is the slope of the line
 wsize <- 20
 
 respVol <- respVols$resp.volume_mL[respVols$respirometer.id == "e"] # Update each trial
-respVol <- 21.2 # Update each trial
+mass <- 21.2 # Update each trial
 alpha <- 1.7206 ## Change as appropriate for different temperatures
 
 md$time <- seq(0, (nrow(md)-1)*15, by=15)
 # Update "oxygen.umol" for each trial
-md$oxygen.umol <- (((md$Oxygen)/0.9924)/100)*102.3*760*alpha*(respVol/1000-respVol/1000)/101.325 ### convert from %sat to umol O2
+md$oxygen.umol <- (((md$Oxygen)/0.9924)/100)*102.3*760*alpha*(respVol/1000-mass/1000)/101.325 ### convert from %sat to umol O2
 
 output <- numeric(150)
 check <- numeric(150)
-meano2 <- numeric(150)
+#meano2 <- numeric(150)
 glms <- list()
 j <- 1
 
@@ -34,12 +34,12 @@ while (i <= nrow(md)-wsize)
 	o2 <- md$oxygen.umol[i:(i+wsize)]
 	z <- lm(o2~time)
 	
-	if (summary(z)$adj.r.squared>=0.97 & coef(z)[2]<0 & coef(z)[2]>-0.1) 
+	if (summary(z)$adj.r.squared>=0.97 & coef(z)[2]<0) #  & coef(z)[2]>-0.1 
 	{
 		output[j] <- coef(z)[2]
 		glms[[j]] <- z
 		check[j] <- i
-		meano2[j] <- mean(o2)
+		#meano2[j] <- mean(o2)
 		j <- j+1
 		i <- i+wsize
 	} 
@@ -51,8 +51,8 @@ while (i <= nrow(md)-wsize)
 output <- output[output!=0]
 ### could modify output to final MO2 units here if you wanted
 output <- output*-1*3600/mass
-meano2 <- meano2[meano2!=0] ## NOTE These are umol units - convert to PO2
-meano2 <- meano2/alpha/(respVol/1000-respVol/1000) # This converts back to torr
+#meano2 <- meano2[meano2!=0] ## NOTE These are umol units - convert to PO2
+#meano2 <- meano2/alpha/(respVol/1000-respVol/1000) # This converts back to torr
 check <- check[check!=0]
 
 ### extend below so the last plus value matches 'wsize'
