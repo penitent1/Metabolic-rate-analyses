@@ -20,16 +20,16 @@ head(smr.data)
 ### NFB00--: Specify probe and species for analysis
 
 probe14 <- smr.data[smr.data$probe == 'NFB0014', ] # Update as appropriate
-probe14.arla <- probe14[probe14$spps == 'arla', ] # Update as appropriate
-probe14.arla.22jun <- probe14.arla[probe14.arla$date.day == '22' &
-                                     probe14.arla$date.month == 'jun' , ] # Update as appropriate
+probe14.arfe <- probe14[probe14$spps == 'arfe', ] # Update as appropriate
+probe14.arfe.27jun <- probe14.arfe[probe14.arfe$date.day == '27' &
+                                     probe14.arfe$date.month == 'jun' , ] # Update as appropriate
 #probe14.olma.trial2.16c <- probe14.olma.trial2[probe14.olma.trial2$temp == '16', ] # Update as appropriate
-head(probe14.arla.22jun) # Update as appropriate
-str(probe14.arla.22jun) # Update as appropriate
+head(probe14.arfe.27jun) # Update as appropriate
+str(probe14.arfe.27jun) # Update as appropriate
 
 ### SMR estimate function
 
-five.hr.plus.data <- probe14.arla.22jun[probe14.arla.22jun$time.hrs > 5, ]
+five.hr.plus.data <- probe14.arfe.27jun[probe14.arfe.27jun$time.hrs > 5, ]
 
 smr <- calcSMR(five.hr.plus.data$mo2) # Update as appropriate
 smr
@@ -39,10 +39,10 @@ smr.check.best
 
   #############################
 
-plot.smr <- ggplot(data=probe14.arla.22jun, aes(x=probe14.arla.22jun$time.hrs, 
-                                                  y=probe14.arla.22jun$mo2)) 
-plot.smr + (geom_point(size = 1.47)) +
-  geom_hline(yintercept = 1.47) +
+plot.smr <- ggplot(data=probe14.arfe.27jun, aes(x=probe14.arfe.27jun$time.hrs, 
+                                                  y=probe14.arfe.27jun$mo2)) 
+plot.smr + (geom_point(size = 1.5)) +
+  geom_hline(yintercept = 1.94) +
   labs(x = "Time (hrs)",
        y = "MO2 (umol O2/g/hr)") +
   theme_base()
@@ -67,10 +67,10 @@ plot.smr + (geom_point(size = 1.47)) +
 pcrit.data <-read.csv(file.choose())
 head(pcrit.data)
 
-calcO2crit(pcrit.data, 1.47) # Enter value of SMR obtained above here, after "pcrit.data
+calcO2crit(pcrit.data, 1.83) # Enter value of SMR obtained above here, after "pcrit.data
 #?calcO2crit
 
-plotO2crit(calcO2crit(pcrit.data, 1.47))
+plotO2crit(calcO2crit(pcrit.data, 1.83))
 
 ### In torr
 # (O2crit.%sat/100)*P.ATM.KPA*760*0.2095/101.325
