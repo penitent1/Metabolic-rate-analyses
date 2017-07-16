@@ -7,22 +7,26 @@ respVols <- read.csv(file.choose())
 ### Probe drift correction data
 
 pre <- c(0,100)
-post <- c(0,102.3) # Update for each trial
+post <- c(0,100.8) # Update for each trial
 probeDrift <- lm(post~pre)
 probeDrift ## "pre" is the slope of the line
 
 wsize <- 20
 
 respVol <- respVols$resp.volume_mL[respVols$respirometer.id == "e"] # Update each trial
-mass <- 29.8 # Update each trial
-alpha <- 1.5936 ## Change as appropriate for different temperatures
+mass <- 48.2 # Update each trial
+alpha <- 1.4842 ## Change as appropriate for different temperatures
 
 md$time <- seq(0, (nrow(md)-1)*15, by=15)
+# Update "po2" for each trial
+md$po2 <- (((md$Oxygen)/1.008)/100)*101.6*760*0.2095/101.325
 # Update "oxygen.umol" for each trial
-md$oxygen.umol <- (((md$Oxygen)/1.023)/100)*102*760*alpha*(respVol/1000-mass/1000)/101.325 ### convert from %sat to umol O2
+md$oxygen.umol <- (((md$Oxygen)/1.008)/100)*101.6*760*0.2095*alpha*(respVol/1000-mass/1000)/101.325 ### convert from %sat to umol O2
 
 o2.rmr <- numeric(150000)
 o2.pcrit <- numeric(150000)
+po2.rmr <- numeric(150000)
+po2.pcrit <- numeric(150000)
 time.rmr <- numeric(150000)
 time.pcrit <- numeric(150000)
 j <- 1
@@ -38,14 +42,15 @@ while (i <= nrow(md)-wsize*5) # Mult by 10 to extend window to 50 minutes (all P
   if (summary(z)$adj.r.squared<0.1 & coef(z)[2]>0) 
   {
     o2.rmr[j] <- md$oxygen.umol[md$time==[i]] #coef(z)[2]
+    po2.rmr[j] <- md$po2[md$time==[i]]
     j <- j+1
     i <- i+1
   } 
   else 
   {
-    output.pcrit[k]
-    k <- k+1
-    i <- i+1
+    o2.pcrit <- md$oxygen.umol[[i]:nrow(md)]
+    #k <- k+1
+    #i <- i+1
   }
 }
 output <- output[output!=0]
