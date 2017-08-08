@@ -13,8 +13,8 @@ probeDrift ## "pre" is the slope of the line
 
 wsize <- 20
 
-respVol <- respVols$resp.volume_mL[respVols$respirometer.id == "e"] # Update each trial
-mass <- 48.2 # Update each trial
+respVol <- respVols$resp.volume_mL[respVols$respirometer.id == "a"] # Update each trial
+mass <- 18.4 # Update each trial
 alpha <- 1.4842 ## Change as appropriate for different temperatures
 
 md$time <- seq(0, (nrow(md)-1)*15, by=15)
@@ -23,36 +23,67 @@ md$po2 <- (((md$Oxygen)/1.008)/100)*101.6*760*0.2095/101.325
 # Update "oxygen.umol" for each trial
 md$oxygen.umol <- (((md$Oxygen)/1.008)/100)*101.6*760*0.2095*alpha*(respVol/1000-mass/1000)/101.325 ### convert from %sat to umol O2
 
-o2.rmr <- numeric(150000)
-o2.pcrit <- numeric(150000)
-po2.rmr <- numeric(150000)
-po2.pcrit <- numeric(150000)
-time.rmr <- numeric(150000)
-time.pcrit <- numeric(150000)
-j <- 1
-k <- 1
 
-i <- 1
-while (i <= nrow(md)-wsize*5) # Mult by 10 to extend window to 50 minutes (all Pcrits are at least an hour long)
+for (i in 1:(nrow(md)-wsize*5)) # Mult by 10 to extend window to 50 minutes (all Pcrits are at least an hour long)
 {
   time <- md$time[i:(i+wsize*5)]
   o2 <- md$oxygen.umol[i:(i+wsize*5)]
   z <- lm(o2~time)
   
-  if (summary(z)$adj.r.squared<0.1 & coef(z)[2]>0) 
+  if (summary(z)$adj.r.squared > 0.975 & coef(z)[2] < 0) 
   {
-    o2.rmr[j] <- md$oxygen.umol[md$time==[i]] #coef(z)[2]
-    po2.rmr[j] <- md$po2[md$time==[i]]
-    j <- j+1
-    i <- i+1
+    pcritCaliData <- md[i:nrow(md), 6:8]
+    rmrData <- md[1:(i-1), c(6,8)]
+    break()
   } 
-  else 
+}
+
+for (i in 1:(nrow(pcritCaliData)-10))
+{
+  if (all(pcritCaliData[i:(i+10),3]==((pcritCaliData[i:(i+10),3])[order(pcritCaliData[i:(i+10),3])])))
   {
-    o2.pcrit <- md$oxygen.umol[[i]:nrow(md)]
-    #k <- k+1
-    #i <- i+1
+    caliData <- pcritCaliData[(i-7):nrow(pcritCaliData),]
+    pcritData <- pcritCaliData[1:(i-8),]
+    break()
   }
 }
+
+# Reset time to start at zero
+pcritData$time <- seq(0, (nrow(pcritData)-1)*15, by=15)
+# plot Pcrit with all data included
+plot(pcritData$oxygen.umol~pcritData$time, cex = 0.25)
+# plot Pcrit with first 5 min of data removed (respirometer still mixing)
+plot(pcritData$oxygen.umol[pcritData$time>300]~pcritData$time[pcritData$time>300], cex = 0.25)
+
+### Get slopes & Po2s for Pcrit
+
+### WHERE I LEFT OFF!!! THIS WHILE LOOP ISN'T WORKING!
+pcritWsize <- 7 ## CHANGE depending on desired window size ie 7 = 20degC, 15 =< 16degC
+
+pcritZ <- list()
+pcritSlopes <- numeric(200)
+pcritPo2s <- numeric(200)
+
+k <- 1
+
+while (k <= nrow(pcritData)-pcritWsize)
+{
+  pcritO2umol <- pcritData$oxygen.umol[k:(k+pcritWsize)]
+  pcritTime <- pcritData$time[k:(k+pcritWsize)]
+  pcritPo2 <-  pcritData$po2[k:(k+pcritWsize)]
+  pcritZ <- lm(pcritO2umol~pcritTime)
+  pcritSlopes <- coef(pcritZ)[2]
+  pcritPo2s <- mean(pcritPo2)
+  k <- k+pcritWsize
+}
+
+pcritSlopes <- pcritSlopes[pcritSlopes!=0]
+pcritPo2s <- pcritPo2s[pcritPo2s!=0]
+
+pcrit.df <- data.frame(pcritSlopes, pcritPo2s)
+
+
+
 output <- output[output!=0]
 ### could modify output to final MO2 units here if you wanted
 output <- output*-1*3600/mass
