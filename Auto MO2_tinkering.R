@@ -7,21 +7,22 @@ respVols <- read.csv(file.choose())
 ### Probe drift correction data
 
 pre <- c(0,100)
-post <- c(0,100.8) # Update for each trial
+post <- c(0,100.8) # UPDATE for each trial
 probeDrift <- lm(post~pre)
 probeDrift ## "pre" is the slope of the line
 
-wsize <- 20
+wsize <- 20 ## 20 rows * 15 sec/row = 300 sec / 60 sec / min = 5 min windows
 
 respVol <- respVols$resp.volume_mL[respVols$respirometer.id == "a"] # Update each trial
 mass <- 18.4 # Update each trial
 alpha <- 1.4842 ## Change as appropriate for different temperatures
+pAtm <- 101.9 # Update each trial: atmospheric pressure
 
 md$time <- seq(0, (nrow(md)-1)*15, by=15)
 # Update "po2" for each trial
-md$po2 <- (((md$Oxygen)/1.008)/100)*101.9*760*0.2095/101.325
+md$po2 <- (((md$Oxygen)/(coef(probeDrift)[2]))/100)*pAtm*760*0.2095/101.325
 # Update "oxygen.umol" for each trial
-md$oxygen.umol <- (((md$Oxygen)/1.008)/100)*101.9*760*0.2095*alpha*(respVol/1000-mass/1000)/101.325 ### convert from %sat to umol O2
+md$oxygen.umol <- (((md$Oxygen)/(coef(probeDrift)[2]))/100)*pAtm*760*0.2095*alpha*(respVol/1000-mass/1000)/101.325 ### convert from %sat to umol O2
 
 
 for (i in 1:(nrow(md)-wsize*5)) # Mult by 10 to extend window to 50 minutes (all Pcrits are at least an hour long)
