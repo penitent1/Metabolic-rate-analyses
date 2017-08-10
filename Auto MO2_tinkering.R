@@ -9,7 +9,7 @@ respVols <- read.csv(file.choose())
 pre <- c(0,100)
 post <- c(0,100.8) # UPDATE for each trial
 probeDrift <- lm(post~pre)
-probeDrift ## "pre" is the slope of the line
+probeDrift ## "pre" is the slope of the line -> coef(probeDrift)[2] == "pre"
 
 wsize <- 20 ## 20 rows * 15 sec/row = 300 sec / 60 sec / min = 5 min windows
 
