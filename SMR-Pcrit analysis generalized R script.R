@@ -9,7 +9,7 @@ library(shape)
 library(StreamMetabolism)
 
 library(fishMO2)
-?fishMO2
+#?fishMO2
 
 ### Use the following script, changing names and specs of objects,
   # to get SMR and "O2crit" estimates
@@ -20,16 +20,16 @@ head(smr.data)
 ### NFB00--: Specify probe and species for analysis
 
 probe13 <- smr.data[smr.data$probe == 'NFB0013', ] # Update as appropriate
-probe13.arha <- probe13[probe13$spps == 'arha', ] # Update as appropriate
-probe13.arha.14jul <- probe13.arha[probe13.arha$date.day == '14' &
-                                     probe13.arha$date.month == 'jul' , ] # Update as appropriate
+probe13.enbi <- probe13[probe13$spps == 'enbi', ] # Update as appropriate
+probe13.enbi.13aug <- probe13.enbi[probe13.enbi$date.day == '13' &
+                                     probe13.enbi$date.month == 'aug' , ] # Update as appropriate
 #probe14.olma.trial2.16c <- probe14.olma.trial2[probe14.olma.trial2$temp == '16', ] # Update as appropriate
-head(probe13.arha.14jul) # Update as appropriate
-str(probe13.arha.14jul) # Update as appropriate
+head(probe13.enbi.13aug) # Update as appropriate
+str(probe13.enbi.13aug) # Update as appropriate
 
 ### SMR estimate function
 
-five.hr.plus.data <- probe13.arha.14jul[probe13.arha.14jul$time.hrs > 5, ]
+five.hr.plus.data <- probe13.enbi.13aug[probe13.enbi.13aug$time.hrs > 5, ]
 
 smr <- calcSMR(five.hr.plus.data$mo2) # Update as appropriate
 smr
@@ -39,10 +39,10 @@ smr.check.best
 
   #############################
 
-plot.smr <- ggplot(data=probe13.arha.14jul, aes(x=probe13.arha.14jul$time.hrs, 
-                                                  y=probe13.arha.14jul$mo2)) 
+plot.smr <- ggplot(data=probe13.enbi.13aug, aes(x=probe13.enbi.13aug$time.hrs, 
+                                                  y=probe13.enbi.13aug$mo2)) 
 plot.smr + (geom_point(size = 1.5)) +
-  geom_hline(yintercept = 4.25) +
+  geom_hline(yintercept = 2.07) +
   labs(x = "Time (hrs)",
        y = "MO2 (umol O2/g/hr)") +
   theme_base()
@@ -67,10 +67,10 @@ plot.smr + (geom_point(size = 1.5)) +
 pcrit.data <-read.csv(file.choose())
 head(pcrit.data)
 
-calcO2crit(pcrit.data, 4.25) # Enter value of SMR obtained above here, after "pcrit.data
+calcO2crit(pcrit.data, 2.07) # Enter value of SMR obtained above here, after "pcrit.data
 #?calcO2crit
 
-plotO2crit(calcO2crit(pcrit.data, 4.25))
+plotO2crit(calcO2crit(pcrit.data, 2.07))
 
 ### In torr
 # (O2crit.%sat/100)*P.ATM.KPA*760*0.2095/101.325
