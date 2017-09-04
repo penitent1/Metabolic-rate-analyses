@@ -20,16 +20,16 @@ head(smr.data)
 ### NFB00--: Specify probe and species for analysis
 
 probe13 <- smr.data[smr.data$probe == 'NFB0013', ] # Update as appropriate
-probe13.hehe <- probe13[probe13$spps == 'hehe', ] # Update as appropriate
-probe13.hehe.16aug <- probe13.hehe[probe13.hehe$date.day == '16' &
-                                     probe13.hehe$date.month == 'aug' , ] # Update as appropriate
+probe13.enbi <- probe13[probe13$spps == 'enbi', ] # Update as appropriate
+probe13.enbi.18aug <- probe13.enbi[probe13.enbi$date.day == '18' &
+                                     probe13.enbi$date.month == 'aug' , ] # Update as appropriate
 #probe14.olma.trial2.16c <- probe14.olma.trial2[probe14.olma.trial2$temp == '16', ] # Update as appropriate
-head(probe13.hehe.16aug) # Update as appropriate
-str(probe13.hehe.16aug) # Update as appropriate
+head(probe13.enbi.18aug) # Update as appropriate
+str(probe13.enbi.18aug) # Update as appropriate
 
 ### SMR estimate function
 
-five.hr.plus.data <- probe13.hehe.16aug[probe13.hehe.16aug$time.hrs > 5, ]
+five.hr.plus.data <- probe13.enbi.18aug[probe13.enbi.18aug$time.hrs > 5, ]
 
 smr <- calcSMR(five.hr.plus.data$mo2) # Update as appropriate
 smr
@@ -39,10 +39,10 @@ smr.check.best
 
   #############################
 
-plot.smr <- ggplot(data=probe13.hehe.16aug, aes(x=probe13.hehe.16aug$time.hrs, 
-                                                  y=probe13.hehe.16aug$mo2)) 
+plot.smr <- ggplot(data=probe13.enbi.18aug, aes(x=probe13.enbi.18aug$time.hrs, 
+                                                  y=probe13.enbi.18aug$mo2)) 
 plot.smr + (geom_point(size = 1.5)) +
-  geom_hline(yintercept = 2.29) +
+  geom_hline(yintercept = 5.31) +
   labs(x = "Time (hrs)",
        y = "MO2 (umol O2/g/hr)") +
   theme_base()
@@ -67,10 +67,10 @@ plot.smr + (geom_point(size = 1.5)) +
 pcrit.data <-read.csv(file.choose())
 head(pcrit.data)
 
-calcO2crit(pcrit.data, 2.29) # Enter value of SMR obtained above here, after "pcrit.data
+calcO2crit(pcrit.data, 5.31) # Enter value of SMR obtained above here, after "pcrit.data
 #?calcO2crit
 
-plotO2crit(calcO2crit(pcrit.data, 2.29))
+plotO2crit(calcO2crit(pcrit.data, 5.31))
 
 ### In torr
 # (O2crit.%sat/100)*P.ATM.KPA*760*0.2095/101.325
