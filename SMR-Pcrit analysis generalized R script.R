@@ -19,33 +19,33 @@ tail(smr.data)
 
 ### NFB00--: Specify probe and species for analysis
 
-probe13 <- smr.data[smr.data$probe == 'NFB0013', ] # Update as appropriate
-probe13.enbi <- probe13[probe13$spps == 'enbi', ] # Update as appropriate
-probe13.enbi.19oct <- probe13.enbi[probe13.enbi$date.day == '19' &
-                                     probe13.enbi$date.month == 'oct' , ] # Update as appropriate
+probe14 <- smr.data[smr.data$probe == 'NFB0014', ] # Update as appropriate
+probe14.arha <- probe14[probe14$spps == 'arha', ] # Update as appropriate
+probe14.arha.30may <- probe14.arha[probe14.arha$date.day == '30' &
+                                     probe14.arha$date.month == 'may' , ] # Update as appropriate
 #probe14.olma.trial2.16c <- probe14.olma.trial2[probe14.olma.trial2$temp == '16', ] # Update as appropriate
-head(probe13.enbi.19oct) # Update as appropriate
-str(probe13.enbi.19oct) # Update as appropriate
+head(probe14.arha.30may) # Update as appropriate
+str(probe14.arha.30may) # Update as appropriate
 
 ### SMR estimate function
 
-five.hr.plus.data <- probe13.enbi.19oct[probe13.enbi.19oct$time.hrs > 5, ]
+five.hr.plus.data <- probe14.arha.30may[probe14.arha.30may$time.hrs > 5, ]
 
-#smr <- calcSMR(five.hr.plus.data$mo2) # Update as appropriate
-#smr
-
-smr <- calcSMR(probe13.enbi.19oct$mo2) # Use if I need ALL the data eg ENBI!
+smr <- calcSMR(five.hr.plus.data$mo2) # Update as appropriate
 smr
+
+#smr <- calcSMR(probe12.olma.6may$mo2) # Use if I need ALL the data eg ENBI!
+#smr
 
 smr.check.best <- as.numeric(ifelse(smr$CVmlnd > 5.4, smr$quant[4], smr$mlnd)) # as recommended in Chabot et al. 2016
 smr.check.best
 
   #############################
 
-plot.smr <- ggplot(data=probe13.enbi.19oct, aes(x=probe13.enbi.19oct$time.hrs, 
-                                                  y=probe13.enbi.19oct$mo2)) 
-plot.smr + (geom_point(size = 1.5)) +
-  geom_hline(yintercept = 1.74) +
+plot.smr <- ggplot(data=probe14.arha.30may, aes(x=probe14.arha.30may$time.hrs, 
+                                                  y=probe14.arha.30may$mo2)) 
+plot.smr + (geom_point(size = 1.48)) +
+  geom_hline(yintercept = 1.48) +
   labs(x = "Time (hrs)",
        y = "MO2 (umol O2/g/hr)") +
   theme_base()
@@ -70,10 +70,10 @@ plot.smr + (geom_point(size = 1.5)) +
 pcrit.data <-read.csv(file.choose())
 head(pcrit.data)
 
-calcO2crit(pcrit.data, 4.53) # Enter value of SMR obtained above here, after "pcrit.data
+calcO2crit(pcrit.data, 1.48) # Enter value of SMR obtained above here, after "pcrit.data
 #?calcO2crit
 
-plotO2crit(calcO2crit(pcrit.data, 3.49))
+plotO2crit(calcO2crit(pcrit.data, 1.48))
 
 ### In torr
 # (O2crit.%sat/100)*P.ATM.KPA*760*0.2095/101.325
