@@ -139,18 +139,18 @@ date,probe,spps,temp,sal,fish.id,finclip.id,mass.g,smr.best,pcrit.r,mo2.regress,
 18-Aug-17,NFB0008,enbi,20,35,enbi.4,top.bottom,248,4.17,60.2,na,na,"yes - smr estimate may be too high, check Mclust max number of clusters allowed by r package",1,16hr,80,
 18-Aug-17,NFB0010,enbi,20,35,enbi.5,top.inbottom,302,3.32,80.8,1.93,46.4,,1,16hr,145,
 18-Aug-17,NFB0013,enbi,20,35,enbi.6,intop.bottom,240,5.31,100.2,na,na,,1,16hr,120,
-25-Aug-17,NFB0008,blci,12,35,blci.1,top,5,2.81,28.4,na,na,,,16hr,190,
-25-Aug-17,NFB0010,blci,12,35,blci.2,bottom,11,2.29,26.5,na,na,,,16hr,175,
-25-Aug-17,NFB0013,blci,12,35,blci.3,middle,6.4,2.25,28.3,na,na,,,16hr,155,
-26-Aug-17,NFB0008,blci,12,35,blci.4,top.bottom,4.7,2.71,30.1,na,na,"yes - the old ""can't be higher than zero intercept""problem",,16hr,245,
-26-Aug-17,NFB0010,blci,12,35,blci.5,intop.bottom,6.6,2.29,37.7,na,na,,,16hr,180,
-26-Aug-17,NFB0013,blci,12,35,blci.6,top.inbottom,8.3,2.04,32.4,2.21,47,,,16hr,185,regress looks more reasonable…
-31-Aug-17,NFB0008,blci,20,35,blci.1,top,5,4.68,54.7,na,na,,,16hr,135,
-31-Aug-17,NFB0010,blci,20,35,blci.2,bottom,10.5,5.4,60.7,na,na,,,16hr,145,
-31-Aug-17,NFB0013,blci,20,35,blci.3,middle,6.4,3.98,42.8,6.31,78.2,,,16hr,100,
-1-Sep-17,NFB0008,blci,16,35,blci.6,top.inbottom,7.9,2.73,38.8,2.96,46.8,,,16hr,135,Trace looks like oxyconformer - probably why REGRESS cannot calculate a pcrit
-1-Sep-17,NFB0010,blci,16,35,blci.5,intop.bottom,6.4,3.02,35.7,3.53,58.2,,,16hr,150,regress looks unreasonable…
-1-Sep-17,NFB0013,blci,16,35,blci.4,top.bottom,4.7,2.91,45.1,2.96,46.8,,,16hr,225,
+25-Aug-17,NFB0008,blci,12,35,blci.1,top,5,2.81,28.4,na,na,,1,16hr,190,
+25-Aug-17,NFB0010,blci,12,35,blci.2,bottom,11,2.29,26.5,na,na,,1,16hr,175,
+25-Aug-17,NFB0013,blci,12,35,blci.3,middle,6.4,2.25,28.3,na,na,,1,16hr,155,
+26-Aug-17,NFB0008,blci,12,35,blci.4,top.bottom,4.7,2.71,30.1,na,na,"yes - the old ""can't be higher than zero intercept""problem",1,16hr,245,
+26-Aug-17,NFB0010,blci,12,35,blci.5,intop.bottom,6.6,2.29,37.7,na,na,,1,16hr,180,
+26-Aug-17,NFB0013,blci,12,35,blci.6,top.inbottom,8.3,2.04,32.4,2.21,47,,1,16hr,185,regress looks more reasonable…
+31-Aug-17,NFB0008,blci,20,35,blci.1,top,5,4.68,54.7,na,na,,1,16hr,135,
+31-Aug-17,NFB0010,blci,20,35,blci.2,bottom,10.5,5.4,60.7,na,na,,1,16hr,145,
+31-Aug-17,NFB0013,blci,20,35,blci.3,middle,6.4,3.98,42.8,6.31,78.2,,1,16hr,100,
+1-Sep-17,NFB0008,blci,16,35,blci.6,top.inbottom,7.9,2.73,38.8,2.96,46.8,,1,16hr,135,Trace looks like oxyconformer - probably why REGRESS cannot calculate a pcrit
+1-Sep-17,NFB0010,blci,16,35,blci.5,intop.bottom,6.4,3.02,35.7,3.53,58.2,,1,16hr,150,regress looks unreasonable…
+1-Sep-17,NFB0013,blci,16,35,blci.4,top.bottom,4.7,2.91,45.1,2.96,46.8,,1,16hr,225,
 7-Sep-17,NFB0008,arha,20,35,arha.2,bottom,11.4,3.49,47.5,3.58,47.3,,2,16hr,85,
 7-Sep-17,NFB0010,arha,20,35,arha.5,middle,13.3,3.87,32.2,5.54,45.9,,1,16hr,58,
 7-Sep-17,NFB0013,arha,20,35,arha.1,top,13.3,3.28,44.8,4.28,63.3,,1,16hr,68,
