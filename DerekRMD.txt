@@ -1,0 +1,211 @@
+---
+title: "behavior test"
+author: "Mel"
+date: "January 20, 2018"
+output:
+  html_document: default
+  pdf_document: default
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## First digitized video!
+
+OK. Ideally this code would run all flights for one individual so if name all files the same, can use the same code for each bird?
+
+```{r}
+suppressMessages(library(tidyverse))
+```
+
+###OPTO-021
+Day 1: Perch-to-perch
+
+```{r}
+P2P <- read.csv("021/opto-021_behav_01-20-18_xypts.csv")
+#str(P2P)
+
+p21_d1 <- ggplot(P2P, aes(x=pt1_cam1_X, y=pt1_cam1_Y)) +
+  geom_point() +
+  ggtitle("OPTO-021 Day 1: perch-to-perch")
+```
+
+Day 2: Aperture
+
+```{r}
+Aperture <- read.csv("021/opto-021_behav_01-21-18_aperture_xypts.csv")
+#str(Aperture)
+
+p21_d2 <- ggplot(Aperture, aes(x=pt1_cam1_X, y=pt1_cam1_Y)) +
+  geom_point() +
+  ggtitle("OPTO-021 Day 2: aperture")
+```
+
+Day 3: Trials 1-4
+
+```{r}
+t1 <- read.csv("021/opto-021_behav-t1_xypts.csv")
+#str(t1)
+
+p21_d3_t1 <- ggplot(t1, aes(x=pt1_cam1_X, y=pt1_cam1_Y)) +
+  geom_point() +
+  ggtitle("OPTO-021 Day 3: Trial 1")
+
+t2 <- read.csv("021/opto-021_behav-t2_xypts.csv")
+#str(t2)
+
+p21_d3_t2 <- ggplot(t2, aes(x=pt1_cam1_X, y=pt1_cam1_Y)) +
+  geom_point() +
+  ggtitle("OPTO-021 Day 3: Trial 2")
+
+t3 <- read.csv("021/opto-021_behav-t3_xypts.csv")
+#str(t3)
+
+p21_d3_t3 <- ggplot(t3, aes(x=pt1_cam1_X, y=pt1_cam1_Y)) +
+  geom_point() +
+  ggtitle("OPTO-021 Day 3: Trial 3")
+
+t4 <- read.csv("021/opto-021_behav-t4_xypts.csv")
+#str(t4)
+
+p21_d3_t4 <- ggplot(t4, aes(x=pt1_cam1_X, y=pt1_cam1_Y)) +
+  geom_point() +
+  ggtitle("OPTO-021 Day 3: Trial 4")
+
+p21_d1
+p21_d2
+
+p21_d3_t1
+p21_d3_t2
+p21_d3_t3
+p21_d3_t4
+```
+
+###OPTO-024
+Day 1: Perch-to-perch
+
+```{r}
+P2P <- read.csv("024/opto-024_behav_01-20-18_testxypts.csv")
+#str(P2P)
+
+p24_d1 <- ggplot(P2P, aes(x=pt1_cam1_X, y=pt1_cam1_Y)) +
+  geom_point() +
+  ggtitle("OPTO-024 Day 1: perch-to-perch")
+```
+
+Day 2 Aperture
+
+```{r}
+Aperture <- read.csv("024/opto-024_behav_aperture_xypts.csv")
+#str(Aperture)
+
+p24_d2 <- ggplot(Aperture, aes(x=pt1_cam1_X, y=pt1_cam1_Y)) +
+  geom_point() +
+  ggtitle("OPTO-024 Day 2: aperture")
+```
+
+Day 3: Trials 1-4
+
+```{r}
+t1 <- read.csv("024/opto-024_behav-t1_xypts.csv")
+#str(t1)
+
+p24_d3_t1 <- ggplot(t1, aes(x=pt1_cam1_X, y=pt1_cam1_Y)) +
+  geom_point() +
+  ggtitle("OPTO-024 Day 3: Trial 1")
+
+t2 <- read.csv("024/opto-024_behav-t2_xypts.csv")
+#str(t2)
+
+p24_d3_t2 <- ggplot(t2, aes(x=pt1_cam1_X, y=pt1_cam1_Y)) +
+  geom_point() +
+  ggtitle("OPTO-024 Day 3: Trial 2")
+
+t3 <- read.csv("024/opto-024_behav-t3_xypts.csv")
+#str(t3)
+
+p24_d3_t3 <- ggplot(t3, aes(x=pt1_cam1_X, y=pt1_cam1_Y)) +
+  geom_point() +
+  ggtitle("OPTO-024 Day 3: Trial 3")
+
+t4 <- read.csv("024/opto-024_behav-t4_xypts.csv")
+#str(t4)
+
+p24_d3_t4 <- ggplot(t4, aes(x=pt1_cam1_X, y=pt1_cam1_Y)) +
+  geom_point() +
+  ggtitle("OPTO-024 Day 3: Trial 4")
+
+p24_d1
+p24_d2
+
+p24_d3_t1
+p24_d3_t2
+p24_d3_t3
+p24_d3_t4
+```
+
+###OPTO-026
+Day 1: Perch-to-perch
+
+```{r}
+P2P <- read.csv("026/opto-026_behav_01-20-18_xypts.csv")
+#str(P2P)
+
+p26_d1 <- ggplot(P2P, aes(x=pt1_cam1_X, y=pt1_cam1_Y)) +
+  geom_point() +
+  ggtitle("OPTO-026 Day 1: perch-to-perch")
+```
+
+Day 2 Aperture
+
+```{r}
+Aperture <- read.csv("026/opto-026_behav_01-21-18_aperture_xypts.csv")
+#str(Aperture)
+
+p26_d2 <- ggplot(Aperture, aes(x=pt1_cam1_X, y=pt1_cam1_Y)) +
+  geom_point() +
+  ggtitle("OPTO-026 Day 2: aperture")
+```
+
+Day 3: Trials 1-4
+
+```{r}
+t1 <- read.csv("026/opto-026_behav-t1_xypts.csv")
+#str(t1)
+
+p26_d3_t1 <- ggplot(t1, aes(x=pt1_cam1_X, y=pt1_cam1_Y)) +
+  geom_point() +
+  ggtitle("OPTO-026 Day 3: Trial 1")
+
+t2 <- read.csv("026/opto-026_behav-t2_xypts.csv")
+#str(t2)
+
+p26_d3_t2 <- ggplot(t2, aes(x=pt1_cam1_X, y=pt1_cam1_Y)) +
+  geom_point() +
+  ggtitle("OPTO-026 Day 3: Trial 2")
+
+#t3 <- read.csv("026/opto-026_behav-t3_xypts.csv")
+#str(t3)
+
+#p26_d3_t3 <- ggplot(t3, aes(x=pt1_cam1_X, y=pt1_cam1_Y)) +
+#  geom_point() +
+#  ggtitle("OPTO-026 Day 3: Trial 3")
+
+#t4 <- read.csv("026/opto-026_behav-t4_xypts.csv")
+#str(t4)
+
+#p26_d3_t4 <- ggplot(t4, aes(x=pt1_cam1_X, y=pt1_cam1_Y)) +
+#  geom_point() +
+#  ggtitle("OPTO-026 Day 3: Trial 4")
+
+p26_d1
+p26_d2
+
+p26_d3_t1
+p26_d3_t2
+#p26_d3_t3
+#p26_d3_t4
+```

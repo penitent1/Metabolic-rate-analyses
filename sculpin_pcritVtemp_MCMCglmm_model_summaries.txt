@@ -1,0 +1,226 @@
+################################################################
+################################################################
+####
+####	Model 1: pcrit ~ temp, random = ~ phylo + spps + fish.id
+####
+################################################################
+################################################################
+prior1<-list(G=list(G1=list(V=1,nu=0.02),G2=list(V=1,nu=0.02), G3=list(V=1,nu=0.02)),
+             R=list(V=1,nu=0.02))
+
+model_repeat1<-MCMCglmm(pcrit.r~temp,random=~species+spps+fish.id,
+                        family="gaussian",
+			ginverse=list(species=inv.phylo$Ainv),
+                        prior=prior1,
+                        data=sculpin_data,
+                        nitt=5000000,burnin=1000,thin=500)
+
+> summary(model_repeat1)
+
+ Iterations = 1001:4999501
+ Thinning interval  = 500
+ Sample size  = 9998 
+
+ DIC: 1284.352 
+
+ G-structure:  ~species
+
+        post.mean l-95% CI u-95% CI eff.samp
+species     150.3 0.002109    575.2     9998
+
+               ~spps
+
+     post.mean l-95% CI u-95% CI eff.samp
+spps     86.68 0.001839    278.3    10604
+
+               ~fish.id
+
+        post.mean l-95% CI u-95% CI eff.samp
+fish.id     28.79 0.002037    73.01     6996
+
+ R-structure:  ~units
+
+      post.mean l-95% CI u-95% CI eff.samp
+units     131.2    89.24    178.3     7914
+
+ Location effects: pcrit.r ~ temp 
+
+            post.mean l-95% CI u-95% CI eff.samp  pMCMC    
+(Intercept)    -4.552  -22.751   14.246     9998  0.551    
+temp            3.075    2.492    3.652     9545 <1e-04 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+################################################################
+################################################################
+####
+####	Model 1.1: pcrit ~ temp, random = ~ phylo + spps + fish.id
+####
+################################################################
+################################################################
+prior1.1<-list(G=list(G1=list(V=1,nu=0.002),G2=list(V=1,nu=0.002), G3=list(V=1,nu=0.002)),
+             R=list(V=1,nu=0.002))
+
+model_repeat1.1<-MCMCglmm(pcrit.r~temp,random=~species+spps+fish.id,
+                        family="gaussian",
+			ginverse=list(species=inv.phylo$Ainv),
+                        prior=prior1.1,
+                        data=sculpin_data,
+                        nitt=5000000,burnin=1000,thin=500)
+
+> summary(model_repeat1.1)
+
+ Iterations = 1001:4999501
+ Thinning interval  = 500
+ Sample size  = 9998 
+
+ DIC: 1285.144 
+
+ G-structure:  ~species
+
+        post.mean  l-95% CI u-95% CI eff.samp
+species     152.7 0.0001818    591.7     9433
+
+               ~spps
+
+     post.mean  l-95% CI u-95% CI eff.samp
+spps      87.5 0.0002945    280.9     9490
+
+               ~fish.id
+
+        post.mean l-95% CI u-95% CI eff.samp
+fish.id     26.79 0.000166    72.63     5049	## Poorly sampled
+
+ R-structure:  ~units
+
+      post.mean l-95% CI u-95% CI eff.samp
+units     133.3    87.86    179.3     5848	## Poorly sampled
+
+ Location effects: pcrit.r ~ temp 
+
+            post.mean l-95% CI u-95% CI eff.samp  pMCMC    
+(Intercept)    -4.592  -22.518   14.276     9998  0.548    
+temp            3.069    2.462    3.647     9300 <1e-04 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+
+################################################################
+################################################################
+####
+####	Model 2: pcrit ~ temp, random = ~ phylo + fish.id
+####
+################################################################
+################################################################
+prior2<-list(G=list(G1=list(V=1,nu=0.02),G2=list(V=1,nu=0.02)),
+             R=list(V=1,nu=0.02))
+
+model_repeat2<-MCMCglmm(pcrit.r~temp,random=~species+spps+fish.id,
+                        family="gaussian",
+			ginverse=list(species=inv.phylo$Ainv),
+                        prior=prior2,
+                        data=sculpin_data,
+                        nitt=5000000,burnin=1000,thin=500)
+
+> summary(model_repeat2)
+
+ Iterations = 1001:4999501
+ Thinning interval  = 500
+ Sample size  = 9998 
+
+ DIC: 1284.643 
+
+ G-structure:  ~species
+
+        post.mean l-95% CI u-95% CI eff.samp
+species     361.6    39.72      879     9998
+
+               ~fish.id
+
+        post.mean l-95% CI u-95% CI eff.samp
+fish.id     28.63 0.002471     74.3     7261
+
+ R-structure:  ~units
+
+      post.mean l-95% CI u-95% CI eff.samp
+units       132    86.33    176.8     7623
+
+ Location effects: pcrit.r ~ temp 
+
+            post.mean l-95% CI u-95% CI eff.samp  pMCMC    
+(Intercept)    -3.483  -26.293   19.724     9998  0.741    
+temp            3.073    2.486    3.665     9163 <1e-04 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+################################################################
+################################################################
+####
+####	Model 2.1: pcrit ~ temp, random = ~ phylo + fish.id
+####
+################################################################
+################################################################
+prior2.1<-list(G=list(G1=list(V=1,nu=0.002),G2=list(V=1,nu=0.002)),
+             R=list(V=1,nu=0.002))
+
+model_repeat2.1<-MCMCglmm(pcrit.r~temp,random=~species+spps+fish.id,
+                        family="gaussian",
+			ginverse=list(species=inv.phylo$Ainv),
+                        prior=prior2.1,
+                        data=sculpin_data,
+                        nitt=5000000,burnin=1000,thin=500)
+
+> summary(model_repeat2.1)
+
+ Iterations = 1001:4999501
+ Thinning interval  = 500
+ Sample size  = 9998 
+
+ DIC: 1285.337 
+
+ G-structure:  ~species
+
+        post.mean l-95% CI u-95% CI eff.samp
+species     354.2    45.19    874.9     9297
+
+               ~fish.id
+
+        post.mean  l-95% CI u-95% CI eff.samp
+fish.id     27.08 0.0001412    73.32     5226	## Poorly sampled
+
+ R-structure:  ~units
+
+      post.mean l-95% CI u-95% CI eff.samp
+units     133.5    88.53    179.8     5709	## Poorly sampled
+
+ Location effects: pcrit.r ~ temp 
+
+            post.mean l-95% CI u-95% CI eff.samp  pMCMC    
+(Intercept)    -3.089  -26.210   19.960     9582  0.763    
+temp            3.061    2.487    3.650     9716 <1e-04 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+################################################################
+################################################################
+####
+####	Model 3: pcrit ~ temp + spps + temp*spps, random = ~ phylo + fish.id
+####
+################################################################
+################################################################
+
+
+prior2<-list(G=list(G1=list(V=1,nu=0.02),G2=list(V=1,nu=0.02)),
+             R=list(V=1,nu=0.02))
+
+################################################################
+################################################################
+####
+####	Model 3.1: pcrit ~ temp + spps + temp*spps, random = ~ phylo + fish.id
+####
+################################################################
+################################################################
+
+
+prior2.1<-list(G=list(G1=list(V=1,nu=0.002),G2=list(V=1,nu=0.002)),
+             R=list(V=1,nu=0.002))

@@ -1,0 +1,31 @@
+#NEXUS
+[R-package APE, Thu Dec 21 12:06:13 2017]
+
+BEGIN TAXA;
+	DIMENSIONS NTAX = 9;
+	TAXLABELS
+		Scorpaenichthys_marmoratus
+		Blepsias_cirrhosus
+		Artedius_lateralis
+		Artedius_fenestralis
+		Artedius_harringtoni
+		Clinocottus_globiceps
+		Oligocottus_maculosus
+		Enophrys_bison
+		Hemilepidotus_hemilepidotus
+	;
+END;
+BEGIN TREES;
+	TRANSLATE
+		1	Scorpaenichthys_marmoratus,
+		2	Blepsias_cirrhosus,
+		3	Artedius_lateralis,
+		4	Artedius_fenestralis,
+		5	Artedius_harringtoni,
+		6	Clinocottus_globiceps,
+		7	Oligocottus_maculosus,
+		8	Enophrys_bison,
+		9	Hemilepidotus_hemilepidotus
+	;
+	TREE * UNTITLED = [&U] ((1:3,2:3):11,(((3:3,(4:2,5:2):1):2,(6:4,7:4):1):5,8:10):4,9:14);
+END;

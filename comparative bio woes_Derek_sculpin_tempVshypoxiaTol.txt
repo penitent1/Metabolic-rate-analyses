@@ -1,0 +1,61 @@
+read.tree("sculpin_phy.tre")
+
+#Phylogenetic tree with 9 tips and 7 internal nodes.
+
+#Tip labels:
+#	Scorpaenichthys_marmoratus, Blepsias_cirrhosus, Artedius_lateralis, Artedius_fenestralis, #Artedius_harringtoni, Clinocottus_globiceps, ...
+
+#Unrooted; includes branch lengths.
+#> plot.phylo(sculpin_phy)
+#> sculpin_phy$edge.length
+# [1] 11  3  3  4  5  2  3  1  2  2  1  4  4 10 14
+#> is.rooted(sculpin_phy)
+#[1] FALSE
+#> is.ultrametric(sculpin_phy)
+#[1] TRUE
+
+## Full hypoxia tolerance X temperature dataset (individual fish's data)
+md <- read.csv("SculpinPcritData_ComparativeAnalysisFormat.csv", stringsAsFactors = FALSE,
+               strip.white = TRUE, na.strings = c("NA","."))
+
+## Pcrit and temp data, NA's filtered out, only "trial.no == 1" inlcuded - trial.no == 1 is not super important here, just ensuring there are no duplicates per individual fish ("fish.id") per temperature
+## This is the data I would like to use to analyze temp*species interactions to assess whether species differ in temperature sensivity of pcrit and smr
+md_pcrit_smr <- md %>%
+  select(spps, temp, fish.id, mass.g, smr.best, pcrit.r, trial.no) %>%
+  filter(!is.na(smr.best)) %>%
+  filter(!is.na(pcrit.r)) %>%
+  filter(trial.no == 1)
+
+## This is where I gave up on analyzing full dataset and instead am aiming to look at q10's
+
+## q10 dataset (collapsed from full dataset)
+md_q10 <- read.csv("md_q10.csv", row.names = 1) # Should be 9 rows long with 2 columns for coding species identities and 2 columns for pcrit and smr (two continuous traits)
+
+#> sculpin_td <- treedata(sculpin_phy, md_q10)
+#> str(sculpin_td)
+#List of 2
+# $ phy :List of 4
+#  ..$ edge       : int [1:15, 1:2] 10 11 11 10 12 13 14 14 15 15 ...
+#  ..$ edge.length: num [1:15] 11 3 3 4 5 2 3 1 2 2 ...
+#  ..$ Nnode      : int 7
+#  ..$ tip.label  : chr [1:9] "Scorpaenichthys_marmoratus" "Blepsias_cirrhosus" "Artedius_lateralis" #"Artedius_fenestralis" ...
+#  ..- attr(*, "class")= chr "phylo"
+#  ..- attr(*, "order")= chr "cladewise"
+# $ data: chr [1:9, 1:3] "arfe" "arha" "arla" "blci" ...
+#  ..- attr(*, "dimnames")=List of 2
+#  .. ..$ : chr [1:9] "Artedius_fenestralis" "Artedius_harringtoni" "Artedius_lateralis" #"Blepsias_cirrhosus" ...
+#  .. ..$ : chr [1:3] "spps" "q10_pcrit" "q10_smr"
+
+## This is code from Matt Pennell's comphy workshop on comparative analysis methods
+pcrit_q10 <- sculpin_td$data[,"q10_pcrit"]
+sculpin_tree <- sculpin_td$phy
+pcrit_q10 <- pcrit_q10[sculpin_tree$tip.label]
+
+## Estimating phylogenetic signal (Pagel's lambda)
+
+fit_lambda <- fitContinuous(sculpin_tree, pcrit_q10, model="lambda")
+#Error in if (lambda < 0) stop("'lambda' must be positive valued") : 
+#  missing value where TRUE/FALSE needed
+#In addition: Warning message:
+#In matrix(unlist(children), nrow = 2) :
+#  data length [15] is not a sub-multiple or multiple of the number of rows [2]

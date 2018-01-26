@@ -1,0 +1,11 @@
+species,spps,ct_max_avg,ct_max_sd,n_ct_max,ct_max_sem,max_depth_mandic,center_habitat
+Artedius_fenestralis,arfe,25.98333333,0.875023809,6,0.357226974,55,subtidal
+Artedius_harringtoni,arha,24.67142857,1.087373419,7,0.410988521,21,subtidal
+Artedius_lateralis,arla,26.7,0.651152824,6,0.265832027,13,intertidal
+Clinocottus_globiceps,clgl,27.56666667,1.111155555,6,0.453627356,0.5,intertidal
+Oligocottus_maculosus,olma,28.87777778,0.603692343,9,0.201230781,0.1,intertidal
+Enophrys_bison,enbi,23.46,2.289759813,5,1.024011719,20,subtidal
+Scorpaenichthys_marmoratus,scma,27.53333333,0.25819889,6,0.105409255,200,subtidal
+Rhamphocottus_richardsoni,rhri,24.65,0.070710678,2,0.05,.,subtidal
+Hemilepidotus_hemilepidotus,hehe,.,.,.,.,450,subtidal
+Blepsias_cirrhosus,blci,.,.,.,.,150,subtidal

@@ -5,7 +5,8 @@ respVols <- read.csv(file.choose())
 ### 'md' is the data frame
 
 ### Probe drift correction data
-
+  ## NEW NOTE: I should make a new datafile for the probe drift data
+    ## EG 
 pre <- c(0,100)
 post <- c(0,100.8) # UPDATE for each trial
 probeDrift <- lm(post~pre)
