@@ -108,14 +108,16 @@ plot_slopes_torr_temp_ebars <- ggplot(data = md_temps_avg, aes(x=temp, y=avg_slo
   geom_line(size=1.25) +
   theme(panel.background = element_rect(fill = "white"),
         axis.line = element_line(size = 1, colour = "black"),
-        panel.border = element_rect(linetype = "blank", fill = NA),
-        axis.text.y = element_text(size = 28),
-        axis.title.y = (element_text(size = 32, margin = margin(t = 0, r = 20, b = 0, l = 0))),
-        axis.text.x = element_text(size = 28),
-        axis.title.x = element_text(size = 32, margin = margin(t = 20, r = 0, b = 0, l = 0))) +
+        panel.border = element_rect(linetype = "blank", fill = NA))+
+        #axis.text.y = element_text(size = 28),
+        #axis.title.y = (element_text(size = 32, margin = margin(t = 0, r = 20, b = 0, l = 0))),
+        #axis.text.x = element_text(size = 28),
+        #axis.title.x = element_text(size = 32, margin = margin(t = 20, r = 0, b = 0, l = 0))) +
   labs(x = expression(paste("Temperature (",degree~C,")")),
-       y = expression("Slope"~"P"["crit"]~("umol O2/g/hr/Torr")))
-plot_slopes_torr_temp_ebars
+       y = expression("P"["crit"]~"slope dependent phase"~("umol O2/g/hr/Torr")))
+plot_slopes_torr_temp_ebars + scale_colour_discrete(name  ="Species",
+                                                    breaks=md_temps_avg$spps_names,
+                                                    labels=md_temps_avg$spps_names)
 
 ## Pcrit slopes vs Pcrit
 
@@ -152,3 +154,26 @@ plot_slopes_torr_pcrit <- ggplot(data = md_temps_avg, aes(x=avg_pcrit, y=avg_slo
   labs(x = expression("P"["crit"]~("Torr")),
        y = expression("Slope"~"P"["crit"]~("umol O2/g/hr/Torr")))
 plot_slopes_torr_pcrit 
+
+## Read Matt Knope's phylogenetic tree into R
+knope_phy <-  read.nexus("bayes_tree_final_knope.nex")
+plot.phylo(knope_phy)
+is.rooted(knope_phy)
+is.ultrametric(knope_phy)
+
+keepers <- c("Oligocottus_maculosus",
+             "Clinocottus_globiceps",
+             "Artedius_harringtoni",
+             "Artedius_lateralis",
+             "Artedius_fenestralis",
+             "Blepsias_cirrhosus",
+             "Scorpaenichthys_marmoratus",
+             "Enophrys_bison",
+             "Hemilepidotus_hemilepidotus")
+
+## Prune phylogeny for species in analysis
+pcrit_phy <- drop.tip(knope_phy, setdiff(knope_phy$tip.label, keepers))
+
+## Compute branch lengths, tree didn't have any
+pcrit_phy <- compute.brlen(pcrit_phy, method = "Grafen")
+plot.phylo(pcrit_phy)

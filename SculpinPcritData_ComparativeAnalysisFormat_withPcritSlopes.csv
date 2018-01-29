@@ -102,9 +102,9 @@ Artedius_fenestralis,arfe,11-Jul-17,NFB0013,20,35,arfe.4,top.bottom.t8.open,62.9
 Artedius_harringtoni,arha,14-Jul-17,NFB0008,20,35,arha.6,none.2,18.4,4.61,45,0,0.1647,0.9808466,6.08,79.3,1,16hr,44,2 min intervals used to estimate MO2 for pcrit
 Artedius_harringtoni,arha,14-Jul-17,NFB0010,20,35,arha.3,none,12.6,4.6,49.3,-0.1381,0.1543,0.9857023,5.4,62.4,1,16hr,60,2 min intervals used to estimate MO2 for pcrit
 Artedius_harringtoni,arha,14-Jul-17,NFB0013,20,35,arha.2,bottom,9.3,4.25,36.6,-0.173,0.194,0.9872115,5.27,48.9,1,16hr,74,2 min intervals used to estimate MO2 for pcrit
-Artedius_lateralis,arla,30-Jul-17,NFB0008,20,35,,intop.middle.inbottom.t6.mesh,35.5,3.34,80.5,0,0.06675,0.9858056,.,.,2,16hr,56,.
-Artedius_lateralis,arla,30-Jul-17,NFB0010,20,35,,bottom.t6.mesh,43.2,3.3,75.9,-0.06447,0.07129,0.9977093,.,.,2,16hr,50,.
-Artedius_lateralis,arla,30-Jul-17,NFB0013,20,35,,top.t6.mesh,33.7,2.71,58.7,0,0.07416,0.9905868,.,.,2,16hr,58,.
+Artedius_lateralis,arla,30-Jul-17,NFB0008,20,35,arla.9,intop.middle.inbottom.t6.mesh,35.5,3.34,80.5,0,0.06675,0.9858056,.,.,2,16hr,56,.
+Artedius_lateralis,arla,30-Jul-17,NFB0010,20,35,arla.11,bottom.t6.mesh,43.2,3.3,75.9,-0.06447,0.07129,0.9977093,.,.,2,16hr,50,.
+Artedius_lateralis,arla,30-Jul-17,NFB0013,20,35,arla.12,top.t6.mesh,33.7,2.71,58.7,0,0.07416,0.9905868,.,.,2,16hr,58,.
 Artedius_lateralis,arla,2-Aug-17,NFB0008,20,35,arla.6,intop.bottom.t6.open,34.7,4.7,102.6,-0.21414,0.07643,0.9624073,3.57,75.4,1,16hr,52,fish DIED during pcrit - fish may have been sick - was dark prior to smr-pcrit assay
 Artedius_lateralis,arla,2-Aug-17,NFB0010,20,35,arla.7,top.middle.bottom.t6.open,28.4,3.55,63,0,0.08992,0.9916786,2.68,48.3,1,16hr,58,.
 Artedius_lateralis,arla,2-Aug-17,NFB0013,20,35,arla.5,top.inbottom.t6.open,33.6,3.65,78.5,0,0.07416,0.9926487,.,.,1,16hr,58,.

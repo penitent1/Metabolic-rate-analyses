@@ -81,28 +81,6 @@ ratios_plot <-  ggplot(md_ratios, aes(x=temp, y=ratios, colour = species)) +
   geom_line()
 
 
-
-#md_all_temps[,1:2]
-
-#max_depth_mandic <- md_q10_ctmax[,c(1,9)]
-
-#md_all_temps <- left_join(md_all_temps, max_depth_mandic, by = "species")
-#md_all_temps[1:9,c("temp","species","max_depth_mandic")]
-#md_all_temps[10:18,c("temp","species","max_depth_mandic")]
-#md_all_temps[19:27,c("temp","species","max_depth_mandic")]
-
-#md_all_temps$max_depth_mandic[md_all_temps$species=="Blepsias_cirrhosus"] <- 150
-#md_all_temps$max_depth_mandic[md_all_temps$species=="Hemilepidotus_hemilepidotus"] <- 450
-#names(md_all_temps)[names(md_all_temps)=="max_depth_mandic"] <- "Max depth (m)"
-
-#md_all_temps$max_depth_mandic <- NULL
-
-## Log natural transformed Pcrit values across the 3 test temperatures
-md_lognat <- md_all_temps %>%
-  mutate(lognat_pcrit = log(avg_pcrit)) %>%
-  mutate(sd_ln_pcrit = sd(lognat_pcrit)) %>%
-  mutate(sem_ln_pcrit = sd_ln_pcrit/n_pcrit)
-
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # # # Plot of Pcrit vs temp for each species mean +/- sem
@@ -547,11 +525,6 @@ plot(lik ~ lambda_1, type = "l", main = expression(paste("Likelihood Plot for ",
 
 #adding our ML estimate as a red line
 abline(v=pgls_lambda_pcrit_v_maxd_nohehe$modelStruct, col = "red")
-
-#?comparative.data
-#data(shorebird)
-#shorebird <- comparative.data(shorebird.tree, shorebird.data, 'Species')
-#print(shorebird)
 
 sculpins_pcrit12Vdepth <- comparative.data()
 
