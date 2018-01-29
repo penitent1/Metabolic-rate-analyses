@@ -2,29 +2,325 @@
 title: "Temperature impacts on oxygen uptake in hypoxia"
 author: "Derek"
 date: "January 26, 2018"
-output: html_document
+output: 
+  html_document: default
+  pdf_document: default
+editor_options:
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 ```
 
-## R Markdown
+## Summary of acute temperature effects on oxygen uptake in hypoxia in marine fishes
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Following consideration of the tremendous feedback I received on my beer seminar and assessment of additional data I've extracted from the P<sub>crit</sub> trial data, I've summarized the results of my study of acute temperature effects on oxygen uptake in hypoxia below. This document is an outline for my first paper on the topic, and I believe the data I present move the field forward in the following `XX` key areas:
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+#### 1. Very few data exist for assessing **acute** temperature change impacts on P<sub>crit</sub> in marine fish
 
-```{r cars}
-summary(cars)
+#### 2. The variability observed among species is consistent with a link between blah blah blah
+
+Prior to my study, as far as I can tell, there are 2 studies, each including 2 species, which have assessed acute temperature impacts on P<sub>crit</sub> in marine fish. I have data for **nine** species of marine sculpin which considerably extends the database of acute temperature change effects on P<sub>crit</sub>. 
+
+```{r, echo=FALSE}
+suppressMessages(library(tidyverse))
+suppressMessages(library(ape))
+suppressMessages(library(rotl))
+suppressMessages(library(geiger))
+suppressMessages(library(phytools))
+suppressMessages(library(phangorn))
+suppressMessages(library(caper))
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
+Literature values for two coral reef fishes (*O. doederleini*, *P. moluccensis* from Nilsson et al. 2010) and two intertidal temperate fishes (*B. lesleyae*, *B. medius* from Hilton et al. 2008):
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+
+```{r, echo = FALSE}
+
+### Import Rogers et al Pcrit data for fishes
+
+df <- read.csv("Rogers et al 2016_Pcrit-Mo2-temp_database.csv", stringsAsFactors = FALSE, strip.white = TRUE, na.strings = c("NA","."))
+df <- as_tibble(df)
+
+### Trim dataset down to acute temp change, seawater fish pcrit and mo2 data
+
+acute_sw <- df %>%
+  dplyr::select(species,sw_or_fw,reference,acute_or_acclimated,acclimation_temp_c,
+                test_temp_c,pcrit_mean,pcrit_sd,pcrit_units,pcrit_n,mo2_mean,
+                mo2_sd,mo2_units,mo2_n,mass_mean_g,mass_sd_g,comments) %>%
+  filter(sw_or_fw == "sw", acute_or_acclimated == "acute")
+
+acute_sw_pcrit_mo2 <- acute_sw %>%
+  dplyr::select(species,reference,test_temp_c,pcrit_mean,pcrit_sd,pcrit_units,pcrit_n,mo2_mean,
+                mo2_sd,mo2_units,mo2_n) %>%
+  filter(!is.na(pcrit_mean))
+
+acute_sw_hilton <- acute_sw_pcrit_mo2 %>%
+  filter(reference == "Hilton et al. (2008)") %>%
+  mutate(pcrit_mean_torr = pcrit_mean*160/6.4,
+         pcrit_sd_torr = pcrit_sd*160/6.4,
+         mo2_mean_umol = mo2_mean*1000/32,
+         mo2_sd_umol = mo2_sd*1000/32)
+
+acute_sw_nilsson <- acute_sw_pcrit_mo2 %>%
+  filter(reference == "Nilsson et al. (2010)") %>%
+  mutate(pcrit_mean_torr = pcrit_mean*160/100,
+         pcrit_sd_torr = pcrit_sd*160/100,
+         mo2_mean_umol = mo2_mean/32,
+         mo2_sd_umol = mo2_sd/32)
+
+acute_sw_torr_umol <- bind_rows(acute_sw_hilton,acute_sw_nilsson)
+
+
+# Colored by species ID: Pcrit 
+pcrit_vs_temp_plot <- ggplot(acute_sw_torr_umol, aes(x=test_temp_c, y=pcrit_mean_torr, colour = species)) +
+  geom_errorbar(mapping = aes(x=test_temp_c, ymin=(pcrit_mean_torr-pcrit_sd_torr), ymax=(pcrit_mean_torr+pcrit_sd_torr)), width=0.75, size=1.25) + 
+  geom_line(size=1.25) +  
+  geom_point(size = 4) +  
+  theme(panel.background = element_rect(fill = "white"),
+        axis.line = element_line(size = 1, colour = "black"),
+        panel.border = element_rect(linetype = "blank", fill = NA)) +#,
+        #legend.position = "none",
+        #axis.text.y = element_text(size = 16),
+        #axis.title.y = (element_text(size = 20, margin = margin(t = 0, r = 20, b = 0, l = 0))),
+        #axis.text.x = element_text(size = 16),
+        #axis.title.x = element_text(size = 20, margin = margin(t = 20, r = 0, b = 0, l = 0))) +
+  labs(x = expression(paste("Temperature (",degree,"C)")),
+       y = expression("P"["crit"]~("Torr")))
+pcrit_vs_temp_plot
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+*O. doederleini* has a more poleward distribution compared with *P. moluccensis*, and *B. lesleyae* is restricted to a lower zone of the intertidal than *B. medius*. Based on these limited data, the oxygen uptake response to acute temperature increases in hypoxia tolerant fishes appears to differ from less tolerant fishes along two axes:
+
+* Tolerant fishes maintain oxygen uptake to lower Po<sub>2</sub>s across the temperature exposure range compared with less tolerant fishes.
+    + I.e., the temperature sensitivity of P<sub>crit</sub> is the same between species
+    + See *B. medius* and *B. lesleyae*
+
+* Tolerant fishes exhibit reduced temperature sensitivity of P<sub>crit</sub> compared with less tolerant species.
+    + See *O. doederleini* and *P. moluccensis*
+
+These observations allows me to set up the following hypothesis:
+
+Hypoxia tolerant species both maintain standard oxygen uptake rates to lower Po<sub>2</sub>s than less tolerant species across all test temperatures when temperature is acutely increased.
+
+I cannot form a stronger hypothesis than this based on the scarcity of available data. On to the sculpins!
+
+### The marine sculpin system and temperature effects on oxygen uptake in hypoxia
+
+Jeff's lab has been working on understanding the evolution of hypoxia tolerance in marine sculpins from a variety of angles, connecting whole organism physiology and behavior in hypoxia to processes at lower levels of organization that likely contribute the variation observed in responses to hypoxia and hypoxia tolerance among these fish species. Early work demonstrated that hypoxia tolerant sculpins exhibit adaptive increases in gill surface area and hemoglobin-oxygen affinity while reducing routine oxygen uptake rates.
+
+```{r, echo = FALSE}
+
+## Read Matt Knope's phylogenetic tree into R
+knope_phy <-  read.nexus("bayes_tree_final_knope.nex")
+
+keepers <- c("Oligocottus_maculosus",
+             "Clinocottus_globiceps",
+             "Artedius_harringtoni",
+             "Artedius_lateralis",
+             "Artedius_fenestralis",
+             "Blepsias_cirrhosus",
+             "Scorpaenichthys_marmoratus",
+             "Enophrys_bison",
+             "Hemilepidotus_hemilepidotus")
+
+## Prune phylogeny for species in analysis
+pcrit_phy <- drop.tip(knope_phy, setdiff(knope_phy$tip.label, keepers))
+
+## Compute branch lengths, tree didn't have any
+pcrit_phy <- compute.brlen(pcrit_phy, method = "Grafen")
+plot.phylo(pcrit_phy)
+
+```
+
+This previous work provides a basis for investigating the mechanisms underlying acute temperature effects on 
+
+```{r}
+
+############################################
+## Read sculpin pcrit and meta-data into R
+############################################
+
+md <- read.csv("SculpinPcritData_ComparativeAnalysisFormat.csv", stringsAsFactors = FALSE,
+               strip.white = TRUE, na.strings = c("NA","."))
+md <- as_tibble(md)
+
+## Pcrit and temp data, NA's filtered out, only "trial.no == 1" inlcuded
+md_pcrit_smr <- md %>%
+  #select(species, spps, date, temp, fish.id, mass.g, smr.best, pcrit.r, trial.no) %>%
+  filter(!is.na(smr.best)) %>%
+  filter(!is.na(pcrit.r)) %>%
+  filter(trial.no == 1)
+
+## Averages for Pcrit and SMR per species per temperature, all 3 temps included
+md_all_temps <- md_pcrit_smr %>%
+  group_by(temp, species) %>%
+  summarise(avg_pcrit = mean(pcrit.r), sd_pcrit = sd(pcrit.r), n_pcrit = length(pcrit.r),
+            avg_smr = mean(smr.best), sd_smr = sd(smr.best), n_smr = length(smr.best)) %>%
+  group_by(temp, species) %>%
+  mutate(sem_pcrit = sd_pcrit/n_pcrit,
+         sem_smr = sd_smr/n_smr)
+
+species_names <- c(
+  "Artedius fenestralis",
+  "Artedius harringtoni",
+  "Artedius lateralis",
+  "Blepsias cirrhosus",
+  "Clinocottus globiceps",
+  "Enophrys bison",
+  "Hemilepidotus hemilepidotus",
+  "Oligocottus maculosus",
+  "Scorpaenichthys marmoratus"
+)
+
+md_all_temps$spps_names <- species_names
+md_all_temps <- as.data.frame(md_all_temps)
+  
+pd <- position_dodge(0.2)
+
+# Colored by species ID: Pcrit
+pcrit_vs_temp_plot_sculpins <- ggplot(md_all_temps, aes(x=temp, y=avg_pcrit, colour = spps_names)) +
+  geom_errorbar(mapping = aes(x=temp, ymin=(avg_pcrit-sem_pcrit), ymax=(avg_pcrit+sem_pcrit)), position=pd, width=0.75, size=1.25) +
+  geom_line(position=pd, size=1.25)  +
+  geom_point(position=pd, size = 4) +
+  theme(panel.background = element_rect(fill = "white"),
+        axis.line = element_line(size = 1, colour = "black"),
+        panel.border = element_rect(linetype = "blank", fill = NA))+#,
+    #    legend.position = "none",
+    #    axis.text.y = element_text(size = 28),
+    #    axis.title.y = (element_text(size = 32, margin = margin(t = 0, r = 20, b = 0, l = 0))),
+    #    axis.text.x = element_text(size = 28),
+    #    axis.title.x = element_text(size = 32, margin = margin(t = 20, r = 0, b = 0, l = 0))) +
+  labs(x = expression(paste("Temperature (",degree,"C)")),
+       y = expression("P"["crit"]~("Torr")))
+pcrit_vs_temp_plot_sculpins
+```
+
+
+
+```{r}
+
+############################################
+## Read sculpin pcrit and meta-data into R
+############################################
+
+md <- read.csv("SculpinPcritData_ComparativeAnalysisFormat.csv", stringsAsFactors = FALSE,
+               strip.white = TRUE, na.strings = c("NA","."))
+md <- as_tibble(md)
+
+## Pcrit and temp data, NA's filtered out, only "trial.no == 1" inlcuded
+md_pcrit_smr <- md %>%
+  #select(species, spps, date, temp, fish.id, mass.g, smr.best, pcrit.r, trial.no) %>%
+  filter(!is.na(smr.best)) %>%
+  filter(!is.na(pcrit.r)) %>%
+  filter(trial.no == 1)
+
+## Averages for Pcrit and SMR per species per temperature, all 3 temps included
+md_all_temps <- md_pcrit_smr %>%
+  group_by(temp, species) %>%
+  summarise(avg_pcrit = mean(pcrit.r), sd_pcrit = sd(pcrit.r), n_pcrit = length(pcrit.r),
+            avg_smr = mean(smr.best), sd_smr = sd(smr.best), n_smr = length(smr.best)) %>%
+  group_by(temp, species) %>%
+  mutate(sem_pcrit = sd_pcrit/n_pcrit,
+         sem_smr = sd_smr/n_smr)
+
+species_names <- c(
+  "Artedius fenestralis",
+  "Artedius harringtoni",
+  "Artedius lateralis",
+  "Blepsias cirrhosus",
+  "Clinocottus globiceps",
+  "Enophrys bison",
+  "Hemilepidotus hemilepidotus",
+  "Oligocottus maculosus",
+  "Scorpaenichthys marmoratus"
+)
+
+md_all_temps$spps_names <- species_names
+
+## Pcrit at 12C
+md_phylo_pcrit_12 <- md_all_temps[md_all_temps$temp==12,
+                                  c("species","avg_pcrit")]
+md_phylo_pcrit_12_rn <- column_to_rownames(md_phylo_pcrit_12, var = "species")
+md_phylo_pcrit_12_matrix <- as.matrix(md_phylo_pcrit_12_rn)[,1]
+
+pheno_pcrit_12 <- phenogram(pcrit_phy, md_phylo_pcrit_12_matrix,
+                         ylab=expression(paste("P"["crit"]~"at 12",degree,"C (Torr)")),
+                         xlab=NULL,
+                         xaxt='n')
+
+## Pcrit at 16C
+md_phylo_pcrit_16 <- md_all_temps[md_all_temps$temp==16,
+                                  c("species","avg_pcrit")]
+md_phylo_pcrit_16_rn <- column_to_rownames(md_phylo_pcrit_16, var = "species")
+md_phylo_pcrit_16_matrix <- as.matrix(md_phylo_pcrit_16_rn)[,1]
+
+pheno_pcrit_16 <- phenogram(pcrit_phy, md_phylo_pcrit_16_matrix,
+                         ylab=expression(paste("P"["crit"]~"at 16",degree,"C (Torr)")),
+                         xlab=NULL,
+                         xaxt='n')
+
+## Pcrit at 20C
+md_phylo_pcrit_20 <- md_all_temps[md_all_temps$temp==20,
+                                  c("species","avg_pcrit")]
+md_phylo_pcrit_20_rn <- column_to_rownames(md_phylo_pcrit_20, var = "species")
+md_phylo_pcrit_20_matrix <- as.matrix(md_phylo_pcrit_20_rn)[,1]
+
+pheno_pcrit_20 <- phenogram(pcrit_phy, md_phylo_pcrit_20_matrix,
+                         ylab=expression(paste("P"["crit"]~"at 20",degree,"C (Torr)")),
+                         xlab=NULL,
+                         xaxt='n')
+
+```
+
+
+
+```{r}
+
+# Colored by species ID: SMR
+smr_vs_temp_plot_sculpins <- ggplot(md_all_temps, aes(x=temp, y=avg_smr, colour = species)) +
+  geom_errorbar(mapping = aes(x=temp, ymin=(avg_smr-sem_smr), ymax=(avg_smr+sem_smr)), position=pd, width=1, size=1.5) +
+  geom_line(position=pd, size=1.25) +
+  geom_point(position=pd, size = 4) +
+  theme(panel.background = element_rect(fill = "white"),
+        axis.line = element_line(size = 1, colour = "black"),
+        panel.border = element_rect(linetype = "blank", fill = NA))+#,
+        #legend.position = "none",
+        #axis.text.y = element_text(size = 28),
+        #axis.title.y = (element_text(size = 32, margin = margin(t = 0, r = 20, b = 0, l = 0))),
+        #axis.text.x = element_text(size = 28),
+        #axis.title.x = element_text(size = 32, margin = margin(t = 20, r = 0, b = 0, l = 0))) +
+  labs(x = expression(paste("Temperature (",degree,"C)")),
+       y = expression(paste("Mo"[2~"min"]," (",mu,"mol O"[2]," g"^-1," hr"^-1,")")))
+smr_vs_temp_plot_sculpins
+
+```
+
+
+```{r}
+
+# Colored by species ID: SMR vs Pcrit
+smr_vs_pcrit_plot <- ggplot(md_all_temps, aes(x=avg_smr, y=avg_pcrit, colour = species)) +
+  geom_errorbar(mapping = aes(ymin=(avg_pcrit-sem_pcrit), ymax=(avg_pcrit+sem_pcrit)), width=0.05, size=1.5) +
+  geom_errorbarh(mapping = aes(xmax = avg_smr+sem_smr, xmin = avg_smr-sem_smr, height = 2.5), size=1.5) + 
+  geom_line(size=1.25) +
+  geom_point(size = 4) +
+  theme(panel.background = element_rect(fill = "white"),
+        axis.line = element_line(size = 1, colour = "black"),
+        panel.border = element_rect(linetype = "blank", fill = NA))+#,
+      #  legend.position = "none",
+      #  axis.text.y = element_text(size = 28),
+      #  axis.title.y = (element_text(size = 32, margin = margin(t = 0, r = 20, b = 0, l = 0))),
+      #  axis.text.x = element_text(size = 28),
+      #  axis.title.x = element_text(size = 32, margin = margin(t = 20, r = 0, b = 0, l = 0))) +
+  labs(y = expression("P"["crit"]~("Torr")),
+       x = expression(paste("Mo"[2~"min"]," (",mu,"mol O"[2]," g"^-1," hr"^-1,")")))
+
+
+```
+
+

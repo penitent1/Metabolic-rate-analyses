@@ -98,7 +98,7 @@ species_names <- c(
 )
 
 md_all_temps$spps_names <- species_names
-md_lognat$spps_names <- species_names
+#md_lognat$spps_names <- species_names
 
 pd <- position_dodge(0.2)
 
