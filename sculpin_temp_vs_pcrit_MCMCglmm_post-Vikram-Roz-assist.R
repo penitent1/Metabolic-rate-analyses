@@ -116,20 +116,24 @@ md_depth_data <- left_join(md_all_temps, max_depth_df, key = species)
 
 # # # 
 # Colored by species ID: Pcrit
-pcrit_vs_temp_plot_noleg <- ggplot(md_all_temps, aes(x=temp, y=avg_pcrit, colour = species)) +
+pcrit_vs_temp_plot <- ggplot(md_all_temps, aes(x=temp, y=avg_pcrit, colour = spps_names)) +
   geom_errorbar(mapping = aes(x=temp, ymin=(avg_pcrit-sem_pcrit), ymax=(avg_pcrit+sem_pcrit)), position=pd, width=0.75, size=1.25) +
   geom_line(position=pd, size=1.25)  +
   geom_point(position=pd, size = 4) +
   theme(panel.background = element_rect(fill = "white"),
         axis.line = element_line(size = 1, colour = "black"),
         panel.border = element_rect(linetype = "blank", fill = NA),
-        legend.position = "none",
+        #legend.position = "none",
+        legend.text = element_text(size = 14),
+        legend.title = element_text(size = 16),
         axis.text.y = element_text(size = 28),
         axis.title.y = (element_text(size = 32, margin = margin(t = 0, r = 20, b = 0, l = 0))),
         axis.text.x = element_text(size = 28),
         axis.title.x = element_text(size = 32, margin = margin(t = 20, r = 0, b = 0, l = 0))) +
   labs(x = expression(paste("Temperature (",degree~C,")")),
-       y = expression("P"["crit"]~("Torr")))
+       y = expression("P"["crit"]~("Torr")),
+       colour = expression("Species"))
+pcrit_vs_temp_plot
 
 # Colored by max depth: Pcrit
 pcrit_vs_temp_plot_maxdepth <- ggplot(md_depth_data, aes(x=temp, y=avg_pcrit, group=species, colour = rank_depth)) +

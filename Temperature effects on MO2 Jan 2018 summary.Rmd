@@ -242,9 +242,14 @@ species_names <- c(
 
 md_all_temps$spps_names <- species_names
 
+#####################################################
+### Phenograms of Pcrit values at 3 test temperatures
+#####################################################
+
 ## Pcrit at 12C
 md_phylo_pcrit_12 <- md_all_temps[md_all_temps$temp==12,
                                   c("species","avg_pcrit")]
+md_phylo_pcrit_12 <- as.data.frame(md_phylo_pcrit_12) ## To avoid warning message from dplyr
 md_phylo_pcrit_12_rn <- column_to_rownames(md_phylo_pcrit_12, var = "species")
 md_phylo_pcrit_12_matrix <- as.matrix(md_phylo_pcrit_12_rn)[,1]
 
@@ -256,6 +261,7 @@ pheno_pcrit_12 <- phenogram(pcrit_phy, md_phylo_pcrit_12_matrix,
 ## Pcrit at 16C
 md_phylo_pcrit_16 <- md_all_temps[md_all_temps$temp==16,
                                   c("species","avg_pcrit")]
+md_phylo_pcrit_16 <- as.data.frame(md_phylo_pcrit_16) ## To avoid warning message from dplyr
 md_phylo_pcrit_16_rn <- column_to_rownames(md_phylo_pcrit_16, var = "species")
 md_phylo_pcrit_16_matrix <- as.matrix(md_phylo_pcrit_16_rn)[,1]
 
@@ -267,6 +273,7 @@ pheno_pcrit_16 <- phenogram(pcrit_phy, md_phylo_pcrit_16_matrix,
 ## Pcrit at 20C
 md_phylo_pcrit_20 <- md_all_temps[md_all_temps$temp==20,
                                   c("species","avg_pcrit")]
+md_phylo_pcrit_20 <- as.data.frame(md_phylo_pcrit_20) ## To avoid warning message from dplyr
 md_phylo_pcrit_20_rn <- column_to_rownames(md_phylo_pcrit_20, var = "species")
 md_phylo_pcrit_20_matrix <- as.matrix(md_phylo_pcrit_20_rn)[,1]
 
@@ -280,6 +287,10 @@ pheno_pcrit_20 <- phenogram(pcrit_phy, md_phylo_pcrit_20_matrix,
 
 
 ```{r}
+
+##################################
+## MO2_min versus temperature plot
+##################################
 
 # Colored by species ID: SMR
 smr_vs_temp_plot_sculpins <- ggplot(md_all_temps, aes(x=temp, y=avg_smr, colour = species)) +
@@ -303,6 +314,10 @@ smr_vs_temp_plot_sculpins
 
 ```{r}
 
+####################################################################
+### MO2_min versus Pcrit 2d plot, temperature not explicitly on plot
+####################################################################
+
 # Colored by species ID: SMR vs Pcrit
 smr_vs_pcrit_plot <- ggplot(md_all_temps, aes(x=avg_smr, y=avg_pcrit, colour = species)) +
   geom_errorbar(mapping = aes(ymin=(avg_pcrit-sem_pcrit), ymax=(avg_pcrit+sem_pcrit)), width=0.05, size=1.5) +
@@ -320,7 +335,15 @@ smr_vs_pcrit_plot <- ggplot(md_all_temps, aes(x=avg_smr, y=avg_pcrit, colour = s
   labs(y = expression("P"["crit"]~("Torr")),
        x = expression(paste("Mo"[2~"min"]," (",mu,"mol O"[2]," g"^-1," hr"^-1,")")))
 
-
 ```
 
 
+```{r}
+
+####################################################
+### MO2_min versus Pcrit VERSUS TEMPERATURE 3D PLOT
+####################################################
+
+
+
+```
