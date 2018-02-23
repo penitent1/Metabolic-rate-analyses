@@ -70,9 +70,9 @@ plot.smr + (geom_point(size = 2)) +
 pcrit.data <-read.csv(file.choose())
 head(pcrit.data)
 
-calcO2crit(pcrit.data, 1.74)#, lowestMO2 = 2.55) # Enter value of SMR obtained above here, after "pcrit.data
+calcO2crit(pcrit.data, 3.98)#, lowestMO2 = 2.55) # Enter value of SMR obtained above here, after "pcrit.data
 
-plotO2crit(calcO2crit(pcrit.data, 1.74))#, lowestMO2 = 2.55))
+plotO2crit(calcO2crit(pcrit.data, 3.98))#, lowestMO2 = 2.55))
 
 ### In torr
 # (O2crit.%sat/100)*P.ATM.KPA*760*0.2095/101.325

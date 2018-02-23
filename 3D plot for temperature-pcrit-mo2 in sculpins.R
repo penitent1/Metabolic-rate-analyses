@@ -16,7 +16,7 @@ Sys.setenv("plotly_api_key"="")
 
 
 pcrit_3d <- plot_ly(md_all_temps, x = ~temp, y = ~avg_smr, z = ~avg_pcrit,
-                    color = ~species) %>%
+                    color = ~spps_names) %>%
   add_markers() %>%
   layout(scene = list(xaxis = list(title = 'Temperature'),
                       yaxis = list(title = 'MO2min (umol/g/hr)'),

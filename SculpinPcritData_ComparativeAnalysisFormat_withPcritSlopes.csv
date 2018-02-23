@@ -5,18 +5,18 @@ Oligocottus_maculosus,olma,13-Apr-17,NFB0014,12,35,olma.3,none,8.4,2.55,21.2,0,0
 Oligocottus_maculosus,olma,18-Apr-17,NFB0009,12,35,olma.1,top,6,1.8,.,.,.,.,.,.,2,72hr,.,.
 Oligocottus_maculosus,olma,18-Apr-17,NFB0012,12,35,olma.2,bottom,7.4,1.8,.,.,.,.,.,.,2,72hr,400,.
 Oligocottus_maculosus,olma,18-Apr-17,NFB0014,12,35,olma.3,none,7.6,1.99,14.6,-0.0983,0.2088,0.8023242,3.1,35.1,2,72hr,195,.
-Oligocottus_maculosus,olma,28-Apr-17,NFB0012,12,35,olma.1,top,5.9,1.91,.,.,.,.,.,.,3,16hr,.,.
-Oligocottus_maculosus,olma,28-Apr-17,NFB0014,12,35,olma.3,none,7.5,2.06,22.6,0,0.1457,0.9980576,2.14,35.8,3,16hr,210,.
 Clinocottus_globiceps,clgl,28-Apr-17,NFB0009,12,35,clgl.1,top,8.4,2.14,34.3,-1.3156,0.1617,0.8997015,2.4,36.9,1,16hr,205,.
 Clinocottus_globiceps,clgl,28-Apr-17,NFB0010,12,35,clgl.2,bottom,16.4,3.1,36.7,-0.3753,0.1516,0.9822479,3.03,36.1,1,16hr,70,.
+Oligocottus_maculosus,olma,28-Apr-17,NFB0012,12,35,olma.1,top,5.9,1.91,.,.,.,.,.,.,3,16hr,.,.
+Oligocottus_maculosus,olma,28-Apr-17,NFB0014,12,35,olma.3,none,7.5,2.06,22.6,0,0.1457,0.9980576,2.14,35.8,3,16hr,210,.
 Artedius_harringtoni,arha,2-May-17,NFB0009,12,35,arha.1,top,15,1.56,44.4,-3.2078,0.1711,0.4964126,1.47,46.4,1,72hr,125,.
 Artedius_harringtoni,arha,2-May-17,NFB0010,12,35,arha.2,bottom,10.3,2.21,24,-0.8952,0.2053,0.9895278,3.13,33.5,1,72hr,125,.
 Artedius_harringtoni,arha,2-May-17,NFB0012,12,35,arha.3,none,11.7,1.26,.,.,.,.,.,.,1,72hr,175,.
 Artedius_harringtoni,arha,2-May-17,NFB0014,12,35,arha.4,top.bottom,7.7,1.43,16.5,0,0.1391,0.9963191,2.96,40.2,1,72hr,180,.
 Clinocottus_globiceps,clgl,6-May-17,NFB0009,12,35,clgl.1,top,8.1,1.78,28.6,-2.0613,0.1519,0.5492072,1.83,54.5,2,48hr,240,.
+Clinocottus_globiceps,clgl,6-May-17,NFB0014,12,35,clgl.2,bottom,15.7,1.76,19.7,-0.2249,0.162,0.9679776,2.81,33.1,2,48hr,100,.
 Oligocottus_maculosus,olma,6-May-17,NFB0010,12,35,olma.3,none,7.5,2.02,26.5,0,0.1225,0.9526565,1.56,26.3,4,48hr,250,.
 Oligocottus_maculosus,olma,6-May-17,NFB0012,12,35,olma.1,top,5.8,1.18,8.8,-0.7446,0.3527,0.968997,1.87,18.5,4,48hr,345,"odd shape to mo2 below pcrit, REGRESS pcrit better fit to data"
-Clinocottus_globiceps,clgl,6-May-17,NFB0014,12,35,clgl.2,bottom,15.7,1.76,19.7,-0.2249,0.162,0.9679776,2.81,33.1,2,48hr,100,.
 Artedius_lateralis,arla,10-May-17,NFB0009,12,35,arla.1,top,28.7,2,71.8,0,0.04424,0.9282615,1.71,76.1,1,16hr,125,Probe09 is possibly a bad probe now at least below 30% Air sat
 Artedius_lateralis,arla,10-May-17,NFB0010,12,35,arla.2,bottom,23.4,2.19,61.9,-0.02889,0.05703,0.9917143,1.69,49.3,1,16hr,145,"Good probe, great example of odd Pcrit shape of ARLA"
 Artedius_lateralis,arla,10-May-17,NFB0012,12,35,arla.3,none,40.3,1.57,35.1,0,0.07089,0.9908365,2.55,59.1,1,16hr,95,Good example of odd Pcrit shape of ARLA and pcrit slope fits mo2 values above pcrit well - i.e. LOL curve of Chabot et al
@@ -24,7 +24,7 @@ Artedius_lateralis,arla,10-May-17,NFB0014,12,35,arla.4,top.bottom,32.1,1.9,52,0,
 Artedius_fenestralis,arfe,11-May-17,NFB0009,12,35,arfe.1,top.t8.open,57.5,2.93,.,.,.,.,.,.,1,16hr,130,Probe09 is possibly a bad probe now at least below 30% Air sat
 Artedius_fenestralis,arfe,11-May-17,NFB0010,12,35,arfe.2,bottom,21.8,2.7,48.4,0,0.05608,0.9588739,1.7,38.8,1,16hr,90,"MO2 of pcrit trial much lower than SMR estimate, use REGRESS mo2 from Pcrit trial as MO2-smr for R pcrit estimate - THIS IS DIFFERENT THAN PCRIT USED IN PREVIOUS ITERATION OF THIS DATASET!"
 Artedius_fenestralis,arfe,11-May-17,NFB0012,12,35,arfe.3,none,46.5,2.51,31.4,0,0.1272,0.9845035,4.14,53.2,1,16hr,75,.
-Artedius_fenestralis,arfe,11-May-17,NFB0014,12,35,arfe.4,top.bottom,55.6,1.45,37.4,.,.,.,2.5,47.4,1,16hr,85,Slope estimate no good bc of origin intercept restriction
+Artedius_fenestralis,arfe,11-May-17,NFB0014,12,35,arfe.4,top.bottom,55.6,1.45,37.4,0,0.06981,0.9974684,2.5,47.4,1,16hr,85,Slope estimate no good bc of origin intercept restriction
 Clinocottus_globiceps,clgl,12-May-17,NFB0009,12,35,clgl.4,top.bottom.t3.nolid,43.3,1.78,.,.,.,.,.,.,1,16hr,.,Probe09 is possibly a bad probe now at least below 30% Air sat
 Clinocottus_globiceps,clgl,12-May-17,NFB0010,12,35,clgl.5,middle.t3.nolid,43.6,1.58,28.3,-0.00004279,-0.08882,0.9740397,1.51,24.6,1,16hr,110,Great example of broken stick regression in mosshead
 Clinocottus_globiceps,clgl,12-May-17,NFB0012,12,35,clgl.3,none.t3.nolid,57.6,.,.,.,.,.,.,.,1,16hr,85,.
@@ -33,7 +33,7 @@ Artedius_lateralis,arla,14-May-17,NFB0009,12,35,arla.5,top.inbottom.t6.open,24.7
 Artedius_lateralis,arla,14-May-17,NFB0010,12,35,arla.6,intop.bottom.t6.open,43,2.09,37.8,-0.06016,0.09037,0.9977011,3.53,66,1,16hr,75,.
 Artedius_lateralis,arla,14-May-17,NFB0012,12,35,arla.7,top.middle.bottom.t6.open,30.8,1.63,34.7,0,0.07489,0.9928502,1.85,39.1,1,16hr,140,.
 Artedius_lateralis,arla,14-May-17,NFB0014,12,35,arla.8,intop.inbottom.t6.open,22.7,2.63,85.4,0,0.04902,0.9965164,2.48,83.4,1,16hr,120,.
-Artedius_fenestralis,arfe,17-May-17,NFB0009,12,35,arfe.5,top.middle.bottom,42.1,1.39,.,.,.,,.,.,1,16hr,.,Probe09 is possibly a bad probe now at least below 30% Air sat
+Artedius_fenestralis,arfe,17-May-17,NFB0009,12,35,arfe.5,top.middle.bottom,42.1,1.39,.,.,.,.,.,.,1,16hr,.,Probe09 is possibly a bad probe now at least below 30% Air sat
 Artedius_fenestralis,arfe,17-May-17,NFB0010,12,35,arfe.6,top.inbottom,65.3,1.54,20.1,-0.02044,0.12452,0.9530945,2.95,34,1,16hr,85,.
 Artedius_fenestralis,arfe,17-May-17,NFB0012,12,35,arfe.7,intop.bottom,66.8,1.07,11.4,-0.1066,0.1667,0.9994115,.,.,1,16hr,60,sparse Pcrit mo2 data points
 Artedius_fenestralis,arfe,17-May-17,NFB0014,12,35,arfe.8,intop.inbottom,31.9,1.39,27.3,0,0.08193,0.9899714,1.57,35,1,16hr,160,
@@ -49,10 +49,10 @@ Artedius_harringtoni,arha,30-May-17,NFB0008,12,35,arha.1,top,14.2,1.46,19.5,-0.1
 Artedius_harringtoni,arha,30-May-17,NFB0010,12,35,arha.2,bottom,10,1.73,.,.,.,.,5.33,38.8,3,16hr,175,pcrit value estimated via R does not have any MO2 data BELOW pcrit although a pcrit was given by R program
 Artedius_harringtoni,arha,30-May-17,NFB0013,12,35,arha.5,middle,13,1.69,20,0,0.1337,0.9986528,1.69,20.7,2,16hr,150,.
 Artedius_harringtoni,arha,30-May-17,NFB0014,12,35,arha.3,none,11.6,1.48,26.4,-0.2487,0.1043,0.9825101,1.82,33.2,3,16hr,175,Big jump in MO2 - pre pcrit unclear why happened but it is real
-Oligocottus_maculosus,olma,1-Jun-17,NFB0008,16,35,olma.1,top,6.3,3.04,20.7,0,0.2364,0.9758104,3.32,35.1,5,16hr,115,.
-Oligocottus_maculosus,olma,1-Jun-17,NFB0010,16,35,olma.7,intop.bottom,10,2.76,14.9,-0.1157,0.1312,0.9930787,2.84,50.6,2,16hr,115,.
 Clinocottus_globiceps,clgl,1-Jun-17,NFB0013,16,35,clgl.2,bottom,16.3,2.3,27.5,-0.2532,0.1604,0.9974755,3.69,54.9,1,16hr,70,.
 Clinocottus_globiceps,clgl,1-Jun-17,NFB0014,16,35,clgl.1,top,7.8,3,47.4,-0.4992,0.1734,0.9965306,3.35,35.7,1,16hr,110,.
+Oligocottus_maculosus,olma,1-Jun-17,NFB0008,16,35,olma.1,top,6.3,3.04,20.7,0,0.2364,0.9758104,3.32,35.1,5,16hr,115,.
+Oligocottus_maculosus,olma,1-Jun-17,NFB0010,16,35,olma.7,intop.bottom,10,2.76,14.9,-0.1157,0.1312,0.9930787,2.84,50.6,2,16hr,115,.
 Oligocottus_maculosus,olma,5-Jun-17,NFB0010,16,35,olma.5,top.inbottom.t10,7,3.29,36.8,-0.517,0.165,0.9579389,3.97,54.5,2,16hr,95,.
 Oligocottus_maculosus,olma,5-Jun-17,NFB0014,16,35,olma.6,middle.t10,5.8,2.89,53,0,0.0869,0.9651942,2.99,44.9,1,16hr,140,.
 Clinocottus_globiceps,clgl,13-Jun-17,NFB0008,12,35,clgl.7,intop.t9.orangefloat,35.2,1.7,25.9,-0.2208,0.1188,0.9198947,1.83,23.6,1,16hr,105,.
@@ -116,10 +116,10 @@ Scorpaenichthys_marmoratus,scma,4-Aug-17,NFB0013,12,35,scma.3,middle,220,2.03,28
 Enophrys_bison,enbi,5-Aug-17,NFB0010,12,35,enbi.2,bottom,251,1.59,27.1,0,0.09367,0.9881935,2.37,54.9,1,16hr,245,.
 Enophrys_bison,enbi,5-Aug-17,NFB0013,12,35,enbi.3,middle,323,1.48,28.4,0,0.08302,0.9951956,.,.,1,16hr,245,.
 Hemilepidotus_hemilepidotus,hehe,6-Aug-17,NFB0008,12,35,hehe.4,top.bottom,629,1.1,56.6,-0.1089,0.03408,0.998364,0.94,53.6,1,16hr,235,.
-Hemilepidotus_hemilepidotus,hehe,7-Aug-17,NFB0008,12,35,hehe.4,top.bottom,629,1.19,54.5,0,0.03481,0.9975072,1.19,56.9,2,16hr,230,"Used ""smr"" from REGRESS bc mo2 during Pcrit was substantially lower than during smr period"
 Hemilepidotus_hemilepidotus,hehe,6-Aug-17,NFB0010,12,35,hehe.5,top.inbottom,442,1.07,37.2,-0.21719,0.05514,0.997586,1.07,38,1,16hr,235,"Used ""smr"" from REGRESS bc mo2 during Pcrit was substantially lower than during smr period"
-Hemilepidotus_hemilepidotus,hehe,7-Aug-17,NFB0010,12,35,hehe.5,top.inbottom,442,1.27,42.9,0,0.04721,0.9992713,1.27,43.5,2,16hr,235,"Used ""smr"" from REGRESS using datafile with MO2 from PO2 above 100 torr excluded bc mo2 during Pcrit was substantially lower than during smr period"
 Hemilepidotus_hemilepidotus,hehe,6-Aug-17,NFB0013,12,35,hehe.6,intop.bottom,414,0.88,36.6,-0.44879,0.07803,0.6612498,0.88,36.6,1,16hr,395,"REGRESS estimate much better for both ""smr"" and ""pcrit"""
+Hemilepidotus_hemilepidotus,hehe,7-Aug-17,NFB0008,12,35,hehe.4,top.bottom,629,1.19,54.5,0,0.03481,0.9975072,1.19,56.9,2,16hr,230,"Used ""smr"" from REGRESS bc mo2 during Pcrit was substantially lower than during smr period"
+Hemilepidotus_hemilepidotus,hehe,7-Aug-17,NFB0010,12,35,hehe.5,top.inbottom,442,1.27,42.9,0,0.04721,0.9992713,1.27,43.5,2,16hr,235,"Used ""smr"" from REGRESS using datafile with MO2 from PO2 above 100 torr excluded bc mo2 during Pcrit was substantially lower than during smr period"
 Hemilepidotus_hemilepidotus,hehe,7-Aug-17,NFB0013,12,35,hehe.6,intop.bottom,414,0.76,30.6,0,0.03966,0.9833073,.,.,2,16hr,380,.
 Scorpaenichthys_marmoratus,scma,8-Aug-17,NFB0008,12,35,scma.4,top.bottom,288,1.42,15.6,-0.08514,0.15366,0.9580336,2.32,27.6,1,16hr,255,.
 Scorpaenichthys_marmoratus,scma,8-Aug-17,NFB0010,12,35,scma.5,top.inbottom,318,1.27,20.2,-0.06457,0.1053,0.8716225,2.1,37.2,1,16hr,255,Decent pcrit fit despite lower r squared value
@@ -147,12 +147,12 @@ Enophrys_bison,enbi,18-Aug-17,NFB0013,20,35,enbi.6,intop.bottom,240,5.31,100.2,0
 Blepsias_cirrhosus,blci,25-Aug-17,NFB0008,12,35,blci.1,top,5,2.81,28.4,-0.6533,0.1954,0.9730928,.,.,1,16hr,190,.
 Blepsias_cirrhosus,blci,25-Aug-17,NFB0010,12,35,blci.2,bottom,11,2.29,26.5,-0.9306,0.1947,0.9822048,.,.,1,16hr,175,.
 Blepsias_cirrhosus,blci,25-Aug-17,NFB0013,12,35,blci.3,middle,6.4,2.25,28.3,0,0.1277,0.9977206,.,.,1,16hr,155,.
-Blepsias_cirrhosus,blci,26-Aug-17,NFB0008,12,35,blci.4,top.bottom,4.7,2.71,30.1,.,.,.,.,.,1,16hr,245,Slope estimate no good bc of origin intercept restriction
+Blepsias_cirrhosus,blci,26-Aug-17,NFB0008,12,35,blci.4,top.bottom,4.7,2.71,30.1,-0.6737,0.1796,0.9032187,.,.,1,16hr,245,Slope estimate no good bc of origin intercept restriction
 Blepsias_cirrhosus,blci,26-Aug-17,NFB0010,12,35,blci.5,intop.bottom,6.6,2.29,37.7,0,0.09699,0.9812699,.,.,1,16hr,180,.
 Blepsias_cirrhosus,blci,26-Aug-17,NFB0013,12,35,blci.6,top.inbottom,8.3,2.04,32.4,0,0.1003,0.9988883,2.21,47,1,16hr,185,regress looks more reasonable…
 Blepsias_cirrhosus,blci,31-Aug-17,NFB0008,20,35,blci.1,top,5,4.68,54.7,0,0.1373,0.9847056,.,.,1,16hr,135,.
 Blepsias_cirrhosus,blci,31-Aug-17,NFB0010,20,35,blci.2,bottom,10.5,5.4,60.7,-0.4626,0.1547,0.9825579,.,.,1,16hr,145,.
-Blepsias_cirrhosus,blci,31-Aug-17,NFB0013,20,35,blci.3,middle,6.4,3.98,42.8,.,.,.,6.31,78.2,1,16hr,100,Slope estimate no good bc of origin intercept restriction
+Blepsias_cirrhosus,blci,31-Aug-17,NFB0013,20,35,blci.3,middle,6.4,3.98,42.8,-1.1768,0.1933,0.9645258,6.31,78.2,1,16hr,100,Slope estimate no good bc of origin intercept restriction
 Blepsias_cirrhosus,blci,1-Sep-17,NFB0008,16,35,blci.6,top.inbottom,7.9,2.73,38.8,0,0.1122,0.9977221,2.96,46.8,1,16hr,135,Trace looks like oxyconformer - probably why REGRESS cannot calculate a pcrit
 Blepsias_cirrhosus,blci,1-Sep-17,NFB0010,16,35,blci.5,intop.bottom,6.4,3.02,35.7,-0.0852,0.1389,0.9902163,3.53,58.2,1,16hr,150,REGRESS looks unreasonable…
 Blepsias_cirrhosus,blci,1-Sep-17,NFB0013,16,35,blci.4,top.bottom,4.7,2.91,45.1,0,0.1027,0.988721,2.96,46.8,1,16hr,225,.
