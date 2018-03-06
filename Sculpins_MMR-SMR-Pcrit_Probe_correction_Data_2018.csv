@@ -1,0 +1,5 @@
+date,spps,common_name,salinity_ppt,temperature_C,do_percent_sat,alpha_Boutilier,probe_kit,respirometer,respirometer_vol_mL,finclip_tank_id,mass_g,pre_percent_sat,post_percent_sat
+2-Mar-18,Oligocottus maculosus,tidepool sculpin,35,12,100,1.7206,NFB0010,1s,72.54,olma-I-new-middle-b1new-wt,4.7,0,0.1
+2-Mar-18,Oligocottus maculosus,tidepool sculpin,35,12,100,1.7206,NFB0010,1s,72.54,olma-I-new-middle-b1new-wt,4.7,100,101.1
+5-Mar-18,Oligocottus maculosus,tidepool sculpin,35,12,10,1.7206,NFB0010,1s,72.54,olma-I-new-middle-b1new-wt,4.7,0,0
+5-Mar-18,Oligocottus maculosus,tidepool sculpin,35,12,10,1.7206,NFB0010,1s,72.54,olma-I-new-middle-b1new-wt,4.7,100,101.5

@@ -19,17 +19,17 @@ tail(smr.data)
 
 ### NFB00--: Specify probe and species for analysis
 
-probe10 <- smr.data[smr.data$probe == 'NFB0010', ] # Update as appropriate
-probe10.enbi <- probe10[probe10$spps == 'enbi', ] # Update as appropriate
-probe10.enbi.19oct <- probe10.enbi[probe10.enbi$date.day == '19' &
-                                    probe10.enbi$date.month == 'oct' , ] # Update as appropriate
+probe08 <- smr.data[smr.data$probe == 'NFB0008', ] # Update as appropriate
+probe08.scma <- probe08[probe08$spps == 'scma', ] # Update as appropriate
+probe08.scma.12sep <- probe08.scma[probe08.scma$date.day == '12' &
+                                    probe08.scma$date.month == 'sep' , ] # Update as appropriate
 #probe14.olma.trial2.16c <- probe14.olma.trial2[probe14.olma.trial2$temp == '16', ] # Update as appropriate
-head(probe10.enbi.19oct) # Update as appropriate
-str(probe10.enbi.19oct) # Update as appropriate
+head(probe08.scma.12sep) # Update as appropriate
+str(probe08.scma.12sep) # Update as appropriate
 
 ### SMR estimate function
 
-five.hr.plus.data <- probe10.enbi.19oct[probe10.enbi.19oct$time.hrs > 5, ]
+five.hr.plus.data <- probe08.scma.12sep[probe08.scma.12sep$time.hrs > 5, ]
 
 smr <- calcSMR(five.hr.plus.data$mo2) # Update as appropriate
 smr
@@ -42,10 +42,10 @@ smr.check.best
 
   #############################
 
-plot.smr <- ggplot(data=probe10.enbi.19oct, aes(x=time.hrs, 
+plot.smr <- ggplot(data=probe08.scma.12sep, aes(x=time.hrs, 
                                                   y=mo2.ms)) 
 plot.smr + (geom_point(size = 2)) +
-  geom_hline(yintercept = 2.02) +
+  geom_hline(yintercept = 3.90) +
   labs(x = "Time (hrs)",
        y = "MO2 (umol O2/g/hr)") +
   theme_base()
@@ -70,9 +70,12 @@ plot.smr + (geom_point(size = 2)) +
 pcrit.data <-read.csv(file.choose())
 head(pcrit.data)
 
-calcO2crit(pcrit.data, 3.98)#, lowestMO2 = 2.55) # Enter value of SMR obtained above here, after "pcrit.data
+pcrit <- calcO2crit(pcrit.data, 3.90)#, lowestMO2 = 2.55) # Enter value of SMR obtained above here, after "pcrit.data
+pcrit
+pcrit$o2crit ## Show only the calculated Pcrit
 
-plotO2crit(calcO2crit(pcrit.data, 3.98))#, lowestMO2 = 2.55))
+plotO2crit(calcO2crit(pcrit.data, 3.90))#, lowestMO2 = 2.55))
+
 
 ### In torr
 # (O2crit.%sat/100)*P.ATM.KPA*760*0.2095/101.325

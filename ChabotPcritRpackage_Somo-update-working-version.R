@@ -1,9 +1,20 @@
+library(mclust)
+library(shape)
+library(StreamMetabolism)
+library(fishMO2)
+
+## Functions requiring fixin
+?calcO2crit()
+
 ## Fixin this damn pcrit calculation function
 
 pcrit.data <-read.csv(file.choose()) ## Working on 12-Sep 2017 NFB0008 SCMA
 pcrit.data
 str(pcrit.data)
 nrow(pcrit.data) ## 26
+
+calcO2crit(pcrit.data, SMR = 3.90) ## 3.90 
+plotO2crit(calcO2crit(pcrit.data, SMR = 3.90))
 
 ## Chabot: IF lowest MO2 not directly stated, calculated as
 ## 5th percentile lowest MO2 from MO2 data calculated at DO above 80%
