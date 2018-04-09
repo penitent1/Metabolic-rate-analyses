@@ -412,8 +412,8 @@ md_q10 <- md_temp_groups_q10 %>%
 ## Open ct_max data and add to q10 data
 ct_max_df <- read.csv("ct_max_data.csv", stringsAsFactors = FALSE,
                       strip.white = TRUE, na.strings = c("NA","."))
-md_q10_ctmax <- full_join(md_q10, ct_max_df, by = "species")
-md_pcrit12 <- md_temp_groups_q10[md_temp_groups_q10$temp==12,]
+ #md_q10_ctmax <- full_join(md_q10, ct_max_df, by = "species")
+ #md_pcrit12 <- md_temp_groups_q10[md_temp_groups_q10$temp==12,]
 
 ## Use this df to test Pcrit at 12 against Q10 for Pcrit
 md_q10_ctmax_pcrit12 <- left_join(md_q10_ctmax, md_pcrit12, by = "species")
@@ -831,12 +831,30 @@ md_ctmax_rn <- column_to_rownames(md_ctmax, var = "species")
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+
 
 # # # Some plots of phylogeny colored by trait values, or phenogram of trait values
+
 
 md_phylo_ctmax <- md_ctmax[,c(1,5)]
 md_phylo_ctmax_rn <- column_to_rownames(md_phylo_ctmax, var = "species")
 md_phylo_ctmax_matrix <- as.matrix(md_phylo_ctmax_rn)[,1]
+
+#############
+# # # Data for ct max phenogram
+#############
+# Using ct_max_df, no q10 values or anything besides ct_max data
+md_phylo_ctmax_only <- ct_max_df[ct_max_df$spps!="rhri",c(1,3)]
+md_phylo_ctmax_only_rn <- column_to_rownames(md_phylo_ctmax_only, var = "species")
+md_phylo_ctmax_only_matrix <- as.matrix(md_phylo_ctmax_only_rn)[,1]
+#############
+# # # END Data for ct max phenogram
+#############
 
 md_pcrit
 md_phylo_pcrit <- md_pcrit[,c(1:2)]
@@ -864,7 +882,7 @@ ctmax_phylo_plot <- plotBranchbyTrait(ramon_phy_ctmax,
                                       palette = "rainbow")
 
 ## Also potentially good
-pheno_ctmax <- phenogram(ramon_phy_ctmax, md_phylo_ctmax_matrix,
+pheno_ctmax <- phenogram(ramon_phy_ctmax, md_phylo_ctmax_only_matrix,
                          ylab=expression(paste("CTmax (",degree~C,")")),
                          xlab=NULL,
                          xaxt='n')
