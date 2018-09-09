@@ -1,0 +1,4 @@
+A la Vikram:
+
+trim flanking regions <50%-ish coverage for all species 
+Flanking = very beginning and very end

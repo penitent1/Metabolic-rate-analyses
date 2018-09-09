@@ -1,4 +1,4 @@
-species,spps,date,probe,temp,sal,fish.id,finclip.id,mass.g,smr.best,pcrit.r,pcrit.intercept.r.percentsat,pcrit.slope.r.percentsat,pcrit.r2,mo2.regress,pcrit.regress,trial.no,smr.time,pcrit.time.min,comments
+species,spps,date,probe,temp,sal,fish.id,finclip.id,mass.g,smr.best.ms,pcrit.r,pcrit.intercept.r.percentsat,pcrit.slope.r.percentsat,pcrit.r2,mo2.regress,pcrit.regress,trial.no,smr.time,pcrit.time.min,comments
 Oligocottus_maculosus,olma,13-Apr-17,NFB0009,12,35,olma.1,top,6,2.14,.,.,.,.,.,.,1,16hr,.,probe issues below 30% air saturation
 Oligocottus_maculosus,olma,13-Apr-17,NFB0012,12,35,olma.2,bottom,7.2,2,19.3,-0.03637,0.16638,0.8241042,2.79,50.5,1,16hr,180,.
 Oligocottus_maculosus,olma,13-Apr-17,NFB0014,12,35,olma.3,none,8.4,2.55,21.2,0,0.1899,0.9756859,3.23,36.7,1,16hr,130,.

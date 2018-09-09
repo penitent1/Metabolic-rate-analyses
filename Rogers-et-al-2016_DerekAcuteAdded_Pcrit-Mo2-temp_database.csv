@@ -1,0 +1,92 @@
+species,sw_or_fw,variable,effect on pcrit,pcrit_method,reference,life_history_stage,acute_or_acclimated,acclimation_temp_c,test_temp_c,pcrit_mean,pcrit_sd,pcrit_units,pcrit_n,mo2_mean,mo2_sd,mo2_units,mo2_n,mass_mean_g,mass_sd_g,mass_n,acclimation_time_days,comments
+Bellapiscis_lesleyae,sw,temperature,increase,closed,Hilton et al. (2008),adult,acute,15,10,.,.,.,.,0.15469545,0.015234866,mgO2_g_hr,8,0.75,0.311126984,8,,
+Bellapiscis_lesleyae,sw,temperature,increase,closed,Hilton et al. (2008),adult,acute,15,15,2.1,0.13,mgO2_per_L,10,0.197270812,0.029151726,mgO2_g_hr,13,0.54,0.324499615,13,,
+Bellapiscis_lesleyae,sw,temperature,increase,closed,Hilton et al. (2008),adult,acute,15,20,.,.,.,.,0.269495849,0.029151726,mgO2_g_hr,13,0.8,0.360555128,13,,
+Bellapiscis_lesleyae,sw,temperature,increase,closed,Hilton et al. (2008),adult,acute,15,25,3.55,0.17,mgO2_per_L,8,0.519554045,0.106889662,mgO2_g_hr,13,0.59,0.180277564,13,,
+Bellapiscis_lesleyae,sw,temperature,increase,closed,Hilton et al. (2008),adult,acute,20,25,,,mgO2_per_L,12,0.562751642,0.12135509,mgO2_g_hr,12,0.65,0.277128129,12,,acclimated to higher temp then tested at higher temp than higher acclimation temp
+Bellapiscis_medius,sw,temperature,increase,closed,Hilton et al. (2008),adult,acute,15,10,.,.,.,.,0.168170841,0.03409034,mgO2_g_hr,10,2.84,0.885437745,10,,
+Bellapiscis_medius,sw,temperature,increase,closed,Hilton et al. (2008),adult,acute,15,15,0.876,0.05,mgO2_per_L,12,0.140674173,0.019434484,mgO2_g_hr,13,2.37,1.009554357,13,,
+Bellapiscis_medius,sw,temperature,increase,closed,Hilton et al. (2008),adult,acute,15,20,.,.,.,.,0.417721324,0.093360242,mgO2_g_hr,12,2.66,1.316358614,12,,
+Bellapiscis_medius,sw,temperature,increase,closed,Hilton et al. (2008),adult,acute,15,25,1.72,0.1,mgO2_per_L,10,0.535724514,0.116593141,mgO2_g_hr,13,2.84,1.225887434,13,,
+Bellapiscis_medius,sw,temperature,increase,closed,Hilton et al. (2008),adult,acute,20,25,,,mgO2_per_L,11,1.03438648,0.196661038,mgO2_g_hr,11,2.2,0.994987437,11,,acclimated to higher temp then tested at higher temp than higher acclimation temp
+Carassius_auratus_auratus,fw,temperature,increase,closed,Fry and Hart (1948),juvenile,acclimated,5,5,4,.,torr,.,8,.,mLO2_kg_hr,,,,,,
+Carassius_auratus_auratus,fw,temperature,increase,closed,Fry and Hart (1948),juvenile,acclimated,10,10,8,.,torr,.,24,.,mLO2_kg_hr,,,,,,
+Carassius_auratus_auratus,fw,temperature,increase,closed,Fry and Hart (1948),juvenile,acclimated,15,15,10,.,torr,.,50,.,mLO2_kg_hr,,,,,,
+Carassius_auratus_auratus,fw,temperature,increase,closed,Fry and Hart (1948),juvenile,acclimated,20,20,18,.,torr,.,85,.,mLO2_kg_hr,,,,,,
+Carassius_auratus_auratus,fw,temperature,increase,closed,Fry and Hart (1948),juvenile,acclimated,25,25,17,.,torr,.,140,.,mLO2_kg_hr,,,,,,
+Carassius_auratus_auratus,fw,temperature,increase,closed,Fry and Hart (1948),juvenile,acclimated,35,35,25,.,torr,.,225,.,mLO2_kg_hr,,,,,,
+Carassius_auratus_grandoculis,fw,temperature,no effect,semi-closed,Yamanaka et al. (2013),juvenile,acclimated,15,15,1.54,0.6,mgO2_per_L,12,0.18,0.07,mgO2_g_hr,12,1.88,2.44,,,I calculated these values after collapsing weight classes into a single class within each temperature
+Carassius_auratus_grandoculis,fw,temperature,no effect,semi-closed,Yamanaka et al. (2013),juvenile,acclimated,20,20,1.62,0.65,mgO2_per_L,12,0.27,0.13,mgO2_g_hr,11,1.9,2.4,,,I calculated these values after collapsing weight classes into a single class within each temperature
+Carassius_auratus_grandoculis,fw,temperature,no effect,semi-closed,Yamanaka et al. (2013),juvenile,acclimated,30,30,1.38,0.42,mgO2_per_L,12,0.45,0.2,mgO2_g_hr,13,1.68,1.95,,,I calculated these values after collapsing weight classes into a single class within each temperature
+Carassius_carassius,fw,temperature,increase,closed,Sollid et al. (2005),adult,acclimated,10,10,1.43,0.13,mgO2_per_L,,38.9,4.5,mgO2_hr_kg,,,,,,
+Carassius_carassius,fw,temperature,increase,closed,Sollid et al. (2005),adult,acclimated,15,15,2.45,0.18,mgO2_per_L,,88.2,7.9,mgO2_hr_kg,,,,,,
+Carassius_carassius,fw,temperature,increase,closed,Sollid et al. (2005),adult,acclimated,20,20,3.55,0.29,mgO2_per_L,,122.7,12.2,mgO2_hr_kg,,,,,,
+Carassius_carassius,fw,temperature,increase,closed,Sollid et al. (2005),adult,acclimated,25,25,4.02,0.27,mgO2_per_L,,209.5,15.1,mgO2_hr_kg,,,,,,
+Cyprinus_carpio,fw,temperature,increase,flow-through,Ott et al. (1980),adult,acclimated,5,5,10.9,3.1,torr,4,10.4,1.5,umolO2_hr_g,4,1525,78,,,
+Cyprinus_carpio,fw,temperature,increase,flow-through,Ott et al. (1980),adult,acclimated,10,10,20.2,2.347871376,torr,5,21.5,2.906888371,umolO2_hr_g,5,1341,214.6625258,,,
+Cyprinus_carpio,fw,temperature,increase,flow-through,Ott et al. (1980),adult,acclimated,15,15,20.7,2.683281573,torr,5,,,umolO2_hr_g,5,1649,205.7182539,,,
+Cyprinus_carpio,fw,temperature,increase,flow-through,Ott et al. (1980),adult,acclimated,25,25,20.2,4.248529157,torr,5,,,umolO2_hr_g,5,1553,118.5116028,,,
+Cyprinus_carpio,fw,temperature,increase,flow-through,Ott et al. (1980),adult,acclimated,32,32,25.6,.,torr,1,,,umolO2_hr_g,1,1015,.,,,
+Salmo_gairdneri,fw,temperature,increase,flow-through,Ott et al. (1980),adult,acclimated,10,10,20.8,2.906888371,torr,5,,,umolO2_hr_g,5,601,134.1640786,,,
+Salmo_gairdneri,fw,temperature,increase,flow-through,Ott et al. (1980),adult,acclimated,15,15,22,3.7,torr,4,,,umolO2_hr_g,4,561,58,,,
+Salmo_gairdneri,fw,temperature,increase,flow-through,Ott et al. (1980),adult,acclimated,20,20,27.4,4.360332556,torr,5,,,umolO2_hr_g,5,542,105.0951949,,,
+Dentex_dentex,sw,temperature,increase,,Cerezo Valverde et al. (2006),adult,acclimated,,,,,,,,,,,,,,,
+Etheostoma_boschungi,fw,temperature,decrease,,Ultsch et al. (1978),,,,,,,,,,,,,,,,,
+Etheostoma_duryi,fw,temperature,decrease,,Ultsch et al. (1978),,,,,,,,,,,,,,,,,on figure 3 in Rogers et al 2016 not in table
+Etheostoma_flabellare,fw,temperature,decrease,,Ultsch et al. (1978),,,,,,,,,,,,,,,,,
+Etheostoma_fusiforme,fw,temperature,decrease,,Ultsch et al. (1978),,,,,,,,,,,,,,,,,
+Etheostoma_rufilineatum,fw,temperature,decrease,,Ultsch et al. (1978),,,,,,,,,,,,,,,,,not in figure 3 in Rogers et al 2016 but in table
+Gadus_morhua,sw,temperature,increase,step-wise nitrogen bubbling,Schurmann and Steffensen (1997),juvenile,acclimated,,5,16.5,2.4,percent_sat,10,35.5,4.8,mgO2_hr_kg,10,124.1,9.9,,,
+Gadus_morhua,sw,temperature,increase,step-wise nitrogen bubbling,Schurmann and Steffensen (1997),juvenile,acclimated,,10,23.2,5.3,percent_sat,11,57,10.9,mgO2_hr_kg,11,157.7,40.2,,,
+Gadus_morhua,sw,temperature,increase,step-wise nitrogen bubbling,Schurmann and Steffensen (1997),juvenile,acclimated,,15,30.3,5.9,percent_sat,11,78.2,9.2,mgO2_hr_kg,11,166.9,43.7,,,
+Gadus_ogac,sw,temperature,increase,step-wise nitrogen bubbling,Corkum and Gamperl (2009),,acclimated,1,1,40.4,9.333809512,percent_sat,8,64,12.16223664,mgO2_hr_kg^0.83,8,50.9,18.95046174,,,Greenland cod_pcrit = 4.6 mgO2_L
+Gadus_ogac,sw,temperature,increase,step-wise nitrogen bubbling,Corkum and Gamperl (2009),,acclimated,8,8,54.8,10.2,percent_sat,9,92.5,18.9,mgO2_hr_kg^0.83,9,74.3,25.8,,,Greenland cod_pcrit = 5.32 mgO2_L
+Tautogolabrus_adspersus,sw,temperature,increase,step-wise nitrogen bubbling,Corkum and Gamperl (2009),,acclimated,1,1,16.9,9.803060747,percent_sat,10,21.2,7.589466384,mgO2_hr_kg^0.83,10,98.8,7.589466384,,,Cunner_pcrit = 1.94 mgO2_L
+Tautogolabrus_adspersus,sw,temperature,increase,step-wise nitrogen bubbling,Corkum and Gamperl (2009),,acclimated,8,8,21.4,1.587450787,percent_sat,7,31.6,,mgO2_hr_kg^0.83,7,135.6,27.2512385,,,Cunner_pcrit = 2.08 mgO2_L
+Gobiodon_erythrospilus,sw,temperature,increase,closed,Sorensen et al. (2014),,acclimated,29,29,26,2,percent_sat,,,,,,,,,,
+Gobiodon_erythrospilus,sw,temperature,increase,closed,Sorensen et al. (2014),,acclimated,31,31,,,percent_sat,,,,,,,,,,
+Gobiodon_erythrospilus,sw,temperature,increase,closed,Sorensen et al. (2014),,acclimated,32,32,,,percent_sat,,,,,,,,,,
+Gobiodon_erythrospilus,sw,temperature,increase,closed,Sorensen et al. (2014),,acclimated,33,33,38,2,percent_sat,,,,,,,,,,
+Gobiodon_histrio,sw,temperature,increase,closed,Sorensen et al. (2014),,acclimated,29,29,23,2,percent_sat,,201,25,mgO2_hr_kg,,,,,,
+Gobiodon_histrio,sw,temperature,increase,closed,Sorensen et al. (2014),,acclimated,31,31,,,percent_sat,,298,22,mgO2_hr_kg,,,,,,
+Gobiodon_histrio,sw,temperature,increase,closed,Sorensen et al. (2014),,acclimated,32,32,,,percent_sat,,308,24,mgO2_hr_kg,,,,,,
+Gobiodon_histrio,sw,temperature,increase,closed,Sorensen et al. (2014),,acclimated,33,33,38,2,percent_sat,,386,27,mgO2_hr_kg,,,,,,
+Hemiscyllium_ocellatum,sw,,,,,,,,,,,,,,,,,,,,,on figure 3 in Rogers et al 2016 not in table
+Hoplias_malabaricus,fw,,,,,,,,,,,,,,,,,,,,,on figure 3 in Rogers et al 2016 not in table
+Hypostomus_plecostomus,fw,,,,,,,,,,,,,,,,,,,,,on figure 3 in Rogers et al 2016 not in table
+Lates_calcarifer,sw,temperature,increase,,Collins et al. (2013),,acclimated,,,,,,,,,,,,,,,
+Morone_saxatilis,brackish,temperature,increase,,Lapointe et al. (2014),,acclimated,,,,,,,,,,,,,,,
+Oreochromis_niloticus,fw,temperature,increase,,Fernandes and Rantin (1989),,acclimated,,,,,,,,,,,,,,,
+Ostorhinchus_doederleini,sw,temperature,increase,closed,Nilsson et al. (2010),adults,acute,29,29,28.2,2.8,percent_sat,8,266,33,mgO2_hr_kg,8,,,,,
+Ostorhinchus_doederleini,sw,temperature,increase,closed,Nilsson et al. (2010),adults,acute,29,31,36.8,2.6,percent_sat,7,314,59,mgO2_hr_kg,7,,,,,
+Ostorhinchus_doederleini,sw,temperature,increase,closed,Nilsson et al. (2010),adults,acute,29,32,48.3,10,percent_sat,6,356,92,mgO2_hr_kg,6,,,,,
+Ostorhinchus_doederleini,sw,temperature,increase,closed,Nilsson et al. (2010),adults,acclimated,32,32,40.8,6.3,percent_sat,6,455,100,mgO2_hr_kg,6,,,,,
+Pagrus_auratus,,,,,,,,,,,,,,,,,,,,,,on figure 3 in Rogers et al 2016 not in table
+Paralichthys_dentatus,,,,,,,,,,,,,,,,,,,,,,on figure 3 in Rogers et al 2016 not in table
+Pomacentrus_moluccensis,sw,temperature,increase,closed,Nilsson et al. (2010),adults,acute,29,29,25.6,3.5,percent_sat,12,283,56,mgO2_hr_kg,12,,,,,not in figure 3 in Rogers et al 2016 but in table
+Pomacentrus_moluccensis,sw,temperature,increase,closed,Nilsson et al. (2010),adults,acute,29,31,27.1,2.29,percent_sat,6,333,84,mgO2_hr_kg,6,,,,,
+Pomacentrus_moluccensis,sw,temperature,increase,closed,Nilsson et al. (2010),adults,acute,29,32,31.5,3.4,percent_sat,6,398,85,mgO2_hr_kg,6,,,,,
+Pomacentrus_moluccensis,sw,temperature,increase,closed,Nilsson et al. (2010),adults,acclimated,32,32,37.1,3.2,percent_sat,6,375,54,mgO2_hr_kg,6,,,,10,
+Pomacentrus_moluccensis,sw,temperature,increase,closed,Nilsson et al. (2010),adults,acclimated,32,32,33.3,4.2,percent_sat,9,354,61,mgO2_hr_kg,9,,,,22,
+Salmo_salar,,temperature,increase,,Barnes et al. (2011),post-smolts?,,,,,,,,,,,,,,,,
+Salmo_salar,,temperature,increase,,Remen et al. (2013),post-smolts?,,,,,,,,,,,,,,,,
+Scyliorhinus_canicula,sw,temperature,increase,step-wise nitrogen bubbling,Butler and Taylor(1975),,acclimated,7,,,,,,,,,,,,,,
+Scyliorhinus_canicula,sw,temperature,increase,step-wise nitrogen bubbling,Butler and Taylor(1975),,acclimated,12,,,,,,,,,,,,,,
+Scyliorhinus_canicula,sw,temperature,increase,step-wise nitrogen bubbling,Butler and Taylor(1975),,acclimated,17,,,,,,,,,,,,,,
+Sciaenops ocellatus,sw,temperature,increase,closed,Ern et al. (2016) JEB,adult,acute,22,24,31.5,4.8,torr,8,185.1,37.3,mgO2_hr_kg,8,35.7,3.4,,,
+Sciaenops ocellatus,sw,temperature,increase,closed,Ern et al. (2016) JEB,adult,acute,22,30,37.9,3.4,torr,8,259.1,29.1,mgO2_hr_kg,8,40,5.7,,,
+Cyclopterus lumpus,sw,temperature,increase,closed,Ern et al. (2016) JEB,adult,acute,10,10,54.4,15.3,torr,8,80.2,10.5,mgO2_hr_kg,8,23,4.2,,,
+Cyclopterus lumpus,sw,temperature,increase,closed,Ern et al. (2016) JEB,adult,acute,10,16,63.8,15.6,torr,8,114.4,14.7,mgO2_hr_kg,8,22.5,4.8,,,
+Lepomis macrochirus,fw,temperature,increase,step-wise nitrogen bubbling/closed at low PO2,Borowiec et al. 2016,adult,acute,25,15,3.177966102,0.647182478,kpa,8,95.60155239,24.69842573,mgO2_hr_kg,8,59.4,22.1,8,,mo2 mean not necessarily reflective of the MO2 at Pcrit
+Lepomis macrochirus,fw,temperature,increase,step-wise nitrogen bubbling/closed at low PO2,Borowiec et al. 2016,adult,acute,25,25,6.406779661,1.143502685,kpa,7,196.1836999,29.09299631,mgO2_hr_kg,7,59.4,22.1,8,,mo2 mean not necessarily reflective of the MO2 at Pcrit
+Lepomis macrochirus,fw,temperature,increase,step-wise nitrogen bubbling/closed at low PO2,Borowiec et al. 2016,adult,acute,25,28,6.610169492,2.732548239,kpa,8,277.0375162,60.37392957,mgO2_hr_kg,8,59.4,22.1,8,,mo2 mean not necessarily reflective of the MO2 at Pcrit
+Lepomis gibbosus,fw,temperature,increase,step-wise nitrogen bubbling/closed at low PO2,Borowiec et al. 2016,adult,acute,25,15,3.737288136,0.575273314,kpa,8,110.8020699,21.95415621,mgO2_hr_kg,8,88.5,24.9,8,,mo2 mean not necessarily reflective of the MO2 at Pcrit
+Lepomis gibbosus,fw,temperature,increase,step-wise nitrogen bubbling/closed at low PO2,Borowiec et al. 2016,adult,acute,25,25,6.610169492,3.523549045,kpa,8,201.3583441,28.35745177,mgO2_hr_kg,8,88.5,24.9,8,,mo2 mean not necessarily reflective of the MO2 at Pcrit
+Lepomis gibbosus,fw,temperature,increase,step-wise nitrogen bubbling/closed at low PO2,Borowiec et al. 2016,adult,acute,25,28,9.838983051,1.614356732,kpa,7,261.1901682,48.77355263,mgO2_hr_kg,7,88.5,24.9,8,,mo2 mean not necessarily reflective of the MO2 at Pcrit
+Lepomis macrochirus-gibbosus hybrid,fw,temperature,increase,step-wise nitrogen bubbling/closed at low PO2,Borowiec et al. 2016,adult,acute,25,15,3.152542373,1.582001612,kpa,8,109.5084088,42.0787994,mgO2_hr_kg,8,71.2,16.1,8,,HYBRID; mo2 mean not necessarily reflective of the MO2 at Pcrit
+Lepomis macrochirus-gibbosus hybrid,fw,temperature,increase,step-wise nitrogen bubbling/closed at low PO2,Borowiec et al. 2016,adult,acute,25,25,8.56779661,1.36627412,kpa,8,234.9935317,39.33452987,mgO2_hr_kg,8,71.2,16.1,8,,HYBRID; mo2 mean not necessarily reflective of the MO2 at Pcrit
+Lepomis macrochirus-gibbosus hybrid,fw,temperature,increase,step-wise nitrogen bubbling/closed at low PO2,Borowiec et al. 2016,adult,acute,25,28,5.898305085,2.354270234,kpa,7,272.5097025,97.54710526,mgO2_hr_kg,7,71.2,16.1,8,,HYBRID; mo2 mean not necessarily reflective of the MO2 at Pcrit
+Chromis atripectoralis,sw,temperature,increase,closed,Ern et al. (2017) Bio. Letters,adult,acute,30,29,24.9,7.071067812,torr,8,106,16.97056275,mgO2_hr_kg,8,3.74,0.735391052,8,,Individual raw data for these means are available in another csv file where I copied data from the supp mat from Ern et al. (2017)
+Chromis atripectoralis,sw,temperature,increase,closed,Ern et al. (2017) Bio. Letters,adult,acute,30,31,32.7,4.5254834,torr,8,165,11.3137085,mgO2_hr_kg,8,3.95,0.820243866,8,,Individual raw data for these means are available in another csv file where I copied data from the supp mat from Ern et al. (2017)
+Chromis atripectoralis,sw,temperature,increase,closed,Ern et al. (2017) Bio. Letters,adult,acute,30,33,34.7,7.636753237,torr,8,183,28.28427125,mgO2_hr_kg,8,3.72,0.622253967,8,,Individual raw data for these means are available in another csv file where I copied data from the supp mat from Ern et al. (2017)
+Chromis atripectoralis,sw,temperature,increase,closed,Ern et al. (2017) Bio. Letters,adult,acute,30,35,37,10.46518036,torr,8,242,28.28427125,mgO2_hr_kg,8,2.48,0.565685425,8,,Individual raw data for these means are available in another csv file where I copied data from the supp mat from Ern et al. (2017)

@@ -1,0 +1,40 @@
+species,date,temp_c,do_percent,b_mass_g,time_loe_min,observed,notes
+Oligocottus_maculosus,28-Apr-18,12,4,3.1,355,1,probe calibration off by ~9% post trial check - DO NOT USE THIS TRIAL
+Oligocottus_maculosus,28-Apr-18,12,4,5.8,369,1,probe calibration off by ~9% post trial check - DO NOT USE THIS TRIAL
+Oligocottus_maculosus,28-Apr-18,12,4,3.1,378,1,probe calibration off by ~9% post trial check - DO NOT USE THIS TRIAL
+Oligocottus_maculosus,28-Apr-18,12,4,3.1,450,1,probe calibration off by ~9% post trial check - DO NOT USE THIS TRIAL
+Oligocottus_maculosus,28-Apr-18,12,4,4.5,453,1,probe calibration off by ~9% post trial check - DO NOT USE THIS TRIAL
+Oligocottus_maculosus,28-Apr-18,12,4,3.9,600,1,probe calibration off by ~9% post trial check - DO NOT USE THIS TRIAL
+Oligocottus_maculosus,3-May-18,12,4,4.8,470,1,
+Oligocottus_maculosus,3-May-18,12,4,2.9,650,1,
+Oligocottus_maculosus,3-May-18,12,4,4.7,780,1,
+Oligocottus_maculosus,3-May-18,12,4,4.3,940,1,
+Oligocottus_maculosus,3-May-18,12,4,3.3,958,1,
+Oligocottus_maculosus,3-May-18,12,4,2.8,970,1,
+Oligocottus_maculosus,6-May-18,16,4,2.5,107,1,"This fish escaped during deoxygenation and was chased prior to returning to the experimental tank, probably shouldn't use"
+Oligocottus_maculosus,6-May-18,16,4,4.9,130,1,
+Oligocottus_maculosus,6-May-18,16,4,4.2,150,1,
+Oligocottus_maculosus,6-May-18,16,4,3.8,173,1,
+Oligocottus_maculosus,6-May-18,16,4,5.7,290,1,
+Oligocottus_maculosus,6-May-18,16,4,7.5,460,1,
+Oligocottus_maculosus,7-May-18,20,4,3.2,40,1,
+Oligocottus_maculosus,7-May-18,20,4,3.6,43,1,
+Oligocottus_maculosus,7-May-18,20,4,3.3,59,1,
+Oligocottus_maculosus,7-May-18,20,4,4.6,65,1,
+Oligocottus_maculosus,7-May-18,20,4,5.8,70,1,
+Oligocottus_maculosus,7-May-18,20,4,5.7,110,1,
+Clinocottus_globiceps,12-May-18,12,4,38.6,2,1,snout-tail tip length = 13.0
+Clinocottus_globiceps,12-May-18,12,4,43.5,80,1,snout-tail tip length = 13.8
+Clinocottus_globiceps,12-May-18,12,4,42.5,550,1,snout-tail tip length = 13.6
+Clinocottus_globiceps,12-May-18,12,4,42.3,620,1,snout-tail tip length = 13.0
+Clinocottus_globiceps,12-May-18,12,4,26.4,1070,1,snout-tail tip length = 11.8
+Clinocottus_globiceps,12-May-18,12,4,25.9,1240,1,snout-tail tip length = 12.0
+Clinocottus_globiceps,17-May-18,16,4,30.4,730,1,Probe calibration off by ~3% post trial check - DO NOT USE THIS TRIAL
+Clinocottus_globiceps,17-May-18,16,4,24.1,770,1,Probe calibration off by ~3% post trial check - DO NOT USE THIS TRIAL
+Clinocottus_globiceps,17-May-18,16,4,25.5,890,1,Probe calibration off by ~3% post trial check - DO NOT USE THIS TRIAL
+Clinocottus_globiceps,17-May-18,16,4,35.6,940,1,Probe calibration off by ~3% post trial check - DO NOT USE THIS TRIAL
+Clinocottus_globiceps,17-May-18,16,4,22.3,1070,1,Probe calibration off by ~3% post trial check - DO NOT USE THIS TRIAL
+Clinocottus_globiceps,23-May-18,20,4,29.3,-5,1,
+Clinocottus_globiceps,23-May-18,20,4,30.9,-1,1,
+Clinocottus_globiceps,23-May-18,20,4,27.8,3,1,
+Clinocottus_globiceps,23-May-18,20,4,27.5,26,1,
