@@ -12,6 +12,7 @@ library(MCMCglmm)
 library(visreg)
 library(nlme)
 library(broom)
+library(car)
 
 setwd("C:/Users/derek/Documents/Metabolic-rate-analyses")
 pcrit_smr_data_summary <- read.csv("SculpinPcritData_ComparativeAnalysisFormat_withPcritSlopes.csv", stringsAsFactors = FALSE,
@@ -210,20 +211,10 @@ lm_scaling_smr_pcrit <- pcrit_smr_data_summary %>%
          tidy_smr_aov = aov_scaling_mod_smr %>% purrr::map(broom::tidy),
          tidy_smr_lm = spps_scaling_mod_smr %>% purrr::map(broom::tidy),
          tidy_pcrit_aov = aov_scaling_mod_pcrit %>% purrr::map(broom::tidy),
-         tidy_pcrit_lm = spps_scaling_mod_pcrit %>% purrr::map(broom::tidy))
+         tidy_pcrit_lm = spps_scaling_mod_pcrit %>% purrr::map(broom::tidy),
+         p_val_smr_aov = tidy_smr_aov %>% purrr::map_dbl(c(5,2)),
+         p_val_pcrit_aov = tidy_pcrit_aov %>% purrr::map_dbl(c(5,2)))
 
-p_values_lm_smr_aov <- lm_scaling_smr_pcrit %>% dplyr::select(species, tidy_smr_aov) %>% unnest() %>%
-  spread(term, p.value) %>% dplyr::select(species, `log(mass.g)`) %>% filter(!is.na(`log(mass.g)`)) %>%
-  mutate(p_val_smr_sig = if_else(`log(mass.g)` < 0.05, "yes", "no")) %>%
-  rename(scaling_slope_smr_p_value = `log(mass.g)`)
-
-p_values_lm_pcrit_aov <- lm_scaling_smr_pcrit %>% dplyr::select(species, tidy_pcrit_aov) %>% unnest() %>%
-  spread(term, p.value) %>% dplyr::select(species, `log(mass.g)`) %>% filter(!is.na(`log(mass.g)`)) %>%
-  mutate(p_val_pcrit_sig = if_else(`log(mass.g)` < 0.05, "yes", "no")) %>%
-  rename(scaling_slope_pcrit_p_value = `log(mass.g)`)
-
-p_values_scaling_aov_smr_pcrit <- bind_cols(p_values_lm_smr_aov, p_values_lm_pcrit_aov) %>%
-  dplyr::select(-species1)
 
 ## In Deutsch et al., body size correction of "HYPOXIA TOLERANCE" was only done if
 ## body mass range was greater than 3 fold
