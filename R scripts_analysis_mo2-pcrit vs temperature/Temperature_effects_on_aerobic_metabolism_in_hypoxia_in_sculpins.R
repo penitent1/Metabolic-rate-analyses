@@ -133,7 +133,7 @@ mass_corr_smr_pcrit_data %>%
         axis.text.x = element_text(size = rel(2.25), colour = "black"),
         axis.text.y = element_text(size = rel(1.5), colour = "black"),
         axis.line = element_line(size = rel(1.5), colour = "black"),
-        axis.ticks = element_line(size = rel(1), colour = "black"),
+        axis.ticks = element_line(size = rel(3), colour = "black"),
         strip.text = element_text(face = "bold", size = rel(1.25)))
 
 ## ******************************************************************
@@ -178,7 +178,7 @@ beta_pcrit_low_temp_plot <-
         axis.title = element_text(size = rel(2.5)),
         axis.text = element_text(size = rel(2.25), colour = "black"),
         axis.line = element_line(size = rel(1.5), colour = "black"),
-        axis.ticks = element_line(size = rel(1), colour = "black"))
+        axis.ticks = element_line(size = rel(3), colour = "black"))
 
 ## Beta pcrit: 16-20 degrees ~ Pcrit at 12 degrees
 beta_pcrit_high_temp_plot <- 
@@ -197,7 +197,7 @@ beta_pcrit_high_temp_plot <-
         axis.title = element_text(size = rel(2.5)),
         axis.text = element_text(size = rel(2.25), colour = "black"),
         axis.line = element_line(size = rel(1.5), colour = "black"),
-        axis.ticks = element_line(size = rel(1), colour = "black"))
+        axis.ticks = element_line(size = rel(3), colour = "black"))
 
 grid.arrange(beta_pcrit_low_temp_plot, beta_pcrit_high_temp_plot, ncol=2)
 # PNG exported: W = 1132 H = 654
@@ -223,7 +223,7 @@ mass_corr_smr_pcrit_data %>%
   #stat_smooth(aes(x = smr.mass.corr.ms, y = pcrit.r), method = "lm", color = "black") +
   stat_smooth(aes(x = smr.mass.corr.ms, y = pcrit.r, group = species_plotting), 
               method = "lm", se = FALSE, size = rel(2), colour = "black") +
-  scale_x_continuous(name = expression(paste("Standard ",dot(M),"o"[2]," (",mu,"mol ",O[2]," g"^-1," hr"^-1,")")),
+  scale_x_continuous(name = expression(paste(dot(M),"o"[2][",standard*"]," (",mu,"mol ",O[2]," g"^-1," hr"^-1,")")),
                      limits = c(0,6),
                      breaks = seq(0,6,1)) +
   scale_y_continuous(name = expression(paste("P"["crit"]," (Torr)")),
@@ -234,7 +234,7 @@ mass_corr_smr_pcrit_data %>%
         axis.title = element_text(size = rel(2.5)),
         axis.text = element_text(size = rel(2.25), colour = "black"),
         axis.line = element_line(size = rel(1.5), colour = "black"),
-        axis.ticks = element_line(size = rel(1), colour = "black"),
+        axis.ticks = element_line(size = rel(3), colour = "black"),
         legend.title = element_text(size = rel(1.5)),
         legend.text = element_text(size = rel(1.5))) +
   labs(colour = "Species")
@@ -251,9 +251,9 @@ mass_corr_smr_pcrit_data %>%
                                       species == "Hemilepidotus_hemilepidotus" ~ "Hemilepidotus hemilepidotus",
                                       species == "Scorpaenichthys_marmoratus" ~ "Scorpaenichthys marmoratus")) %>%
   ggplot(aes(x = smr.mass.corr.ms, y = pcrit.r)) +
-  geom_point() +
-  stat_smooth(method = "lm") +
-  scale_x_continuous(name = expression(paste("Standard ",dot(M)[O][2]," (",mu,"mol",O[2]," g"^-1," hr"^-1)),
+  stat_smooth(method = "lm", size = rel(2), colour = "black") +
+  geom_point(size = 3) +
+  scale_x_continuous(name = expression(paste(dot(M)[O][2][",standard*"]," (",mu,"mol ",O[2]," g"^-1," hr"^-1,")")),
                      limits = c(0,6)) +
   scale_y_continuous(name = expression(paste("P"["crit"]," (Torr)")),
                      limits = c(0,100)) +
@@ -261,14 +261,14 @@ mass_corr_smr_pcrit_data %>%
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = NA),
-        axis.title = element_text(size = rel(2)),
-        axis.text = element_text(size = rel(1.5), colour = "black"),
+        axis.title = element_text(size = rel(2.5)),
+        axis.text.x = element_text(size = rel(2.25), colour = "black"),
+        axis.text.y = element_text(size = rel(1.5), colour = "black"),
         axis.line = element_line(size = rel(1.5), colour = "black"),
-        axis.ticks = element_line(size = rel(1), colour = "black"),
-        strip.text = element_text(face = "bold", size = rel(1.5)))
+        axis.ticks = element_line(size = rel(3), colour = "black"),
+        strip.text = element_text(face = "bold", size = rel(1.25)))
 
 ## Linear model: Pcrit ~ SMR + species + SMR*species
-
 mass_corr_smr_pcrit_data %>%
   lm(pcrit.r ~ smr.mass.corr.ms + species + smr.mass.corr.ms*species, data = .) %>%
   Anova(., type = "III")
@@ -277,6 +277,22 @@ mass_corr_smr_pcrit_data %>%
 # THIS MEANS!
 # SMR is a significant predictor of SMR, but the sensitivity of pcrit
 # to variation in SMR varies between species.
+
+pcrit_vs_smr_aov_per_species_data <- 
+  mass_corr_smr_pcrit_data %>%
+  group_by(species) %>%
+  nest() %>%
+  mutate(pcrit_vs_smr_lm = data %>% purrr::map(~ lm(pcrit.r ~ smr.mass.corr.ms, 
+                                                    data = .)),
+         aov_pcrit_vs_smr_lm = pcrit_vs_smr_lm %>% purrr::map(~ Anova(., type = "III")),
+         tidy_pcrit_vs_smr_lm = aov_pcrit_vs_smr_lm %>% purrr::map(broom::tidy),
+         p_val_pcrit_smr = tidy_pcrit_vs_smr_lm %>% purrr::map_dbl(c(5,2)))
+  
+## Artedius harringtoni is the only species 
+## which does not have a significant relationship: Pcrit ~ Mo2 (all temp included):
+pcrit_vs_smr_aov_per_species_data$tidy_pcrit_vs_smr_lm[[3]]
+
+
 
 ## *******************************************
 ##
@@ -335,7 +351,7 @@ ggplot(lm_pcrit_vs_smr_delta_smr_data, aes(x = delta_smr_12_20, y = slope_pcrit_
 ggplot(lm_pcrit_vs_smr_delta_smr_data, aes(x = delta_smr_12_20, y = delta_pcrit_12_20)) +
   geom_point(size = 5) +
   #stat_smooth(method = "lm", size = 2) +
-  scale_x_continuous(name = expression(paste(Delta,"SMR"["12-20"][degree]["C"]," (",mu,"mol O"[2], " g"^-1," h"^-1,")")),
+  scale_x_continuous(name = expression(paste(Delta,dot(M),"o"["2,standard* "]["12-20"][degree]["C"]," (",mu,"mol O"[2], " g"^-1," h"^-1,")")),
                      limits = c(0,4)) +
   scale_y_continuous(name = expression(paste(Delta,"P"["crit 12-20"][degree]["C"]," (Torr)")),
                      limits = c(0,50)) +
@@ -345,7 +361,7 @@ ggplot(lm_pcrit_vs_smr_delta_smr_data, aes(x = delta_smr_12_20, y = delta_pcrit_
         axis.title = element_text(size = rel(2.5)),
         axis.text = element_text(size = rel(2.25), colour = "black"),
         axis.line = element_line(size = rel(1.5), colour = "black"),
-        axis.ticks = element_line(size = rel(1), colour = "black"))
+        axis.ticks = element_line(size = rel(3), colour = "black"))
 
 # Anova on Delta Pcrit ~ Delta SMR across the tested temperature range (12-20 degrees)
 lm_pcrit_vs_smr_delta_smr_data %>%
@@ -455,14 +471,19 @@ beta_pcrit_ct_max_data <-
   
 ## AOV on Beta_pcrit_low/high ~ CTmax
 beta_pcrit_ct_max_data %>%
-  lm(slope_pcrit_low_t)
+  lm(slope_pcrit_low_temps ~ avg_ct_max, data = .) %>%
+  Anova(., type = "III")
+
+beta_pcrit_ct_max_data %>%
+  lm(slope_pcrit_high_temps ~ avg_ct_max, data = .) %>%
+  Anova(., type = "III")
 
 
 beta_pcrit_low_temp_ctmax_plot <- 
   beta_pcrit_ct_max_data %>%
   ggplot(aes(x = avg_ct_max, y = slope_pcrit_low_temps)) +
   geom_point(size = 5) +
-  stat_smooth(method = "lm") +
+  #stat_smooth(method = "lm") +
   scale_x_continuous(name = expression(paste("CT"["max"]," (",degree,C,")")),
                      limits = c(20, 30)) +
   scale_y_continuous(name = expression(paste(beta["P"]["crit"][" 12-16"][degree][C]," (Torr  ",degree,C^-1,")")),
@@ -473,16 +494,16 @@ beta_pcrit_low_temp_ctmax_plot <-
         axis.title = element_text(size = rel(2.5)),
         axis.text = element_text(size = rel(2.25), colour = "black"),
         axis.line = element_line(size = rel(1.5), colour = "black"),
-        axis.ticks = element_line(size = rel(1), colour = "black"))
+        axis.ticks = element_line(size = rel(3), colour = "black"))
 
 beta_pcrit_high_temp_ctmax_plot <- 
   beta_pcrit_ct_max_data %>%
   ggplot(aes(x = avg_ct_max, y = slope_pcrit_high_temps)) +
+  stat_smooth(method = "lm", size = 2, colour = "black") +
   geom_point(size = 5) +
-  stat_smooth(method = "lm") +
   scale_x_continuous(name = expression(paste("CT"["max"]," (",degree,C,")")),
                      limits = c(20, 30)) +
-  scale_y_continuous(name = expression(paste(beta["P"]["crit"][" 12-16"][degree][C]," (Torr  ",degree,C^-1,")")),
+  scale_y_continuous(name = expression(paste(beta["P"]["crit"][" 16-20"][degree][C]," (Torr  ",degree,C^-1,")")),
                      limits = c(-5,15)) +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
@@ -490,7 +511,7 @@ beta_pcrit_high_temp_ctmax_plot <-
         axis.title = element_text(size = rel(2.5)),
         axis.text = element_text(size = rel(2.25), colour = "black"),
         axis.line = element_line(size = rel(1.5), colour = "black"),
-        axis.ticks = element_line(size = rel(1), colour = "black"))
+        axis.ticks = element_line(size = rel(3), colour = "black"))
 
 grid.arrange(beta_pcrit_low_temp_ctmax_plot, beta_pcrit_high_temp_ctmax_plot, ncol=2)
 # PNG exported: W = 1132 H = 654
