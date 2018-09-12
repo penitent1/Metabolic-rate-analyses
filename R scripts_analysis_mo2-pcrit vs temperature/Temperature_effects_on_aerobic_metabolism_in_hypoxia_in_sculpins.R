@@ -358,21 +358,139 @@ lm_pcrit_vs_smr_delta_smr_data %>%
 ##
 ## *******************************************
 
-ggplot(ct_max_df, aes(x = species_plotting, y = loe_temp_corrected)) + 
+## Plot: CTmax for each species, all raw data WITH ENBI outlier
+ct_max_df %>%
+  mutate(species_plotting_abb = case_when(species=="arfe"~"A. fenestralis",
+                                          species=="arha"~"A. harringtoni",
+                                          species=="arla"~"A. lateralis",
+                                          species=="clgl"~"C. globiceps",
+                                          species=="enbi"~"E. bison",
+                                          species=="hehe"~"H. hemilepidotus",
+                                          species=="olma"~"O. maculosus",
+                                          species=="scma"~"S. marmoratus")) %>%
+ggplot(aes(x = species_plotting_abb, y = loe_temp_corrected)) + 
+  geom_jitter(width = 0.15, size = 3) +
+  scale_x_discrete(name = "Species") + 
+  scale_y_continuous(name = expression(paste("CT"["max"]," (",degree,C,")"))) + 
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        axis.line = element_line(size = rel(1.5), colour = "black"),
+        axis.title.x = element_text(size = rel(2.5),
+                                    colour = "black"),
+        axis.ticks = element_line(size = rel(3), colour = "black"),
+        axis.text.x = element_text(size = rel(1.25), 
+                                   angle = 25, 
+                                   vjust = 1, hjust = 1,
+                                   face = "bold",
+                                   colour = "black"),
+        axis.title.y = element_text(size = rel(2.5),
+                                    hjust = 0.35,
+                                    colour = "black"),
+        axis.text.y = element_text(size = rel(2.5),
+                                   colour = "black"))
+
+## Plot: CTmax for each species, all raw data WITHOUT ENBI outlier
+ct_max_df_no_enbi_out <- ct_max_df[-37,]
+View(ct_max_df)
+View(ct_max_df_no_enbi_out)
+
+ct_max_df_no_enbi_out %>%
+  mutate(species_plotting_abb = case_when(species=="arfe"~"A. fenestralis",
+                                          species=="arha"~"A. harringtoni",
+                                          species=="arla"~"A. lateralis",
+                                          species=="clgl"~"C. globiceps",
+                                          species=="enbi"~"E. bison",
+                                          species=="hehe"~"H. hemilepidotus",
+                                          species=="olma"~"O. maculosus",
+                                          species=="scma"~"S. marmoratus")) %>%
+  ggplot(aes(x = species_plotting_abb, y = loe_temp_corrected)) + 
   geom_jitter(width = 0.15, size = 3) + 
   scale_x_discrete(name = "Species") + 
   scale_y_continuous(name = expression(paste("CT"["max"]," (",degree,C,")"))) + 
   theme(panel.background = element_blank(), 
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
         axis.line = element_line(size = rel(1.5), colour = "black"),
-        axis.title.x = element_text(size = rel(2.5)),
-        axis.ticks = element_line(size = rel(1), colour = "black"),
+        axis.title.x = element_text(size = rel(2.5),
+                                    colour = "black"),
+        axis.ticks = element_line(size = rel(3), colour = "black"),
         axis.text.x = element_text(size = rel(1.25), 
-                                   angle = 45, 
-                                   vjust = 0.95, hjust = 0.975),
-        axis.title.y = element_text(size = rel(2.5)),
-        axis.text.y = element_text(size = rel(1.25)))
+                                   angle = 25, 
+                                   vjust = 1, hjust = 1,
+                                   face = "bold",
+                                   colour = "black"),
+        axis.title.y = element_text(size = rel(2.5),
+                                    hjust = 0.35,
+                                    colour = "black"),
+        axis.text.y = element_text(size = rel(2.5),
+                                   colour = "black"))
+
+## Plot Beta_Pcrit_low/high ~ CTmax
+
+## Beta pcrit: 12-16 degrees ~ CTmax
+
+beta_pcrit_ct_max_data <- 
+  ct_max_df_no_enbi_out %>%
+  group_by(species) %>%
+  dplyr::select(species, mass, species_plotting, distribution, max_depth, loe_temp_corrected) %>%
+  summarise(avg_ct_max = mean(loe_temp_corrected)) %>%
+  rename(spps = species) %>%
+  mutate(species = case_when(spps == "olma"~"Oligocottus_maculosus",
+                             spps == "clgl"~"Clinocottus_globiceps",
+                             spps == "arha"~"Artedius_harringtoni",
+                             spps == "arla"~"Artedius_lateralis",
+                             spps == "arfe"~"Artedius_fenestralis",
+                             spps == "hehe"~"Hemilepidotus_hemilepidotus",
+                             spps == "scma"~"Scorpaenichthys_marmoratus",
+                             spps == "enbi"~"Enophrys_bison")) %>%
+  full_join(., lm_pcrit_smr_temp[lm_pcrit_smr_temp$species!="Blepsias_cirrhosus",c(1,10,11,12)], 
+            by = "species") %>%
+  mutate(species_plotting = case_when(species == "Oligocottus_maculosus" ~ "Oligocottus maculosus",
+                                      species == "Clinocottus_globiceps" ~ "Clinocottus globiceps",
+                                      species == "Artedius_harringtoni" ~ "Artedius harringtoni",
+                                      species == "Artedius_lateralis" ~ "Artedius lateralis",
+                                      species == "Artedius_fenestralis" ~ "Artedius fenestralis",
+                                      species == "Enophrys_bison" ~ "Enophrys bison",
+                                      species == "Hemilepidotus_hemilepidotus" ~ "Hemilepidotus hemilepidotus",
+                                      species == "Scorpaenichthys_marmoratus" ~ "Scorpaenichthys marmoratus"))
+  
+## AOV on Beta_pcrit_low/high ~ CTmax
+beta_pcrit_ct_max_data %>%
+  lm(slope_pcrit_low_t)
 
 
+beta_pcrit_low_temp_ctmax_plot <- 
+  beta_pcrit_ct_max_data %>%
+  ggplot(aes(x = avg_ct_max, y = slope_pcrit_low_temps)) +
+  geom_point(size = 5) +
+  stat_smooth(method = "lm") +
+  scale_x_continuous(name = expression(paste("CT"["max"]," (",degree,C,")")),
+                     limits = c(20, 30)) +
+  scale_y_continuous(name = expression(paste(beta["P"]["crit"][" 12-16"][degree][C]," (Torr  ",degree,C^-1,")")),
+                     limits = c(-5,15)) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = NA),
+        axis.title = element_text(size = rel(2.5)),
+        axis.text = element_text(size = rel(2.25), colour = "black"),
+        axis.line = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks = element_line(size = rel(1), colour = "black"))
 
+beta_pcrit_high_temp_ctmax_plot <- 
+  beta_pcrit_ct_max_data %>%
+  ggplot(aes(x = avg_ct_max, y = slope_pcrit_high_temps)) +
+  geom_point(size = 5) +
+  stat_smooth(method = "lm") +
+  scale_x_continuous(name = expression(paste("CT"["max"]," (",degree,C,")")),
+                     limits = c(20, 30)) +
+  scale_y_continuous(name = expression(paste(beta["P"]["crit"][" 12-16"][degree][C]," (Torr  ",degree,C^-1,")")),
+                     limits = c(-5,15)) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = NA),
+        axis.title = element_text(size = rel(2.5)),
+        axis.text = element_text(size = rel(2.25), colour = "black"),
+        axis.line = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks = element_line(size = rel(1), colour = "black"))
 
+grid.arrange(beta_pcrit_low_temp_ctmax_plot, beta_pcrit_high_temp_ctmax_plot, ncol=2)
+# PNG exported: W = 1132 H = 654
