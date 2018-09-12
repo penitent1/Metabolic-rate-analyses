@@ -153,6 +153,7 @@ mo2_data
 pcrit_data
 pcrit_smr_data_summary
 ct_max_data
+ct_max_data_spps_summary
 
 ## SMR allometry, with species-specific linear models including at all temperatures
 # Colours = species
