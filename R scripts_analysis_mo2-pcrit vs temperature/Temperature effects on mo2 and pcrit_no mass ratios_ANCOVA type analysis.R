@@ -170,27 +170,6 @@ ggplot(pcrit_smr_data_summary, aes(x = log(mass.g), y = log(smr.raw), colour = s
 ggplot(pcrit_smr_data_summary, aes(x = log(mass.g), y = log(smr.raw), colour = spps, group = spps)) +
   stat_smooth(method = "lm")
 
-## Get linear models of ln(smr) ~ ln(mass), as well as tests of significance
-## for model terms
-smr_allo_exponents <- pcrit_smr_data_summary %>%
-  group_by(species) %>%
-  do(spps_scaling_mod = lm(log(smr.raw)~log(mass.g), data=.)) %>%
-  tidy(spps_scaling_mod) %>%
-  dplyr::select(term, estimate, std.error, p.value) %>%
-  filter(term == "log(mass.g)") %>%
-  rename(slope.b = estimate) %>%
-  mutate(sig_allo_exp = if_else(p.value < 0.05, "yes", "no"))
-
-ggplot(smr_allo_exponents, aes(x = species, 
-                               y = slope.b, 
-                               colour = sig_allo_exp)) +
-  geom_point(size = 5) +
-  geom_errorbar(aes(x = species, 
-                    ymin = slope.b-std.error, 
-                    ymax = slope.b+std.error)) +
-  labs(x = expression(paste("Species")),
-       y = expression(paste("Scaling coefficient")),
-       colour = expression(paste("Significant \nexponent?")))
 
 ## ***************************************************************
 ##
@@ -216,17 +195,20 @@ lm_scaling_smr_pcrit <- pcrit_smr_data_summary %>%
          p_val_smr_aov = tidy_smr_aov %>% purrr::map_dbl(c(5,2)),
          p_val_pcrit_aov = tidy_pcrit_aov %>% purrr::map_dbl(c(5,2)))
 
-
 ## In Deutsch et al., body size correction of "HYPOXIA TOLERANCE" was only done if
 ## body mass range was greater than 3 fold
 lm_scaling_smr_pcrit %>% 
-  dplyr::select(species, range_fold_mass) %>% 
+  dplyr::select(species, range_fold_mass, range_mass) %>% 
   mutate(range_bigger_3fold = if_else(range_fold_mass > 3, "yes", "no"))
 
-## Hemilepidotus hemilepidotus is the only species with a significant effect
-## of body mass on Pcrit, but the fold-range of body masses is 1.8.
+lm_scaling_smr_pcrit[,c("species","p_val_smr_aov","p_val_pcrit_aov")] %>%
+  mutate(sig_smr = if_else(p_val_smr_aov<0.05, "yes", "no"),
+         sig_pcrit = if_else(p_val_pcrit_aov<0.05, "yes", "no"))
 
-summary(lm_scaling_smr_pcrit$spps_scaling_mod_pcrit[[6]])
+## Artedius harrringtoni is the only species with a significant effect
+## of body mass on Pcrit, but the fold-range of body masses is 2.39.
+
+summary(lm_scaling_smr_pcrit$spps_scaling_mod_pcrit[[3]])
 
 # Checking the 95% CI for the slope: Estimate +/- (Std. Error * t value)
 #> 0.5514 - (0.2537*2.173)
@@ -261,35 +243,46 @@ pcrit_smr_data_summary %>%
                      limits = c(0,100)) +
   facet_wrap("species_plotting")
 
-lm_pcrit_temp <- pcrit_smr_data_summary %>%
+lm_pcrit_smr_temp <- pcrit_smr_data_summary %>%
   group_by(species) %>%
   nest() %>%
   mutate(data_low_temps = data %>% purrr::map(~ filter(., temp != 20)),
          data_high_temps = data %>% purrr::map(~ filter(., temp !=12)),
          data_mean_pcrit_12 = data %>% purrr::map(~ filter(., temp == 12)),
-         lm_low_temps = data_low_temps %>% purrr::map(~ lm(pcrit.r ~ temp, data=.)),
-         lm_high_temps = data_high_temps %>% purrr::map(~ lm(pcrit.r ~ temp, data=.)),
-         tidy_low_temps = lm_low_temps %>% purrr::map(broom::tidy),
-         tidy_high_temps = lm_high_temps %>% purrr::map(broom::tidy),
-         slope_low_temps = tidy_low_temps %>% purrr::map_dbl(c(2,2)),
-         slope_high_temps = tidy_high_temps %>% purrr::map_dbl(c(2,2)),
+         lm_pcrit_low_temps = data_low_temps %>% purrr::map(~ lm(pcrit.r ~ temp, data=.)),
+         lm_pcrit_high_temps = data_high_temps %>% purrr::map(~ lm(pcrit.r ~ temp, data=.)),
+         tidy_pcrit_low_temps = lm_pcrit_low_temps %>% purrr::map(broom::tidy),
+         tidy_pcrit_high_temps = lm_pcrit_high_temps %>% purrr::map(broom::tidy),
+         slope_pcrit_low_temps = tidy_pcrit_low_temps %>% purrr::map_dbl(c(2,2)),
+         slope_pcrit_high_temps = tidy_pcrit_high_temps %>% purrr::map_dbl(c(2,2)),
          mean_pcrit_12 = data_mean_pcrit_12 %>% purrr::map_dbl(~ mean(.$pcrit.r)))
   
-lm_pcrit_temp[,c(1,10,11,12)] %>%
-  ggplot(aes(x = mean_pcrit_12, y = slope_low_temps)) +
+lm_pcrit_smr_temp[,c(1,10,11,12)] %>%
+  ggplot(aes(x = mean_pcrit_12, y = slope_pcrit_low_temps)) +
   geom_point(size = 3) +
   stat_smooth(method = "lm") +
   scale_x_continuous(name = expression(paste("P"["crit"]," at 12",degree,C," (Torr)")),
                      limits = c(20, 50)) +
   scale_y_continuous(name = expression(paste("P"["crit"],"-Temperature sensitivity (Torr ",degree,C^-1,")")))
 
-lm_pcrit_temp[,c(1,10,11,12)] %>%
-  ggplot(aes(x = mean_pcrit_12, y = slope_high_temps)) +
+lm_pcrit_smr_temp[,c(1,10,11,12)] %>%
+  ggplot(aes(x = mean_pcrit_12, y = slope_pcrit_high_temps)) +
   geom_point(size = 3) +
   stat_smooth(method = "lm") +
   scale_x_continuous(name = expression(paste("P"["crit"]," at 12",degree,C," (Torr)")),
                      limits = c(20, 50)) +
   scale_y_continuous(name = expression(paste("P"["crit"],"-Temperature sensitivity (Torr ",degree,C^-1,")")))
+
+## Pcrit vs SMR
+
+## *****************
+
+# Need to plot out the linear plots for:
+# 1) pcrit vs smr, using facet_wrap("species")
+# 2) pcrit vs smr, using stat_smooth(method = "lm") in a single plot
+
+pcrit_smr_data_summary %>%
+  ggplot(aes(x = smr.best.ms, y = ))
 
 ## Versus CTmax
 
@@ -309,22 +302,6 @@ lm_pcrit_temp[,c(1,10,11,12)] %>%
                      limits = c(20, 50)) +
   scale_y_continuous(name = expression(paste("P"["crit"],"-Temperature sensitivity (Torr ",degree,C^-1,")")))
 
-
-
-
-
-
-
-ggplot() +
-stat_smooth(data = pcrit_smr_data_summary[pcrit_smr_data_summary$temp!=20,], 
-              aes(x = temp, y = pcrit.r),
-            method = "lm") +
-stat_smooth(data = pcrit_smr_data_summary[pcrit_smr_data_summary$temp!=12,],
-              aes(x = temp, y = pcrit.r),
-            method = "lm") +
-facet_wrap("species")
-
-
 ## Arrhenius plot: ln(pcrit.r) ~ 1/T
 
 pcrit_smr_data_summary %>%
@@ -334,8 +311,6 @@ pcrit_smr_data_summary %>%
   stat_smooth(method = "lm") +
   facet_wrap("species")
 
-
-
 pcrit_smr_data_summary %>%
   group_by(species, temp) %>%
   mutate(mean_pcrit = mean(pcrit.r),
@@ -344,7 +319,6 @@ pcrit_smr_data_summary %>%
   geom_jitter(width = 0.15) +
   geom_line(aes(x = temp, y = mean_smr), size = 1.25) +
   facet_wrap("species")
-
 
 ## Raw Pcrit vs temperature data >>> CHECK HIGH ARLA, same individual???
 

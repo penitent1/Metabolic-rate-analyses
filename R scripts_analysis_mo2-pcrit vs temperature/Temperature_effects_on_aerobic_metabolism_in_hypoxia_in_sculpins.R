@@ -4,7 +4,7 @@ library(mclust)
 library(shape)
 library(StreamMetabolism)
 library(fishMO2)
-library(cowplot)
+#library(cowplot)
 library(ape)
 library(caper)
 library(geiger)
@@ -22,119 +22,6 @@ pcrit_smr_data_summary <- pcrit_smr_data_summary %>%
   mutate(smr.raw = smr.best.ms*mass.g) %>%
   filter(!is.na(pcrit.r), !is.na(smr.best.ms), trial.no==1)
 
-setwd("C:/Users/derek/Documents/Metabolic-rate-analyses/Raw MO2 slope data")
-mo2_data <- read.csv("Pcrit-vs-temp_Sculpin_study_IndividualMO2data.csv", stringsAsFactors = FALSE, strip.white = TRUE, na.strings = c("NA","."))
-mo2_data <- as_tibble(mo2_data)
-mo2_data
-
-#mo2_data <- transform(mo2_data, date = paste(date.day, date.month, date.year))
-#mo2_data <- as_tibble(mo2_data)
-mo2_data <- left_join(mo2_data, pcrit_smr_data_summary, by = c("probe" = "probe",
-                                                               "spps" = "spps",
-                                                               "date" = "date"))
-mo2_data <- mo2_data %>%
-  filter(!is.na(pcrit.r), !is.na(smr.best.ms)) %>%
-  mutate(mo2.raw = mo2.ms*mass.g,
-         species = if_else(spps=="olma","Oligocottus_maculosus",
-                           if_else(spps=="scma", "Scorpaenichthys_marmoratus",
-                                   if_else(spps=="blci", "Blepsias_cirrhosus",
-                                           if_else(spps=="enbi", "Enophrys_bison",
-                                                   if_else(spps=="hehe", "Hemilepidotus_hemilepidotus",
-                                                           if_else(spps=="arla", "Artedius_lateralis",
-                                                                   if_else(spps=="arha", "Artedius_harringtoni",
-                                                                           if_else(spps=="arfe", "Artedius_fenestralis",
-                                                                                   "Clinocottus_globiceps")))))))))
-
-
-pcrit_folder <- "C:/Users/derek/Documents/Metabolic-rate-analyses/R fish MO2 O2crit csv files"
-pcrit_file_list <- list.files(path = pcrit_folder)
-setwd("C:/Users/derek/Documents/Metabolic-rate-analyses/R fish MO2 O2crit csv files")
-## This works to read in all the pcrit data files
-## From following website:
-## https://stackoverflow.com/questions/26273555/inserting-file-names-as-column-values-in-a-data-frame?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-data2 <- lapply(pcrit_file_list, read.table, header = TRUE, sep = ",")
-for (i in 1:length(data2)) {
-  data2[[i]] <- cbind(data2[[i]], pcrit_file_list[i])
-}
-pcrit_data <- do.call("rbind", data2)
-colnames(pcrit_data)[c(1,2,3)] <- c("do_percent", "mo2", "file")
-
-pcrit_data <- as_tibble(pcrit_data)
-## Alternative (didn't work for me) from the following website:
-## http://www.reed.edu/data-at-reed/resources/R/reading_and_writing.html
-#pcrit_data <- do.call("rbind",
-#                      lapply(pcrit_file_list,
-#                             function(x)
-#                               read.csv(paste(pcrit_folder, x, sep = ''),
-#                               stringsAsFactors = FALSE)))
-
-pcrit_data
-
-# Extract the date from filename
-# See r4ds online e-book, Section 14.3: Matching patterns with regular expressions
-#str_extract(pcrit_data$file, "(\\d|\\d\\d)[A-Z][a-z][a-z]\\d\\d\\d\\d")[1:10] # extracts date from filename
-#str_extract(pcrit_data$file, "(\\d|\\d{2})[A-Z][a-z]{2}\\d{4}")[1:10] # same thing but shorter code
-
-pcrit_data$trial_date <- str_extract(pcrit_data$file, "(\\d|\\d{2})[A-Z][a-z]{2}\\d{4}")
-
-pcrit_data$trial_date <- case_when(
-  pcrit_data$trial_date == str_extract(pcrit_data$trial_date, "\\d{2}[A-Z][a-z]{2}\\d{4}") ~
-    str_c(
-      str_sub(pcrit_data$trial_date, start = 1, end = 2),
-      "-",
-      str_sub(pcrit_data$trial_date, start = 3, end = 5),
-      "-",
-      str_sub(pcrit_data$trial_date, start = 6, end = 9)
-    ),
-  pcrit_data$trial_date == str_extract(pcrit_data$trial_date, "\\d[A-Z][a-z]{2}\\d{4}") ~
-    str_c(
-      str_sub(pcrit_data$trial_date, start = 1, end = 1),
-      "-",
-      str_sub(pcrit_data$trial_date, start = 2, end = 4),
-      "-",
-      str_sub(pcrit_data$trial_date, start = 5, end = 8)
-    )
-)
-
-ex2 <- "20Nov2020"
-ex2_dash <- str_c(
-  str_sub(ex2, start = 1, end = 2),
-  "-",
-  str_sub(ex2, start = 3, end = 5),
-  "-",
-  str_sub(ex2, start = 6, end = 9)
-)
-
-
-# Extract the probe from filename
-str_extract(pcrit_data$file, "NFB00[0-9]{2}")[1:10]
-
-pcrit_data$probe <- str_extract(pcrit_data$file, "NFB00[0-9]{2}")
-pcrit_data
-
-# Extract the spps from filename
-str_extract(pcrit_data$file, "[A-Z]{4}")[1:10]
-
-pcrit_data$spps <- str_extract(pcrit_data$file, "[A-Z]{4}")
-pcrit_data$spps <- tolower(pcrit_data$spps) ## Convert spps names "to lower" case letters
-
-# Extract the temperature from filename
-str_extract(pcrit_data$file, "\\s[0-9]{2}")[1:10]
-
-pcrit_data$temp_c <- str_extract(pcrit_data$file, "\\s[0-9]{2}")
-pcrit_data$temp_c <- as.numeric(str_extract(pcrit_data$temp_c, "[0-9]{2}"))
-
-pcrit_data <- pcrit_data %>%
-  mutate(species = if_else(spps=="olma","Oligocottus_maculosus",
-                           if_else(spps=="scma", "Scorpaenichthys_marmoratus",
-                                   if_else(spps=="blci", "Blepsias_cirrhosus",
-                                           if_else(spps=="enbi", "Enophrys_bison",
-                                                   if_else(spps=="hehe", "Hemilepidotus_hemilepidotus",
-                                                           if_else(spps=="arla", "Artedius_lateralis",
-                                                                   if_else(spps=="arha", "Artedius_harringtoni",
-                                                                           if_else(spps=="arfe", "Artedius_fenestralis",
-                                                                                   "Clinocottus_globiceps")))))))))
-
 ## Open ct_max data and correct raw loe temperatures
 # NOTE! I don't have CTmax data for BLCI
 #setwd("C:/Users/derek/Documents/Metabolic-rate-analyses")
@@ -149,33 +36,15 @@ ct_max_data_spps_summary <- ct_max_df %>%
 #######################
 #######################                        
 
-mo2_data
-pcrit_data
 pcrit_smr_data_summary
-ct_max_data
 ct_max_data_spps_summary
 
-## SMR allometry, with species-specific linear models including at all temperatures
-# Colours = species
-ggplot(pcrit_smr_data_summary, aes(x = mass.g, y = smr.raw, colour = spps)) +
-  geom_point()
 
-ggplot(pcrit_smr_data_summary, aes(x = mass.g, y = log(smr.raw), colour = spps)) +
-  geom_point()
-
-ggplot(pcrit_smr_data_summary, aes(x = log(mass.g), y = log(smr.raw), colour = spps, group = spps)) +
-  geom_point() +
-  stat_smooth(method = "lm")
-
-ggplot(pcrit_smr_data_summary, aes(x = log(mass.g), y = log(smr.raw), colour = spps, group = spps)) +
-  stat_smooth(method = "lm")
-
-
-## ***************************************************************
+## *******************************************************************
 ##
-##    Linear models and AOVs on scaling of body mass and smr/pcrit
+##  Body mass VS smr/Pcrit:  Linear models and AOVs
 ##
-## ***************************************************************
+## *******************************************************************
 
 lm_scaling_smr_pcrit <- pcrit_smr_data_summary %>%
   group_by(species) %>%
@@ -193,5 +62,226 @@ lm_scaling_smr_pcrit <- pcrit_smr_data_summary %>%
          tidy_pcrit_aov = aov_scaling_mod_pcrit %>% purrr::map(broom::tidy),
          tidy_pcrit_lm = spps_scaling_mod_pcrit %>% purrr::map(broom::tidy),
          p_val_smr_aov = tidy_smr_aov %>% purrr::map_dbl(c(5,2)),
-         p_val_pcrit_aov = tidy_pcrit_aov %>% purrr::map_dbl(c(5,2)))
+         p_val_pcrit_aov = tidy_pcrit_aov %>% purrr::map_dbl(c(5,2)),
+         slope_smr = tidy_smr_lm %>% purrr::map_dbl(c(2,2)))
 
+## Adjust smr for body mass effects on SMR:
+
+mass_corr_smr_pcrit_data <- 
+  lm_scaling_smr_pcrit %>%
+  dplyr::select(species, data, median_mass, mean_mass, range_mass, range_fold_mass, 
+                p_val_smr_aov, slope_smr) %>%
+  unnest() %>%
+  mutate(smr.mass.corr = if_else(p_val_smr_aov < 0.05,
+                                 smr.raw*exp(slope_smr*log(mean_mass/mass.g)),
+                                 smr.raw),
+         smr.mass.corr.ms = if_else(p_val_smr_aov < 0.05,
+                                    smr.mass.corr/mean_mass,
+                                    smr.raw/mass.g))
+
+## In Deutsch et al., body size correction of "HYPOXIA TOLERANCE" eg Pcrit
+## was only done if body mass range was greater than 3 fold
+
+lm_scaling_smr_pcrit %>% 
+  mutate(range_bigger_3fold = if_else(range_fold_mass > 3, "yes", "no")) %>%
+  dplyr::select(species, p_val_smr_aov, p_val_pcrit_aov, range_mass, range_fold_mass)
+
+lm_scaling_smr_pcrit[,c("species","p_val_smr_aov","p_val_pcrit_aov")] %>%
+  mutate(sig_smr = if_else(p_val_smr_aov<0.05, "yes", "no"),
+         sig_pcrit = if_else(p_val_pcrit_aov<0.05, "yes", "no"))
+
+## Artedius harrringtoni is the only species with a significant effect
+## of body mass on Pcrit, but the fold-range of body masses is 2.39.
+
+summary(lm_scaling_smr_pcrit$spps_scaling_mod_pcrit[[3]])
+
+
+## ******************************************************************
+##
+## Figure 1:
+## Raw Pcrit vs temperature, every species in it's own plot
+##
+## ******************************************************************
+
+mass_corr_smr_pcrit_data %>%
+  group_by(species, temp) %>%
+  mutate(mean_pcrit = mean(pcrit.r),
+         mean_smr = mean(smr.mass.corr.ms),
+         species_plotting = case_when(species == "Oligocottus_maculosus" ~ "Oligocottus maculosus",
+                                      species == "Clinocottus_globiceps" ~ "Clinocottus globiceps",
+                                      species == "Artedius_harringtoni" ~ "Artedius harringtoni",
+                                      species == "Artedius_lateralis" ~ "Artedius lateralis",
+                                      species == "Artedius_fenestralis" ~ "Artedius fenestralis",
+                                      species == "Blepsias_cirrhosus" ~ "Blepsias cirrhosus",
+                                      species == "Enophrys_bison" ~ "Enophrys bison",
+                                      species == "Hemilepidotus_hemilepidotus" ~ "Hemilepidotus hemilepidotus",
+                                      species == "Scorpaenichthys_marmoratus" ~ "Scorpaenichthys marmoratus")) %>%
+  ggplot(aes(x = temp, y = pcrit.r)) +
+  geom_jitter(width = 0.15) +
+  geom_line(aes(x = temp, y = mean_pcrit), size = 1.25) +
+  scale_x_continuous(name = expression(paste("Temperature (",degree,C,")")),
+                     limits = c(9,23)) +
+  scale_y_continuous(name = expression(paste("P"["crit"]," (Torr)")),
+                     limits = c(0,100)) +
+  facet_wrap("species_plotting") +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = NA),
+        axis.title = element_text(size = rel(2)),
+        axis.text = element_text(size = rel(1.25), colour = "black"),
+        axis.line = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks = element_line(size = rel(1), colour = "black"),
+        strip.text = element_text(face = "bold", size = rel(1.5)))
+
+## ******************************************************************
+##
+## Figure 2:
+## Beta-Pcrit-low_temps vs Pcrit at 12 C
+##
+## ******************************************************************
+
+## Get linear models of Pcrit vs temperature:
+## 1) lm for between 12-16 degrees
+## 2) lm for between 16-20 degrees
+
+lm_pcrit_smr_temp <- mass_corr_smr_pcrit_data %>%
+  group_by(species) %>%
+  nest() %>%
+  mutate(data_low_temps = data %>% purrr::map(~ filter(., temp != 20)),
+         data_high_temps = data %>% purrr::map(~ filter(., temp !=12)),
+         data_mean_pcrit_12 = data %>% purrr::map(~ filter(., temp == 12)),
+         lm_pcrit_low_temps = data_low_temps %>% purrr::map(~ lm(pcrit.r ~ temp, data=.)),
+         lm_pcrit_high_temps = data_high_temps %>% purrr::map(~ lm(pcrit.r ~ temp, data=.)),
+         tidy_pcrit_low_temps = lm_pcrit_low_temps %>% purrr::map(broom::tidy),
+         tidy_pcrit_high_temps = lm_pcrit_high_temps %>% purrr::map(broom::tidy),
+         slope_pcrit_low_temps = tidy_pcrit_low_temps %>% purrr::map_dbl(c(2,2)),
+         slope_pcrit_high_temps = tidy_pcrit_high_temps %>% purrr::map_dbl(c(2,2)),
+         mean_pcrit_12 = data_mean_pcrit_12 %>% purrr::map_dbl(~ mean(.$pcrit.r)))
+
+## Beta pcrit: 12-16 degrees ~ Pcrit at 12 degrees
+lm_pcrit_smr_temp[,c(1,10,11,12)] %>%
+  ggplot(aes(x = mean_pcrit_12, y = slope_pcrit_low_temps)) +
+  geom_point(size = 5) +
+  stat_smooth(method = "lm", size = 2) +
+  scale_x_continuous(name = expression(paste("P"["crit"]," at 12",degree,C," (Torr)")),
+                     limits = c(20, 50)) +
+  scale_y_continuous(name = expression(paste(beta["P"]["crit"]," (Torr  ",degree,C^-1,")")),
+                     limits = c(-2,12)) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = NA),
+        axis.title = element_text(size = rel(2)),
+        axis.text = element_text(size = rel(1.5), colour = "black"),
+        axis.line = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks = element_line(size = rel(1), colour = "black"))
+
+## Beta pcrit: 16-20 degrees ~ Pcrit at 12 degrees
+lm_pcrit_smr_temp[,c(1,10,11,12)] %>%
+  ggplot(aes(x = mean_pcrit_12, y = slope_pcrit_high_temps)) +
+  geom_point(size = 5) +
+  stat_smooth(method = "lm", size = 2) +
+  scale_x_continuous(name = expression(paste("P"["crit"]," at 12",degree,C," (Torr)")),
+                     limits = c(20, 50)) +
+  scale_y_continuous(name = expression(paste(beta["P"]["crit"]," (Torr  ",degree,C^-1,")")),
+                     limits = (c(-2, 12))) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = NA),
+        axis.title = element_text(size = rel(2)),
+        axis.text = element_text(size = rel(1.5), colour = "black"),
+        axis.line = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks = element_line(size = rel(1), colour = "black"))
+
+## *******************************************
+##
+##  Plotting Pcrit against SMR
+##
+## *******************************************
+
+# Version 1: all species in one plot with species coded by colour
+mass_corr_smr_pcrit_data %>%
+  mutate(species_plotting = case_when(species == "Oligocottus_maculosus" ~ "Oligocottus maculosus",
+                                      species == "Clinocottus_globiceps" ~ "Clinocottus globiceps",
+                                      species == "Artedius_harringtoni" ~ "Artedius harringtoni",
+                                      species == "Artedius_lateralis" ~ "Artedius lateralis",
+                                      species == "Artedius_fenestralis" ~ "Artedius fenestralis",
+                                      species == "Blepsias_cirrhosus" ~ "Blepsias cirrhosus",
+                                      species == "Enophrys_bison" ~ "Enophrys bison",
+                                      species == "Hemilepidotus_hemilepidotus" ~ "Hemilepidotus hemilepidotus",
+                                      species == "Scorpaenichthys_marmoratus" ~ "Scorpaenichthys marmoratus")) %>%
+  ggplot(aes(x = smr.mass.corr.ms, y = pcrit.r, colour = species_plotting)) +
+  #geom_point() +
+  stat_smooth(method = "lm", se = FALSE, size = rel(2)) +
+  scale_x_continuous(name = expression(paste("Standard ",dot(M)[O][2]," (",mu,"mol",O[2]," g"^-1," hr"^-1)),
+                     limits = c(0,6)) +
+  scale_y_continuous(name = expression(paste("P"["crit"]," (Torr)")),
+                     limits = c(0,100)) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = NA),
+        axis.title = element_text(size = rel(2)),
+        axis.text = element_text(size = rel(1.5), colour = "black"),
+        axis.line = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks = element_line(size = rel(1), colour = "black"),
+        legend.title = element_text(size = rel(1.5)),
+        legend.text = element_text(size = rel(1.5))) +
+  labs(colour = "Species")
+
+# Version 2: each species in their own plot
+mass_corr_smr_pcrit_data %>%
+  mutate(species_plotting = case_when(species == "Oligocottus_maculosus" ~ "Oligocottus maculosus",
+                                      species == "Clinocottus_globiceps" ~ "Clinocottus globiceps",
+                                      species == "Artedius_harringtoni" ~ "Artedius harringtoni",
+                                      species == "Artedius_lateralis" ~ "Artedius lateralis",
+                                      species == "Artedius_fenestralis" ~ "Artedius fenestralis",
+                                      species == "Blepsias_cirrhosus" ~ "Blepsias cirrhosus",
+                                      species == "Enophrys_bison" ~ "Enophrys bison",
+                                      species == "Hemilepidotus_hemilepidotus" ~ "Hemilepidotus hemilepidotus",
+                                      species == "Scorpaenichthys_marmoratus" ~ "Scorpaenichthys marmoratus")) %>%
+  ggplot(aes(x = smr.mass.corr.ms, y = pcrit.r)) +
+  geom_point() +
+  stat_smooth(method = "lm") +
+  scale_x_continuous(name = expression(paste("Standard ",dot(M)[O][2]," (",mu,"mol",O[2]," g"^-1," hr"^-1)),
+                     limits = c(0,6)) +
+  scale_y_continuous(name = expression(paste("P"["crit"]," (Torr)")),
+                     limits = c(0,100)) +
+  facet_wrap("species_plotting") +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = NA),
+        axis.title = element_text(size = rel(2)),
+        axis.text = element_text(size = rel(1.5), colour = "black"),
+        axis.line = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks = element_line(size = rel(1), colour = "black"),
+        strip.text = element_text(face = "bold", size = rel(1.5)))
+
+## *******************************************
+##
+##  Plotting Delta(SMR:20-12) against species
+##
+## *******************************************
+
+delta_smr_temp_data <- 
+  mass_corr_smr_pcrit_data %>%
+  mutate(species_plotting = case_when(species == "Oligocottus_maculosus" ~ "Oligocottus maculosus",
+                                      species == "Clinocottus_globiceps" ~ "Clinocottus globiceps",
+                                      species == "Artedius_harringtoni" ~ "Artedius harringtoni",
+                                      species == "Artedius_lateralis" ~ "Artedius lateralis",
+                                      species == "Artedius_fenestralis" ~ "Artedius fenestralis",
+                                      species == "Blepsias_cirrhosus" ~ "Blepsias cirrhosus",
+                                      species == "Enophrys_bison" ~ "Enophrys bison",
+                                      species == "Hemilepidotus_hemilepidotus" ~ "Hemilepidotus hemilepidotus",
+                                      species == "Scorpaenichthys_marmoratus" ~ "Scorpaenichthys marmoratus")) %>%
+  group_by(species, temp) %>%
+  nest() %>%
+  mutate(avg_smr = data %>% purrr::map_dbl(~ mean(.$smr.mass.corr.ms)),
+         avg_pcrit = data %>% purrr::map_dbl(~ mean(.$pcrit.r))) %>%
+  filter(temp != 16) %>%
+  dplyr::select(-data) %>%
+  group_by(species) %>%
+  nest() %>%
+  mutate(delta_smr_12_data = data %>% purrr::map(~ filter(., temp == 12)),
+         delta_smr_20_data = data %>% purrr::map(~ filter(., temp == 20)),
+         delta_smr_12_20 = purrr::map2_dbl(delta_smr_20_data, delta_smr_12_data, ~ .x$avg_smr -.y$avg_smr))
+
+delta_smr_temp_data  
