@@ -1,6 +1,7 @@
 library(tidyverse)
 library(fishMO2)
 
+## Import MO2 data: each file is one trial, one fish. This may need to change later.
 md <- read_csv(file.choose()) %>%
   mutate(time_hrs = time_min/60,
          o2_kpa = o2_torr/0.133,
