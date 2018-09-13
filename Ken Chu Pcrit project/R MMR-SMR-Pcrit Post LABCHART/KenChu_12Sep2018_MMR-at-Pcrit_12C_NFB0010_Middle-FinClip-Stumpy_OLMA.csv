@@ -1,0 +1,4 @@
+experiment_period,time_min,o2_sat,o2_torr,umol_per_sec,sel_duration
+mmr_smr,3.1327,14.114,22.4446,-0.0016,390
+mmr_smr,14.9371,13.9294,22.1511,-0.0021,330
+mmr_smr,27.2428,13.7284,21.8315,-0.0021,450
