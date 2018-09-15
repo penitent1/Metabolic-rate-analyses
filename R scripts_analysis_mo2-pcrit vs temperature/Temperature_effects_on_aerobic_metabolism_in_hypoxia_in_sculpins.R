@@ -4,7 +4,7 @@ library(mclust)
 library(shape)
 library(StreamMetabolism)
 library(fishMO2)
-#library(cowplot)
+#library(cowplot) # Decided to manually adjust plots - too confusing with cowplot
 library(gridExtra)
 library(ape)
 library(caper)
@@ -15,6 +15,15 @@ library(nlme)
 library(broom)
 library(car)
 
+## *******************************
+##
+##    Importing data
+##
+## *******************************
+
+## ******************
+## Pcrit and SMR data
+## ******************
 setwd("C:/Users/derek/Documents/Metabolic-rate-analyses")
 pcrit_smr_data_summary <- read.csv("SculpinPcritData_ComparativeAnalysisFormat_withPcritSlopes.csv", stringsAsFactors = FALSE,
                                    strip.white = TRUE, na.strings = c("NA","."))
@@ -23,8 +32,13 @@ pcrit_smr_data_summary <- pcrit_smr_data_summary %>%
   mutate(smr.raw = smr.best.ms*mass.g) %>%
   filter(!is.na(pcrit.r), !is.na(smr.best.ms), trial.no==1)
 
-## Open ct_max data and correct raw loe temperatures
-# NOTE! I don't have CTmax data for BLCI
+## *****************************
+## Open ct_max data 
+## Correct raw loe temperatures
+##
+## *****************************
+
+#NOTE! I don't have CTmax data for BLCI
 #setwd("C:/Users/derek/Documents/Metabolic-rate-analyses")
 ct_max_df <- read_csv(file.choose()) %>% # Use data file that includes trials 1 and 2 for scma and enbi
   filter(species != "rhri") %>% ## Remove Grunt sculpins
@@ -34,13 +48,61 @@ ct_max_data_spps_summary <- ct_max_df %>%
   group_by(species) %>%
   dplyr::summarise(ct_max_avg = mean(loe_temp_corrected))
 
+## *****************************************************************
+##
+## Read sculpin phyologeny into R and prune for species in analysis
+##
+## *****************************************************************
+mandic_2013_tree <- read.nexus(file.choose())
+plot.phylo(mandic_2013_tree)
+is.ultrametric(mandic_2013_tree) ## It is not :(
+is.rooted(mandic_2013_tree) ## It's rooted!!
+
+mandic_2013_tree_no_out <- drop.tip(mandic_2013_tree, "Satyrichthys_amiscus")
+
+mandic_um <- chronopl(mandic_2013_tree_no_out, 1)
+## Fix tip names so they actually give species names
+mandic_um$tip.label[mandic_um$tip.label == "EF521369.1_Hemilepidotus_hemilep"] <- "Hemilepidotus_hemilepidotus"
+mandic_um$tip.label[mandic_um$tip.label == "Fluffy"] <- "Oligocottus_snyderi"
+mandic_um$tip.label[mandic_um$tip.label == "Great_Sculpin_AB114909"] <- "Myoxocephalus_polyacanthocephalus"
+mandic_um$tip.label[mandic_um$tip.label == "Mosshead"] <- "Clinocottus_globiceps"
+mandic_um$tip.label[mandic_um$tip.label == "Pacific_Staghorn"] <- "Leptocottus_armatus"
+mandic_um$tip.label[mandic_um$tip.label == "Padded"] <- "Artedius_fenestralis"
+mandic_um$tip.label[mandic_um$tip.label == "Prickly"] <- "Cottus_asper"
+mandic_um$tip.label[mandic_um$tip.label == "Tidepool"] <- "Oligocottus_maculosus"
+mandic_um$tip.label[mandic_um$tip.label == "Scalyhead"] <- "Artedius_harringtoni"
+mandic_um$tip.label[mandic_um$tip.label == "Shorthorn"] <- "Myoxocephalus_scorpius"
+mandic_um$tip.label[mandic_um$tip.label == "Silverspotted"] <- "Blepsias_cirrhosus"
+mandic_um$tip.label[mandic_um$tip.label == "Smoothhead"] <- "Artedius_lateralis"
+mandic_um$tip.label[mandic_um$tip.label == "Cabezon"] <- "Scorpaenichthys_marmoratus"
+mandic_um$tip.label[mandic_um$tip.label == "Buffalo"] <- "Enophrys_bison"
+mandic_um$tip.label[mandic_um$tip.label == "cottus_bairdii"] <- "Cottus_bairdii"
+
+plot.phylo(mandic_um) ## Ultrametric!
+
+## Drop species not in my study:
+keepers_mandic <- c("Oligocottus_maculosus",
+                    "Clinocottus_globiceps",
+                    "Artedius_harringtoni",
+                    "Artedius_lateralis",
+                    "Artedius_fenestralis", ## Ramon tree has typo here, should be "fenestralis"
+                    "Scorpaenichthys_marmoratus",
+                    "Enophrys_bison",
+                    "Hemilepidotus_hemilepidotus",
+                    "Blepsias_cirrhosus")
+mandic_phy <- drop.tip(mandic_um, setdiff(mandic_um$tip.label, keepers_mandic))
+plot.phylo(mandic_phy)
+mandic_ctmax_phy <- drop.tip(mandic_phy, "Blepsias_cirrhosus") # No CTmax for BLCI
+plot.phylo(mandic_ctmax_phy)
+
 #######################
 #######################                        
 
 pcrit_smr_data_summary
 ct_max_df
 ct_max_data_spps_summary
-
+plot.phylo(mandic_phy)
+plot.phylo(mandic_ctmax_phy)
 
 ## *******************************************************************
 ##
