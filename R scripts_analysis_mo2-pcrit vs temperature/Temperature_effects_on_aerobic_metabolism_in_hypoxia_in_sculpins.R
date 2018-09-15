@@ -331,7 +331,8 @@ mass_corr_smr_pcrit_data %>%
         strip.text = element_text(face = "bold", size = rel(1.25)))
 
 ## Linear model: Pcrit ~ SMR + species + SMR*species
-mass_corr_smr_pcrit_data %>%
+pcrit_smr_smr_spps_ancova <- 
+  mass_corr_smr_pcrit_data %>%
   lm(pcrit.r ~ smr.mass.corr.ms + species + smr.mass.corr.ms*species, data = .) %>%
   Anova(., type = "III")
 
@@ -426,9 +427,11 @@ ggplot(lm_pcrit_vs_smr_delta_smr_data, aes(x = delta_smr_12_20, y = delta_pcrit_
         axis.ticks = element_line(size = rel(3), colour = "black"))
 
 # Anova on Delta Pcrit ~ Delta SMR across the tested temperature range (12-20 degrees)
-lm_pcrit_vs_smr_delta_smr_data %>%
-  lm(delta_pcrit_12_20 ~ delta_smr_12_20, data = .) %>%
-  Anova(., type = "III")
+#lm_pcrit_vs_smr_delta_smr_data %>%
+#  lm(delta_pcrit_12_20 ~ delta_smr_12_20, data = .) %>%
+#  Anova(., type = "III")
+
+## >>>>> SEE analysis section at end of script for PGLS (caper) statistical analysis
 
 ## *******************************************
 ##
@@ -492,14 +495,14 @@ ct_max_df_no_enbi_out %>%
                                     colour = "black"),
         axis.ticks = element_line(size = rel(3), colour = "black"),
         axis.text.x = element_text(size = rel(1.25), 
-                                   angle = 25, 
+                                   angle = 20, 
                                    vjust = 1, hjust = 1,
                                    face = "bold",
                                    colour = "black"),
         axis.title.y = element_text(size = rel(2.5),
                                     hjust = 0.35,
                                     colour = "black"),
-        axis.text.y = element_text(size = rel(2.5),
+        axis.text.y = element_text(size = rel(2.25),
                                    colour = "black"))
 
 ## Plot Beta_Pcrit_low/high ~ CTmax
@@ -577,3 +580,469 @@ beta_pcrit_high_temp_ctmax_plot <-
 
 grid.arrange(beta_pcrit_low_temp_ctmax_plot, beta_pcrit_high_temp_ctmax_plot, ncol=2)
 # PNG exported: W = 1132 H = 654
+
+## **********************************************************
+##
+## PGLS models: Beta pcrit, CTmax, Pcrit_12, Delta_Pcrit/SMR
+##
+## **********************************************************
+
+## NOTE: Consider using MCMCglmm instead, should let me feed in RAW data
+## instead of 1 mean per species - See Vikram's phylo methods link
+
+## ***********************************
+## Beta Pcrit - low temps vs Pcrit_12
+## ***********************************
+
+## Using CAPER pacakge
+data_beta_pcrit12 <- 
+  lm_pcrit_smr_temp %>%
+  dplyr::select(species, slope_pcrit_low_temps, slope_pcrit_high_temps, mean_pcrit_12) %>%
+  as.data.frame()
+
+comp_data_beta_pcrit12_caper <- 
+  comparative.data(mandic_phy, data_beta_pcrit12,
+                   names.col = "species",
+                   vcv.dim = 2,warn.dropped = TRUE)
+
+# *************************************
+# OLS model: beta LOW temps ~ Pcrit_12
+ols_beta_low_temps_pcrit12_caper <- pgls(slope_pcrit_low_temps ~ mean_pcrit_12,
+                                         data = comp_data_beta_pcrit12_caper)
+summary(ols_beta_low_temps_pcrit12_caper)
+# PGLS model: with lambda estimated using ML
+pgls_beta_low_temps_pcrit12_caper <- pgls(slope_pcrit_low_temps ~ mean_pcrit_12,
+                                         data = comp_data_beta_pcrit12_caper,
+                                         lambda = "ML")
+summary(pgls_beta_low_temps_pcrit12_caper)
+lk_pgls_beta_low_temps_pcrit_12_caper <- pgls.profile(pgls_beta_low_temps_pcrit12_caper,
+                                                      which = "lambda")
+plot(lk_pgls_beta_low_temps_pcrit_12_caper) ## No peak but rises continuously to 0
+# PIC model: using caper's CRUNCH function
+pic_beta_low_temps_pcrit12_caper <- crunch(slope_pcrit_low_temps ~ mean_pcrit_12,
+                                           data = comp_data_beta_pcrit12_caper)
+summary(pic_beta_low_temps_pcrit12_caper)
+#
+# _____________________________________
+
+# *************************************
+# OLS model: beta HIGH temps ~ Pcrit_12
+ols_beta_high_temps_pcrit12_caper <- pgls(slope_pcrit_high_temps ~ mean_pcrit_12,
+                                         data = comp_data_beta_pcrit12_caper)
+summary(ols_beta_high_temps_pcrit12_caper)
+# PGLS model: with lambda estimated using ML
+pgls_beta_high_temps_pcrit12_caper <- pgls(slope_pcrit_high_temps ~ mean_pcrit_12,
+                                          data = comp_data_beta_pcrit12_caper,
+                                          lambda = "ML")
+summary(pgls_beta_high_temps_pcrit12_caper)
+lk_pgls_beta_high_temps_pcrit_12_caper <- pgls.profile(pgls_beta_high_temps_pcrit12_caper,
+                                                      which = "lambda")
+plot(lk_pgls_beta_high_temps_pcrit_12_caper) ## No peak but rises continuously to 0
+# PIC model: using caper's CRUNCH function
+pic_beta_high_temps_pcrit12_caper <- crunch(slope_pcrit_high_temps ~ mean_pcrit_12,
+                                           data = comp_data_beta_pcrit12_caper)
+summary(pic_beta_high_temps_pcrit12_caper)
+#
+# _____________________________________
+
+# *************************************
+# Delta Pcrit_12-20 ~ Delta SMR_12-20
+# *************************************
+
+data_delta_pcrit_smr <- lm_pcrit_vs_smr_delta_smr_data %>% as.data.frame()
+
+comp_data_delta_pcrit_smr_caper <- 
+  comparative.data(mandic_phy, data_delta_pcrit_smr,
+                   names.col = "species",
+                   vcv.dim = 2,warn.dropped = TRUE)
+
+# *************************************
+# OLS model: delta_pcrit ~ delta_smr
+ols_delta_pcrit_delta_smr_caper <- pgls(delta_pcrit_12_20 ~ delta_smr_12_20,
+                                         data = comp_data_delta_pcrit_smr_caper)
+summary(ols_delta_pcrit_delta_smr_caper)
+# PGLS model: with lambda estimated using ML
+pgls_delta_pcrit_delta_smr_caper <- pgls(delta_pcrit_12_20 ~ delta_smr_12_20,
+                                          data = comp_data_delta_pcrit_smr_caper,
+                                          lambda = "ML")
+summary(pgls_delta_pcrit_delta_smr_caper)
+lk_pgls_delta_pcrit_delta_smr_caper <- pgls.profile(pgls_delta_pcrit_delta_smr_caper,
+                                                      which = "lambda")
+plot(lk_pgls_delta_pcrit_delta_smr_caper) ## No peak but rises continuously to 0
+# PIC model: using caper's CRUNCH function
+pic_delta_pcrit_delta_smr_caper <- crunch(delta_pcrit_12_20 ~ delta_smr_12_20,
+                                           data = comp_data_delta_pcrit_smr_caper)
+summary(pic_delta_pcrit_delta_smr_caper)
+#
+# _____________________________________
+
+# **********************************************
+# Comparative dataframe: beta LOW temps ~ CTmax
+
+data_beta_ctmax <- 
+  lm_pcrit_smr_temp %>%
+  filter(species != "Blepsias_cirrhosus") %>%
+  dplyr::select(species, slope_pcrit_low_temps, slope_pcrit_high_temps, mean_pcrit_12) %>%
+  mutate(mean_ct_max = case_when(species=="Oligocottus_maculosus"~29.0,
+                                 species=="Clinocottus_globiceps"~27.7,
+                                 species=="Artedius_harringtoni"~24.7,
+                                 species=="Artedius_lateralis"~26.8,
+                                 species=="Artedius_fenestralis"~26.1,
+                                 species=="Hemilepidotus_hemilepidotus"~27.3,
+                                 species=="Scorpaenichthys_marmoratus"~27.1,
+                                 species=="Enophrys_bison"~21.6)) %>%
+  as.data.frame()
+
+comp_data_beta_ctmax_caper <- 
+  comparative.data(mandic_ctmax_phy, data_beta_ctmax,
+                   names.col = "species",
+                   vcv.dim = 2,warn.dropped = TRUE)
+
+# *************************************
+# OLS model: beta LOW temps ~ CTmax
+ols_beta_low_temps_ctmax_caper <- pgls(slope_pcrit_low_temps ~ mean_ct_max,
+                                          data = comp_data_beta_ctmax_caper)
+summary(ols_beta_low_temps_ctmax_caper)
+# PGLS model: with lambda estimated using ML
+pgls_beta_low_temps_ct_max_caper <- pgls(slope_pcrit_low_temps ~ mean_ct_max,
+                                           data = comp_data_beta_ctmax_caper,
+                                           lambda = "ML")
+summary(pgls_beta_low_temps_ct_max_caper)
+lk_pgls_beta_low_temps_ct_max_caper <- pgls.profile(pgls_beta_low_temps_ct_max_caper,
+                                                       which = "lambda")
+plot(lk_pgls_beta_low_temps_ct_max_caper) ## No peak but rises continuously to 0
+# PIC model: using caper's CRUNCH function
+pic_beta_low_temps_ct_max_caper <- crunch(slope_pcrit_low_temps ~ mean_ct_max,
+                                            data = comp_data_beta_ctmax_caper)
+summary(pic_beta_low_temps_ct_max_caper)
+#
+# _____________________________________
+
+# *************************************
+# OLS model: beta HIGH  temps ~ CTmax
+ols_beta_high_temps_ctmax_caper <- pgls(slope_pcrit_high_temps ~ mean_ct_max,
+                                       data = comp_data_beta_ctmax_caper)
+summary(ols_beta_high_temps_ctmax_caper)
+# PGLS model: with lambda estimated using ML
+pgls_beta_high_temps_ct_max_caper <- pgls(slope_pcrit_high_temps ~ mean_ct_max,
+                                         data = comp_data_beta_ctmax_caper,
+                                         lambda = "ML")
+summary(pgls_beta_high_temps_ct_max_caper)
+lk_pgls_beta_high_temps_ct_max_caper <- pgls.profile(pgls_beta_high_temps_ct_max_caper,
+                                                     "lambda")
+plot(lk_pgls_beta_high_temps_ct_max_caper) ## No peak but rises continuously to 0
+# PIC model: using caper's CRUNCH function
+pic_beta_high_temps_ct_max_caper <- crunch(slope_pcrit_high_temps ~ mean_ct_max,
+                                          data = comp_data_beta_ctmax_caper)
+summary(pic_beta_high_temps_ct_max_caper)
+
+## Compare models using AIC (lower is beter)
+AIC(ols_beta_high_temps_ctmax_caper)
+AIC(pgls_beta_high_temps_ct_max_caper)
+
+## Get the AIC weights
+## Create a named vector
+aic_all <- c(AIC(ols_beta_low_temps_pcrit12),
+             AIC(pgls_bm_beta_low_temps_pcrit12))
+names(aic_all) <- c("ols", "bm", "lambda")
+aicw(aic_all)
+
+
+#
+# _____________________________________
+
+
+
+
+
+
+## *******************
+##
+## Using APE package
+##
+## *******************
+
+
+## Regular OLS
+ols_beta_low_temps_pcrit12 <- 
+  lm_pcrit_smr_temp %>%
+  dplyr::select(species, slope_pcrit_low_temps, mean_pcrit_12) %>%
+  column_to_rownames(var = "species") %>%
+  gls(slope_pcrit_low_temps ~ mean_pcrit_12,
+      data = .,
+      method = "ML")
+
+## PGLS assuming a Brownian correlation
+pgls_bm_beta_low_temps_pcrit12 <- 
+  lm_pcrit_smr_temp %>%
+  dplyr::select(species, slope_pcrit_low_temps, mean_pcrit_12) %>%
+  column_to_rownames(var = "species") %>%
+  gls(slope_pcrit_low_temps ~ mean_pcrit_12,
+      data=.,
+      correlation=corBrownian(phy=mandic_phy),
+      method="ML")
+
+## PGLS assuming a Pagel's lambda correlation
+# MODEL DOES NOT COVERGE when starting value of lambda = 1:
+# Error in eigen(val, only.values = TRUE) : 
+# infinite or missing values in 'x'
+# Converged when I specified value = 0, or value = 0.5
+# both gave same model (e.g. parameters, log-likelihood, et cet)
+pgls_lambda_beta_low_temps_pcrit12 <- 
+  lm_pcrit_smr_temp %>%
+  dplyr::select(species, slope_pcrit_low_temps, mean_pcrit_12) %>%
+  column_to_rownames(var = "species") %>%
+  gls(slope_pcrit_low_temps ~ mean_pcrit_12,
+      data=.,
+      correlation=corPagel(value=1,phy=mandic_phy,fixed=TRUE),
+      method="ML")
+
+## Compare models using AIC (lower is beter)
+AIC(ols_beta_low_temps_pcrit12)
+AIC(pgls_bm_beta_low_temps_pcrit12)
+AIC(pgls_lambda_beta_low_temps_pcrit12)
+
+## Get the AIC weights
+## Create a named vector
+aic_all <- c(AIC(ols_beta_low_temps_pcrit12),
+             AIC(pgls_bm_beta_low_temps_pcrit12),
+             AIC(pgls_lambda_beta_low_temps_pcrit12))
+names(aic_all) <- c("ols", "bm", "lambda")
+aicw(aic_all)
+## More weight on bm BUT delta AIC < 2 for all, 
+## so no real difference bw models
+
+## Using a likelihood ratio test to evaluate whether pgls is justified
+anova(ols_beta_low_temps_pcrit12, pgls_lambda_beta_low_temps_pcrit12)
+
+plot(ols_beta_low_temps_pcrit12)
+summary(ols_beta_low_temps_pcrit12)
+anova(ols_beta_low_temps_pcrit12)
+
+
+## ************************************
+## Beta Pcrit - high temps vs Pcrit_12
+## ************************************
+
+## Regular OLS
+ols_beta_high_temps_pcrit12 <- 
+  lm_pcrit_smr_temp %>%
+  dplyr::select(species, slope_pcrit_high_temps, mean_pcrit_12) %>%
+  column_to_rownames(var = "species") %>%
+  gls(slope_pcrit_high_temps ~ mean_pcrit_12,
+      data = .,
+      method = "ML")
+
+## PGLS assuming a Brownian correlation
+pgls_bm_beta_high_temps_pcrit12 <- 
+  lm_pcrit_smr_temp %>%
+  dplyr::select(species, slope_pcrit_high_temps, mean_pcrit_12) %>%
+  column_to_rownames(var = "species") %>%
+  gls(slope_pcrit_high_temps ~ mean_pcrit_12,
+      data=.,
+      correlation=corBrownian(phy=mandic_phy),
+      method="ML")
+
+## PGLS assuming a Pagel's lambda correlation
+pgls_lambda_beta_high_temps_pcrit12 <- 
+  lm_pcrit_smr_temp %>%
+  dplyr::select(species, slope_pcrit_high_temps, mean_pcrit_12) %>%
+  column_to_rownames(var = "species") %>%
+  gls(slope_pcrit_high_temps ~ mean_pcrit_12,
+      data=.,
+      correlation=corPagel(value=1,phy=mandic_phy,fixed=FALSE),
+      method="ML")
+
+## Compare models using AIC (lower is beter)
+AIC(ols_beta_high_temps_pcrit12)
+AIC(pgls_bm_beta_high_temps_pcrit12)
+AIC(pgls_lambda_beta_high_temps_pcrit12)
+
+## Get the AIC weights
+## Create a named vector
+aic_all <- c(AIC(ols_beta_high_temps_pcrit12),
+             AIC(pgls_bm_beta_high_temps_pcrit12),
+             AIC(pgls_lambda_beta_high_temps_pcrit12))
+names(aic_all) <- c("ols", "bm", "lambda")
+aicw(aic_all)
+## More weight on bm BUT delta AIC < 2 for all, 
+## so no real difference bw models
+
+## Using a likelihood ratio test to evaluate whether pgls is justified
+anova(ols_beta_high_temps_pcrit12, pgls_lambda_beta_high_temps_pcrit12)
+
+plot(ols_beta_high_temps_pcrit12)
+summary(ols_beta_high_temps_pcrit12)
+anova(ols_beta_high_temps_pcrit12)
+
+## ************************************
+## Delta Pcrit ~ Delta SMR
+## ************************************
+
+## Regular OLS
+ols_delta_pcrit_delta_smr_gls <- 
+  lm_pcrit_vs_smr_delta_smr_data %>%
+  column_to_rownames(var = "species") %>%
+  gls(delta_pcrit_12_20 ~ delta_smr_12_20,
+      data = .,
+      method = "ML")
+
+## PGLS assuming a Brownian correlation
+pgls_bm_delta_pcrit_delta_smr_gls <- 
+  lm_pcrit_vs_smr_delta_smr_data %>%
+  column_to_rownames(var = "species") %>%
+  gls(delta_pcrit_12_20 ~ delta_smr_12_20,
+      data=.,
+      correlation=corBrownian(phy=mandic_phy),
+      method="ML")
+
+## PGLS assuming a Pagel's lambda correlation
+pgls_delta_pcrit_delta_smr_gls <- 
+  lm_pcrit_vs_smr_delta_smr_data %>%
+  column_to_rownames(var = "species") %>%
+  gls(delta_pcrit_12_20 ~ delta_smr_12_20,
+      data=.,
+      correlation=corPagel(value=1,phy=mandic_phy,fixed=TRUE),
+      method="ML")
+
+## Compare models using AIC (lower is beter)
+AIC(ols_delta_pcrit_delta_smr_gls)
+AIC(pgls_bm_delta_pcrit_delta_smr_gls)
+AIC(pgls_delta_pcrit_delta_smr_gls)
+
+## Get the AIC weights
+## Create a named vector
+aic_all <- c(AIC(ols_delta_pcrit_delta_smr_gls),
+             AIC(pgls_bm_delta_pcrit_delta_smr_gls),
+             AIC(pgls_delta_pcrit_delta_smr_gls))
+names(aic_all) <- c("ols", "bm", "lambda")
+aicw(aic_all)
+## More weight on bm BUT delta AIC < 2 for all, 
+## so no real difference bw models
+
+## Using a likelihood ratio test to evaluate whether pgls is justified
+anova(ols_delta_pcrit_delta_smr_gls, pgls_delta_pcrit_delta_smr_gls)
+
+plot(ols_delta_pcrit_delta_smr_gls)
+summary(ols_delta_pcrit_delta_smr_gls)
+anova(ols_delta_pcrit_delta_smr_gls)
+
+## ************************************
+## Beta Pcrit - low temps vs CT_max
+## ************************************
+
+data_beta_ctmax_gls <- 
+  lm_pcrit_smr_temp %>%
+  filter(species != "Blepsias_cirrhosus") %>%
+  dplyr::select(species, slope_pcrit_low_temps, slope_pcrit_high_temps, mean_pcrit_12) %>%
+  mutate(mean_ct_max = case_when(species=="Oligocottus_maculosus"~29.0,
+                                 species=="Clinocottus_globiceps"~27.7,
+                                 species=="Artedius_harringtoni"~24.7,
+                                 species=="Artedius_lateralis"~26.8,
+                                 species=="Artedius_fenestralis"~26.1,
+                                 species=="Hemilepidotus_hemilepidotus"~27.3,
+                                 species=="Scorpaenichthys_marmoratus"~27.1,
+                                 species=="Enophrys_bison"~21.6)) %>%
+  column_to_rownames(var = "species")
+
+## Regular OLS
+ols_beta_low_temps_ctmax_gls <- gls(slope_pcrit_low_temps ~ mean_ct_max,
+                                  data = data_beta_ctmax_gls,
+                                  method = "ML")
+
+## PGLS assuming a Brownian correlation
+pgls_bm_beta_low_temps_ctmax_gls <- gls(slope_pcrit_low_temps ~ mean_ct_max,
+                                      data=data_beta_ctmax_gls,
+                                      correlation=corBrownian(phy=mandic_ctmax_phy),
+                                      method="ML")
+
+## PGLS assuming a Pagel's lambda correlation
+## Model does not converge with `fixed=FALSE` - had to fix `value`
+pgls_lambda_beta_low_temps_ctmax_gls <- gls(slope_pcrit_low_temps ~ mean_ct_max,
+      data=data_beta_ctmax_gls,
+      correlation=corPagel(value=0.5,phy=mandic_ctmax_phy,fixed=TRUE),
+      method="ML")
+
+## Compare models using AIC (lower is beter)
+AIC(ols_beta_low_temps_ctmax_gls)
+AIC(pgls_bm_beta_low_temps_ctmax_gls)
+AIC(pgls_lambda_beta_low_temps_ctmax_gls)
+
+## Get the AIC weights
+## Create a named vector
+aic_all <- c(AIC(ols_beta_low_temps_ctmax_gls),
+             AIC(pgls_bm_beta_low_temps_ctmax_gls),
+             AIC(pgls_lambda_beta_low_temps_ctmax_gls))
+names(aic_all) <- c("ols", "bm", "lambda")
+aicw(aic_all)
+## More weight on bm BUT delta AIC < 2 for all, 
+## so no real difference bw models
+
+## Using a likelihood ratio test to evaluate whether pgls is justified
+anova(ols_beta_low_temps_ctmax_gls, pgls_lambda_beta_low_temps_ctmax_gls)
+
+plot(ols_beta_low_temps_ctmax_gls)
+summary(ols_beta_low_temps_ctmax_gls)
+anova(ols_beta_low_temps_ctmax_gls)
+
+## ************************************
+## Beta Pcrit - high temps vs CT_max
+## ************************************
+
+## Regular OLS
+ols_beta_high_temps_ctmax_gls <- gls(slope_pcrit_high_temps ~ mean_ct_max,
+                                    data = data_beta_ctmax_gls,
+                                    method = "ML")
+
+## PGLS assuming a Brownian correlation
+pgls_bm_beta_high_temps_ctmax_gls <- gls(slope_pcrit_high_temps ~ mean_ct_max,
+                                        data=data_beta_ctmax_gls,
+                                        correlation=corBrownian(phy=mandic_ctmax_phy),
+                                        method="ML")
+
+## PGLS assuming a Pagel's lambda correlation
+## Model does not converge with `fixed=FALSE` - had to fix `value`
+pgls_lambda_beta_high_temps_ctmax_gls <- gls(slope_pcrit_high_temps ~ mean_ct_max,
+                                            data=data_beta_ctmax_gls,
+                                            correlation=corPagel(value=0.75,
+                                                                 phy=mandic_ctmax_phy,
+                                                                 fixed=FALSE),
+                                            method="ML")
+
+## Compare models using AIC (lower is beter)
+AIC(ols_beta_high_temps_ctmax_gls)
+AIC(pgls_bm_beta_high_temps_ctmax_gls)
+AIC(pgls_lambda_beta_high_temps_ctmax_gls)
+
+## Get the AIC weights
+## Create a named vector
+aic_all <- c(AIC(ols_beta_high_temps_ctmax_gls),
+             AIC(pgls_bm_beta_high_temps_ctmax_gls),
+             AIC(pgls_lambda_beta_high_temps_ctmax_gls))
+names(aic_all) <- c("ols", "bm", "lambda")
+aicw(aic_all)
+## More weight on bm BUT delta AIC < 2 for all, 
+## so no real difference bw models
+
+## Using a likelihood ratio test to evaluate whether pgls is justified
+anova(ols_beta_high_temps_ctmax_gls, pgls_lambda_beta_high_temps_ctmax_gls)
+
+plot(ols_beta_high_temps_ctmax_gls)
+summary(ols_beta_high_temps_ctmax_gls)
+anova(ols_beta_high_temps_ctmax_gls)
+
+# Plot of log likelihood of Pagels Lambda
+intervals(pgls_lambda_beta_high_temps_ctmax_gls,
+          which = "var-cov")
+lambda <- seq(0,1, length.out = 500)
+lik <- sapply(lambda, function(lambda) logLik(gls(slope_pcrit_high_temps ~ mean_ct_max,
+                                                  correlation = 
+                                                    corPagel(value = lambda, 
+                                                             phy = mandic_ctmax_phy, 
+                                                             fixed = TRUE),
+                                                  data = data_beta_ctmax_gls)))
+plot(lik ~ lambda, type = "l", 
+     main = expression(paste("Likelihood Plot for ",lambda)), 
+     ylab = "Log Likelihood", 
+     xlab = expression(lambda))
+abline(v = pgls_lambda_beta_high_temps_ctmax_gls$modelStruct, col = "red")
