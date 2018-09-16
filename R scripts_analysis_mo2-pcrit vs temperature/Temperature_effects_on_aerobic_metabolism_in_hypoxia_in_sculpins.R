@@ -39,8 +39,8 @@ pcrit_smr_data_summary <- pcrit_smr_data_summary %>%
 ## *****************************
 
 #NOTE! I don't have CTmax data for BLCI
-#setwd("C:/Users/derek/Documents/Metabolic-rate-analyses")
-ct_max_df <- read_csv(file.choose()) %>% # Use data file that includes trials 1 and 2 for scma and enbi
+setwd("C:/Users/derek/Documents/Metabolic-rate-analyses/CT max data")
+ct_max_df <- read_csv("CT_max_sculpins_scma_enbi_BOTH_trials_1_2_all_data_included.csv") %>% # Use data file that includes trials 1 and 2 for scma and enbi
   filter(species != "rhri") %>% ## Remove Grunt sculpins
   mutate(loe_temp_corrected = (loe_temp - 0.2909)/0.9857) ## Correcting for calibration; based on test of temp probe labelled "2"
 
@@ -53,7 +53,8 @@ ct_max_data_spps_summary <- ct_max_df %>%
 ## Read sculpin phyologeny into R and prune for species in analysis
 ##
 ## *****************************************************************
-mandic_2013_tree <- read.nexus(file.choose())
+setwd("C:/Users/derek/Documents/Metabolic-rate-analyses/Phylogeny files")
+mandic_2013_tree <- read.nexus("Oct62009_Likelihood w branchlengths.tre")
 plot.phylo(mandic_2013_tree)
 is.ultrametric(mandic_2013_tree) ## It is not :(
 is.rooted(mandic_2013_tree) ## It's rooted!!
