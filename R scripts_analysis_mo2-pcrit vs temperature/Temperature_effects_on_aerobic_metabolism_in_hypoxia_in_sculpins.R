@@ -748,13 +748,8 @@ aic_all <- c(AIC(ols_beta_low_temps_pcrit12),
 names(aic_all) <- c("ols", "bm", "lambda")
 aicw(aic_all)
 
-
 #
 # _____________________________________
-
-
-
-
 
 
 ## *******************
@@ -762,24 +757,18 @@ aicw(aic_all)
 ## Using APE package
 ##
 ## *******************
-
+data_beta_pcrit12_gls <- lm_pcrit_smr_temp %>%
+  dplyr::select(species, slope_pcrit_low_temps, slope_pcrit_high_temps, mean_pcrit_12) %>%
+  column_to_rownames(var = "species")
 
 ## Regular OLS
-ols_beta_low_temps_pcrit12 <- 
-  lm_pcrit_smr_temp %>%
-  dplyr::select(species, slope_pcrit_low_temps, mean_pcrit_12) %>%
-  column_to_rownames(var = "species") %>%
-  gls(slope_pcrit_low_temps ~ mean_pcrit_12,
-      data = .,
+ols_beta_low_temps_pcrit12 <- gls(slope_pcrit_low_temps ~ mean_pcrit_12,
+      data = data_beta_pcrit12_gls,
       method = "ML")
 
 ## PGLS assuming a Brownian correlation
-pgls_bm_beta_low_temps_pcrit12 <- 
-  lm_pcrit_smr_temp %>%
-  dplyr::select(species, slope_pcrit_low_temps, mean_pcrit_12) %>%
-  column_to_rownames(var = "species") %>%
-  gls(slope_pcrit_low_temps ~ mean_pcrit_12,
-      data=.,
+pgls_bm_beta_low_temps_pcrit12 <- gls(slope_pcrit_low_temps ~ mean_pcrit_12,
+      data=data_beta_pcrit12_gls,
       correlation=corBrownian(phy=mandic_phy),
       method="ML")
 
@@ -789,12 +778,8 @@ pgls_bm_beta_low_temps_pcrit12 <-
 # infinite or missing values in 'x'
 # Converged when I specified value = 0, or value = 0.5
 # both gave same model (e.g. parameters, log-likelihood, et cet)
-pgls_lambda_beta_low_temps_pcrit12 <- 
-  lm_pcrit_smr_temp %>%
-  dplyr::select(species, slope_pcrit_low_temps, mean_pcrit_12) %>%
-  column_to_rownames(var = "species") %>%
-  gls(slope_pcrit_low_temps ~ mean_pcrit_12,
-      data=.,
+pgls_lambda_beta_low_temps_pcrit12 <- gls(slope_pcrit_low_temps ~ mean_pcrit_12,
+      data=data_beta_pcrit12_gls,
       correlation=corPagel(value=1,phy=mandic_phy,fixed=TRUE),
       method="ML")
 
@@ -818,41 +803,45 @@ anova(ols_beta_low_temps_pcrit12, pgls_lambda_beta_low_temps_pcrit12)
 
 plot(ols_beta_low_temps_pcrit12)
 summary(ols_beta_low_temps_pcrit12)
-anova(ols_beta_low_temps_pcrit12)
-
+anova(ols_beta_low_temps_pcrit12) ## 
 
 ## ************************************
 ## Beta Pcrit - high temps vs Pcrit_12
 ## ************************************
 
 ## Regular OLS
-ols_beta_high_temps_pcrit12 <- 
-  lm_pcrit_smr_temp %>%
-  dplyr::select(species, slope_pcrit_high_temps, mean_pcrit_12) %>%
-  column_to_rownames(var = "species") %>%
-  gls(slope_pcrit_high_temps ~ mean_pcrit_12,
-      data = .,
+ols_beta_high_temps_pcrit12 <- gls(slope_pcrit_high_temps ~ mean_pcrit_12,
+      data = data_beta_pcrit12_gls,
       method = "ML")
 
 ## PGLS assuming a Brownian correlation
-pgls_bm_beta_high_temps_pcrit12 <- 
-  lm_pcrit_smr_temp %>%
-  dplyr::select(species, slope_pcrit_high_temps, mean_pcrit_12) %>%
-  column_to_rownames(var = "species") %>%
-  gls(slope_pcrit_high_temps ~ mean_pcrit_12,
-      data=.,
+pgls_bm_beta_high_temps_pcrit12 <- gls(slope_pcrit_high_temps ~ mean_pcrit_12,
+      data=data_beta_pcrit12_gls,
       correlation=corBrownian(phy=mandic_phy),
       method="ML")
 
 ## PGLS assuming a Pagel's lambda correlation
-pgls_lambda_beta_high_temps_pcrit12 <- 
-  lm_pcrit_smr_temp %>%
-  dplyr::select(species, slope_pcrit_high_temps, mean_pcrit_12) %>%
-  column_to_rownames(var = "species") %>%
-  gls(slope_pcrit_high_temps ~ mean_pcrit_12,
-      data=.,
+pgls_lambda_beta_high_temps_pcrit12 <- gls(slope_pcrit_high_temps ~ mean_pcrit_12,
+      data=data_beta_pcrit12_gls,
       correlation=corPagel(value=1,phy=mandic_phy,fixed=FALSE),
       method="ML")
+
+# Plot of log likelihood of Pagels Lambda
+nlme::intervals(pgls_lambda_beta_high_temps_pcrit12)#,
+          #which = "var-cov")
+lambda <- seq(0,1, length.out = 500)
+lik <- sapply(lambda, 
+              function(lambda) logLik(gls(slope_pcrit_high_temps ~ mean_pcrit_12,
+                                                  correlation = 
+                                                    corPagel(value = lambda, 
+                                                             phy = mandic_phy, 
+                                                             fixed = TRUE),
+                                                  data = data_beta_pcrit12_gls)))
+plot(lik ~ lambda, type = "l", 
+     main = expression(paste("Likelihood Plot for ",lambda)), 
+     ylab = "Log Likelihood", 
+     xlab = expression(lambda))
+abline(v = pgls_lambda_beta_high_temps_pcrit12$modelStruct, col = "red")
 
 ## Compare models using AIC (lower is beter)
 AIC(ols_beta_high_temps_pcrit12)
@@ -871,6 +860,9 @@ aicw(aic_all)
 
 ## Using a likelihood ratio test to evaluate whether pgls is justified
 anova(ols_beta_high_temps_pcrit12, pgls_lambda_beta_high_temps_pcrit12)
+
+summary(pgls_lambda_beta_high_temps_pcrit12)
+plot(pgls_lambda_beta_high_temps_pcrit12)
 
 plot(ols_beta_high_temps_pcrit12)
 summary(ols_beta_high_temps_pcrit12)
@@ -986,6 +978,7 @@ plot(ols_beta_low_temps_ctmax_gls)
 summary(ols_beta_low_temps_ctmax_gls)
 anova(ols_beta_low_temps_ctmax_gls)
 
+
 ## ************************************
 ## Beta Pcrit - high temps vs CT_max
 ## ************************************
@@ -1005,7 +998,7 @@ pgls_bm_beta_high_temps_ctmax_gls <- gls(slope_pcrit_high_temps ~ mean_ct_max,
 ## Model does not converge with `fixed=FALSE` - had to fix `value`
 pgls_lambda_beta_high_temps_ctmax_gls <- gls(slope_pcrit_high_temps ~ mean_ct_max,
                                             data=data_beta_ctmax_gls,
-                                            correlation=corPagel(value=0.75,
+                                            correlation=corPagel(value=0.5,
                                                                  phy=mandic_ctmax_phy,
                                                                  fixed=FALSE),
                                             method="ML")
