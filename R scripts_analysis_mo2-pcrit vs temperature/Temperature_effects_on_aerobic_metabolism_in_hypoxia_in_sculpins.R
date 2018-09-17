@@ -850,7 +850,10 @@ plot(lik ~ lambda, type = "l",
      main = expression(paste("Likelihood Plot for ",lambda)), 
      ylab = "Log Likelihood", 
      xlab = expression(lambda))
-tibble(lambda = lambda, likelihood = lik) %>% filter(likelihood == max(likelihood))
+lk_plot_data <- tibble(lambda = lambda, likelihood = lik) 
+# filter(likelihood == max(likelihood))
+ggplot(lk_plot_data, aes(x = lambda, y = likelihood)) + 
+  geom_point(size = rel(0.5))
 #abline(v = pgls_lambda_beta_high_temps_ctmax_gls$modelStruct$corStruct, col = "red")
 
 ## Using a likelihood ratio test to evaluate whether pgls is justified
@@ -867,46 +870,42 @@ anova(ols_beta_high_temps_pcrit12)
 ## Delta Pcrit ~ Delta SMR
 ## ************************************
 
+lm_pcrit_vs_smr_delta_smr_data_spps_rn <- lm_pcrit_vs_smr_delta_smr_data %>%
+  column_to_rownames(var = "species")
+
 ## Regular OLS
 ols_delta_pcrit_delta_smr_gls <- 
-  lm_pcrit_vs_smr_delta_smr_data %>%
-  column_to_rownames(var = "species") %>%
   gls(delta_pcrit_12_20 ~ delta_smr_12_20,
-      data = .,
+      data = lm_pcrit_vs_smr_delta_smr_data_spps_rn,
       method = "ML")
 
 ## PGLS assuming a Brownian correlation
 pgls_bm_delta_pcrit_delta_smr_gls <- 
-  lm_pcrit_vs_smr_delta_smr_data %>%
-  column_to_rownames(var = "species") %>%
   gls(delta_pcrit_12_20 ~ delta_smr_12_20,
-      data=.,
+      data=lm_pcrit_vs_smr_delta_smr_data_spps_rn,
       correlation=corBrownian(phy=mandic_phy),
       method="ML")
 
 ## PGLS assuming a Pagel's lambda correlation
 pgls_delta_pcrit_delta_smr_gls <- 
-  lm_pcrit_vs_smr_delta_smr_data %>%
-  column_to_rownames(var = "species") %>%
   gls(delta_pcrit_12_20 ~ delta_smr_12_20,
-      data=.,
+      data=lm_pcrit_vs_smr_delta_smr_data_spps_rn,
       correlation=corPagel(value=1,phy=mandic_phy,fixed=TRUE),
       method="ML")
 
-## Compare models using AIC (lower is beter)
-AIC(ols_delta_pcrit_delta_smr_gls)
-AIC(pgls_bm_delta_pcrit_delta_smr_gls)
-AIC(pgls_delta_pcrit_delta_smr_gls)
-
-## Get the AIC weights
-## Create a named vector
-aic_all <- c(AIC(ols_delta_pcrit_delta_smr_gls),
-             AIC(pgls_bm_delta_pcrit_delta_smr_gls),
-             AIC(pgls_delta_pcrit_delta_smr_gls))
-names(aic_all) <- c("ols", "bm", "lambda")
-aicw(aic_all)
-## More weight on bm BUT delta AIC < 2 for all, 
-## so no real difference bw models
+lambda <- seq(0,1, length.out = 500)
+lik <- sapply(lambda, function(lambda) logLik(gls(delta_pcrit_12_20 ~ delta_smr_12_20,
+                                                  correlation = 
+                                                    corPagel(value = lambda, 
+                                                             phy = mandic_phy, 
+                                                             fixed = TRUE),
+                                                  data = lm_pcrit_vs_smr_delta_smr_data_spps_rn)))
+plot(lik ~ lambda, type = "l", 
+     main = expression(paste("Likelihood Plot for ",lambda)), 
+     ylab = "Log Likelihood", 
+     xlab = expression(lambda))
+lk_plot_data <- tibble(lambda = lambda, likelihood = lik) 
+lk_plot_data %>% filter(likelihood == max(likelihood))
 
 ## Using a likelihood ratio test to evaluate whether pgls is justified
 anova(ols_delta_pcrit_delta_smr_gls, pgls_delta_pcrit_delta_smr_gls)
