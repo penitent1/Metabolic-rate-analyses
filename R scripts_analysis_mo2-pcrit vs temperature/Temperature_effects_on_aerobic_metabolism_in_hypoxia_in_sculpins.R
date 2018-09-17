@@ -565,7 +565,8 @@ beta_pcrit_low_temp_ctmax_plot <-
 beta_pcrit_high_temp_ctmax_plot <- 
   beta_pcrit_ct_max_data %>%
   ggplot(aes(x = avg_ct_max, y = slope_pcrit_high_temps)) +
-  stat_smooth(method = "lm", size = 2, colour = "black") +
+  geom_l
+  #stat_smooth(method = "lm", size = 2, colour = "black") +
   geom_point(size = 5) +
   scale_x_continuous(name = expression(paste("CT"["max"]," (",degree,C,")")),
                      limits = c(20, 30)) +
@@ -720,33 +721,51 @@ summary(pic_beta_low_temps_ct_max_caper)
 # _____________________________________
 
 # *************************************
-# OLS model: beta HIGH  temps ~ CTmax
-ols_beta_high_temps_ctmax_caper <- pgls(slope_pcrit_high_temps ~ mean_ct_max,
+# BM model: beta HIGH  temps ~ CTmax
+pgls_bm_beta_high_temps_ctmax_caper <- pgls(slope_pcrit_high_temps ~ mean_ct_max,
                                        data = comp_data_beta_ctmax_caper)
-summary(ols_beta_high_temps_ctmax_caper)
+summary(pgls_bm_beta_high_temps_ctmax_caper)
 # PGLS model: with lambda estimated using ML
-pgls_beta_high_temps_ct_max_caper <- pgls(slope_pcrit_high_temps ~ mean_ct_max,
+pgls_pagel_beta_high_temps_ct_max_caper <- pgls(slope_pcrit_high_temps ~ mean_ct_max,
                                          data = comp_data_beta_ctmax_caper,
                                          lambda = "ML")
-summary(pgls_beta_high_temps_ct_max_caper)
-lk_pgls_beta_high_temps_ct_max_caper <- pgls.profile(pgls_beta_high_temps_ct_max_caper,
+summary(pgls_pagel_beta_high_temps_ct_max_caper)
+lk_pgls_pagel_beta_high_temps_ct_max_caper <- pgls.profile(pgls_pagel_beta_high_temps_ct_max_caper,
                                                      "lambda")
-plot(lk_pgls_beta_high_temps_ct_max_caper) ## No peak but rises continuously to 0
+plot(lk_pgls_pagel_beta_high_temps_ct_max_caper) ## No peak but rises continuously to 0
 # PIC model: using caper's CRUNCH function
 pic_beta_high_temps_ct_max_caper <- crunch(slope_pcrit_high_temps ~ mean_ct_max,
                                           data = comp_data_beta_ctmax_caper)
 summary(pic_beta_high_temps_ct_max_caper)
 
 ## Compare models using AIC (lower is beter)
-AIC(ols_beta_high_temps_ctmax_caper)
-AIC(pgls_beta_high_temps_ct_max_caper)
+AIC(pgls_bm_beta_high_temps_ctmax_caper)
+AIC(pgls_pagel_beta_high_temps_ct_max_caper)
 
 ## Get the AIC weights
 ## Create a named vector
-aic_all <- c(AIC(ols_beta_low_temps_pcrit12),
-             AIC(pgls_bm_beta_low_temps_pcrit12))
-names(aic_all) <- c("ols", "bm", "lambda")
+aic_all <- c(AIC(pgls_bm_beta_high_temps_ctmax_caper),
+             AIC(pgls_pagel_beta_high_temps_ct_max_caper))
+names(aic_all) <- c("bm", "lambda")
 aicw(aic_all)
+
+anova.pgls(pgls_bm_beta_high_temps_ctmax_caper,
+           pgls_pagel_beta_high_temps_ct_max_caper)
+
+lrtest <- function(model1, model2){
+  lik1 <- logLik(model1)
+  lik2 <- logLik(model2)
+  LR <- -2*(lik1-lik2)
+  degf <-  attr(lik2,"df") - attr(lik1,"df")
+  P <- pchisq(LR, df = degf, lower.tail = FALSE)
+  cat(paste("Likelihood ratio = ",
+            signif(LR, 5),"(df=",degf,") P = ",
+            signif(P,4),"\n",sep = ""))
+  invisible(list(likelihood.ratio=LR,p=P))
+}
+
+lrtest(pgls_bm_beta_high_temps_ctmax_caper,
+       pgls_pagel_beta_high_temps_ct_max_caper)
 
 #
 # _____________________________________
@@ -773,37 +792,31 @@ pgls_bm_beta_low_temps_pcrit12 <- gls(slope_pcrit_low_temps ~ mean_pcrit_12,
       method="ML")
 
 ## PGLS assuming a Pagel's lambda correlation
-# MODEL DOES NOT COVERGE when starting value of lambda = 1:
-# Error in eigen(val, only.values = TRUE) : 
-# infinite or missing values in 'x'
-# Converged when I specified value = 0, or value = 0.5
-# both gave same model (e.g. parameters, log-likelihood, et cet)
 pgls_lambda_beta_low_temps_pcrit12 <- gls(slope_pcrit_low_temps ~ mean_pcrit_12,
       data=data_beta_pcrit12_gls,
-      correlation=corPagel(value=1,phy=mandic_phy,fixed=TRUE),
+      correlation=corPagel(value=0,phy=mandic_phy,fixed=TRUE),
       method="ML")
 
-## Compare models using AIC (lower is beter)
-AIC(ols_beta_low_temps_pcrit12)
-AIC(pgls_bm_beta_low_temps_pcrit12)
-AIC(pgls_lambda_beta_low_temps_pcrit12)
-
-## Get the AIC weights
-## Create a named vector
-aic_all <- c(AIC(ols_beta_low_temps_pcrit12),
-             AIC(pgls_bm_beta_low_temps_pcrit12),
-             AIC(pgls_lambda_beta_low_temps_pcrit12))
-names(aic_all) <- c("ols", "bm", "lambda")
-aicw(aic_all)
-## More weight on bm BUT delta AIC < 2 for all, 
-## so no real difference bw models
+lambda <- seq(0,1, length.out = 500)
+lik <- sapply(lambda, function(lambda) logLik(gls(slope_pcrit_low_temps ~ mean_pcrit_12,
+                                                  correlation = 
+                                                    corPagel(value = lambda, 
+                                                             phy = mandic_phy, 
+                                                             fixed = TRUE),
+                                                  data = data_beta_pcrit12_gls)))
+plot(lik ~ lambda, type = "l", 
+     main = expression(paste("Likelihood Plot for ",lambda)), 
+     ylab = "Log Likelihood", 
+     xlab = expression(lambda))
+tibble(lambda = lambda, likelihood = lik) %>% filter(likelihood == max(likelihood))
+#abline(v = pgls_lambda_beta_high_temps_ctmax_gls$modelStruct$corStruct, col = "red")
 
 ## Using a likelihood ratio test to evaluate whether pgls is justified
 anova(ols_beta_low_temps_pcrit12, pgls_lambda_beta_low_temps_pcrit12)
 
 plot(ols_beta_low_temps_pcrit12)
 summary(ols_beta_low_temps_pcrit12)
-anova(ols_beta_low_temps_pcrit12) ## 
+anova(ols_beta_low_temps_pcrit12)
 
 ## ************************************
 ## Beta Pcrit - high temps vs Pcrit_12
@@ -823,15 +836,11 @@ pgls_bm_beta_high_temps_pcrit12 <- gls(slope_pcrit_high_temps ~ mean_pcrit_12,
 ## PGLS assuming a Pagel's lambda correlation
 pgls_lambda_beta_high_temps_pcrit12 <- gls(slope_pcrit_high_temps ~ mean_pcrit_12,
       data=data_beta_pcrit12_gls,
-      correlation=corPagel(value=1,phy=mandic_phy,fixed=FALSE),
+      correlation=corPagel(value=1,phy=mandic_phy,fixed=TRUE),
       method="ML")
 
-# Plot of log likelihood of Pagels Lambda
-nlme::intervals(pgls_lambda_beta_high_temps_pcrit12)#,
-          #which = "var-cov")
 lambda <- seq(0,1, length.out = 500)
-lik <- sapply(lambda, 
-              function(lambda) logLik(gls(slope_pcrit_high_temps ~ mean_pcrit_12,
+lik <- sapply(lambda, function(lambda) logLik(gls(slope_pcrit_high_temps ~ mean_pcrit_12,
                                                   correlation = 
                                                     corPagel(value = lambda, 
                                                              phy = mandic_phy, 
@@ -841,22 +850,8 @@ plot(lik ~ lambda, type = "l",
      main = expression(paste("Likelihood Plot for ",lambda)), 
      ylab = "Log Likelihood", 
      xlab = expression(lambda))
-abline(v = pgls_lambda_beta_high_temps_pcrit12$modelStruct, col = "red")
-
-## Compare models using AIC (lower is beter)
-AIC(ols_beta_high_temps_pcrit12)
-AIC(pgls_bm_beta_high_temps_pcrit12)
-AIC(pgls_lambda_beta_high_temps_pcrit12)
-
-## Get the AIC weights
-## Create a named vector
-aic_all <- c(AIC(ols_beta_high_temps_pcrit12),
-             AIC(pgls_bm_beta_high_temps_pcrit12),
-             AIC(pgls_lambda_beta_high_temps_pcrit12))
-names(aic_all) <- c("ols", "bm", "lambda")
-aicw(aic_all)
-## More weight on bm BUT delta AIC < 2 for all, 
-## so no real difference bw models
+tibble(lambda = lambda, likelihood = lik) %>% filter(likelihood == max(likelihood))
+#abline(v = pgls_lambda_beta_high_temps_ctmax_gls$modelStruct$corStruct, col = "red")
 
 ## Using a likelihood ratio test to evaluate whether pgls is justified
 anova(ols_beta_high_temps_pcrit12, pgls_lambda_beta_high_temps_pcrit12)
@@ -998,9 +993,9 @@ pgls_bm_beta_high_temps_ctmax_gls <- gls(slope_pcrit_high_temps ~ mean_ct_max,
 ## Model does not converge with `fixed=FALSE` - had to fix `value`
 pgls_lambda_beta_high_temps_ctmax_gls <- gls(slope_pcrit_high_temps ~ mean_ct_max,
                                             data=data_beta_ctmax_gls,
-                                            correlation=corPagel(value=0.5,
+                                            correlation=corPagel(value=0.864,
                                                                  phy=mandic_ctmax_phy,
-                                                                 fixed=FALSE),
+                                                                 fixed=TRUE),
                                             method="ML")
 
 ## Compare models using AIC (lower is beter)
@@ -1024,10 +1019,11 @@ anova(ols_beta_high_temps_ctmax_gls, pgls_lambda_beta_high_temps_ctmax_gls)
 plot(ols_beta_high_temps_ctmax_gls)
 summary(ols_beta_high_temps_ctmax_gls)
 anova(ols_beta_high_temps_ctmax_gls)
+anova(pgls_lambda_beta_high_temps_ctmax_gls)
 
 # Plot of log likelihood of Pagels Lambda
-intervals(pgls_lambda_beta_high_temps_ctmax_gls,
-          which = "var-cov")
+#intervals(pgls_lambda_beta_high_temps_ctmax_gls,
+#          which = "var-cov")
 lambda <- seq(0,1, length.out = 500)
 lik <- sapply(lambda, function(lambda) logLik(gls(slope_pcrit_high_temps ~ mean_ct_max,
                                                   correlation = 
@@ -1039,4 +1035,6 @@ plot(lik ~ lambda, type = "l",
      main = expression(paste("Likelihood Plot for ",lambda)), 
      ylab = "Log Likelihood", 
      xlab = expression(lambda))
-abline(v = pgls_lambda_beta_high_temps_ctmax_gls$modelStruct, col = "red")
+tibble(lambda = lambda, likelihood = lik) %>% filter(likelihood == max(likelihood))
+abline(v = pgls_lambda_beta_high_temps_ctmax_gls$modelStruct$corStruct, col = "red")
+
