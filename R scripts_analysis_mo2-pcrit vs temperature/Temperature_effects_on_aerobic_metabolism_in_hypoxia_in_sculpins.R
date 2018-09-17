@@ -96,6 +96,9 @@ plot.phylo(mandic_phy)
 mandic_ctmax_phy <- drop.tip(mandic_phy, "Blepsias_cirrhosus") # No CTmax for BLCI
 plot.phylo(mandic_ctmax_phy)
 
+plot(mandic_phy, cex = 2, no.margin = TRUE, x.lim = 2, label.offset = 0.1, edge.width = 3.5)
+# printed plot size: W = 1132 H = 932
+
 #######################
 #######################                        
 
@@ -197,7 +200,9 @@ mass_corr_smr_pcrit_data %>%
         axis.text.y = element_text(size = rel(1.5), colour = "black"),
         axis.line = element_line(size = rel(1.5), colour = "black"),
         axis.ticks = element_line(size = rel(3), colour = "black"),
-        strip.text = element_text(face = "bold", size = rel(1.25)))
+        strip.text = element_text(face = "bold", size = rel(1.25)),
+        axis.title.x = element_text(margin = margin(t = 30)),
+        axis.title.y = element_text(margin = margin(r = 20)))
 
 ## ******************************************************************
 ##
@@ -241,7 +246,11 @@ beta_pcrit_low_temp_plot <-
         axis.title = element_text(size = rel(2.5)),
         axis.text = element_text(size = rel(2.25), colour = "black"),
         axis.line = element_line(size = rel(1.5), colour = "black"),
-        axis.ticks = element_line(size = rel(3), colour = "black"))
+        axis.ticks = element_line(size = rel(3), colour = "black"),
+        axis.title.x = element_text(margin = margin(t = 30)),
+        axis.title.y = element_text(margin = margin(r = 20)),
+        plot.margin = unit(c(0.1,0.2,0.2,0.2), "in"))
+
 
 ## Beta pcrit: 16-20 degrees ~ Pcrit at 12 degrees
 beta_pcrit_high_temp_plot <- 
@@ -260,7 +269,11 @@ beta_pcrit_high_temp_plot <-
         axis.title = element_text(size = rel(2.5)),
         axis.text = element_text(size = rel(2.25), colour = "black"),
         axis.line = element_line(size = rel(1.5), colour = "black"),
-        axis.ticks = element_line(size = rel(3), colour = "black"))
+        axis.ticks = element_line(size = rel(3), colour = "black"),
+        axis.title.x = element_text(margin = margin(t = 30)),
+        axis.title.y = element_text(margin = margin(r = 20)),
+        plot.margin = unit(c(0.1,0.2,0.2,0.2), "in"))
+
 
 grid.arrange(beta_pcrit_low_temp_plot, beta_pcrit_high_temp_plot, ncol=2)
 # PNG exported: W = 1132 H = 654
@@ -316,7 +329,7 @@ mass_corr_smr_pcrit_data %>%
   ggplot(aes(x = smr.mass.corr.ms, y = pcrit.r)) +
   stat_smooth(method = "lm", size = rel(2), colour = "black") +
   geom_point(size = 3) +
-  scale_x_continuous(name = expression(paste(dot(M)[O][2][",standard*"]," (",mu,"mol ",O[2]," g"^-1," hr"^-1,")")),
+  scale_x_continuous(name = expression(paste(dot(M),"o"[2][",standard*"]," (",mu,"mol ",O[2]," g"^-1," hr"^-1,")")),
                      limits = c(0,6)) +
   scale_y_continuous(name = expression(paste("P"["crit"]," (Torr)")),
                      limits = c(0,100)) +
@@ -329,7 +342,10 @@ mass_corr_smr_pcrit_data %>%
         axis.text.y = element_text(size = rel(1.5), colour = "black"),
         axis.line = element_line(size = rel(1.5), colour = "black"),
         axis.ticks = element_line(size = rel(3), colour = "black"),
-        strip.text = element_text(face = "bold", size = rel(1.25)))
+        strip.text = element_text(face = "bold", size = rel(1.25)),
+        axis.title.x = element_text(margin = margin(t = 30)),
+        axis.title.y = element_text(margin = margin(r = 20)))
+
 
 ## Linear model: Pcrit ~ SMR + species + SMR*species
 pcrit_smr_smr_spps_ancova <- 
@@ -425,7 +441,11 @@ ggplot(lm_pcrit_vs_smr_delta_smr_data, aes(x = delta_smr_12_20, y = delta_pcrit_
         axis.title = element_text(size = rel(2.5)),
         axis.text = element_text(size = rel(2.25), colour = "black"),
         axis.line = element_line(size = rel(1.5), colour = "black"),
-        axis.ticks = element_line(size = rel(3), colour = "black"))
+        axis.ticks = element_line(size = rel(3), colour = "black"),
+        axis.title.x = element_text(margin = margin(t = 30)),
+        axis.title.y = element_text(margin = margin(r = 30)),
+        plot.margin = unit(c(0.1,0.2,0.2,0.2), "in"))
+
 
 # Anova on Delta Pcrit ~ Delta SMR across the tested temperature range (12-20 degrees)
 #lm_pcrit_vs_smr_delta_smr_data %>%
@@ -477,31 +497,32 @@ View(ct_max_df)
 View(ct_max_df_no_enbi_out)
 
 ct_max_df_no_enbi_out %>%
-  mutate(species_plotting_abb = case_when(species=="arfe"~"A. fenestralis",
-                                          species=="arha"~"A. harringtoni",
-                                          species=="arla"~"A. lateralis",
-                                          species=="clgl"~"C. globiceps",
-                                          species=="enbi"~"E. bison",
-                                          species=="hehe"~"H. hemilepidotus",
-                                          species=="olma"~"O. maculosus",
-                                          species=="scma"~"S. marmoratus")) %>%
+  mutate(species_plotting_abb = case_when(species=="arfe"~"Artedius\nfenestralis",
+                                          species=="arha"~"Artedius\nharringtoni",
+                                          species=="arla"~"Artedius\nlateralis",
+                                          species=="clgl"~"Clinocottus\nglobiceps",
+                                          species=="enbi"~"Enophrys\nbison",
+                                          species=="hehe"~"Hemilepidotus\nhemilepidotus",
+                                          species=="olma"~"Oligocottus\nmaculosus",
+                                          species=="scma"~"Scorpaenichthys\nmarmoratus")) %>%
   ggplot(aes(x = species_plotting_abb, y = loe_temp_corrected)) + 
-  geom_jitter(width = 0.15, size = 3) + 
+  geom_jitter(width = 0.15, size = 4) + 
   scale_x_discrete(name = "Species") + 
   scale_y_continuous(name = expression(paste("CT"["max"]," (",degree,C,")"))) + 
   theme(panel.background = element_blank(), 
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
         axis.line = element_line(size = rel(1.5), colour = "black"),
         axis.title.x = element_text(size = rel(2.5),
-                                    colour = "black"),
+                                    colour = "black",
+                                    margin = margin(t = 30)),
         axis.ticks = element_line(size = rel(3), colour = "black"),
-        axis.text.x = element_text(size = rel(1.25), 
-                                   angle = 20, 
-                                   vjust = 1, hjust = 1,
-                                   face = "bold",
+        axis.text.x = element_text(size = rel(1.5), 
+                                   #angle = 20, 
+                                   #vjust = 1, hjust = 1,
+                                   #face = "bold",
                                    colour = "black"),
         axis.title.y = element_text(size = rel(2.5),
-                                    hjust = 0.35,
+                                    margin = margin(r = 20),
                                     colour = "black"),
         axis.text.y = element_text(size = rel(2.25),
                                    colour = "black"))
@@ -560,13 +581,15 @@ beta_pcrit_low_temp_ctmax_plot <-
         axis.title = element_text(size = rel(2.5)),
         axis.text = element_text(size = rel(2.25), colour = "black"),
         axis.line = element_line(size = rel(1.5), colour = "black"),
-        axis.ticks = element_line(size = rel(3), colour = "black"))
+        axis.ticks = element_line(size = rel(3), colour = "black"),
+        axis.title.x = element_text(margin = margin(t = 30)),
+        axis.title.y = element_text(margin = margin(r = 20)),
+        plot.margin = unit(c(0.1,0.2,0.2,0.2), "in"))
 
 beta_pcrit_high_temp_ctmax_plot <- 
   beta_pcrit_ct_max_data %>%
   ggplot(aes(x = avg_ct_max, y = slope_pcrit_high_temps)) +
-  geom_l
-  #stat_smooth(method = "lm", size = 2, colour = "black") +
+  stat_smooth(method = "lm", size = 2, colour = "black", se = FALSE) +
   geom_point(size = 5) +
   scale_x_continuous(name = expression(paste("CT"["max"]," (",degree,C,")")),
                      limits = c(20, 30)) +
@@ -578,7 +601,10 @@ beta_pcrit_high_temp_ctmax_plot <-
         axis.title = element_text(size = rel(2.5)),
         axis.text = element_text(size = rel(2.25), colour = "black"),
         axis.line = element_line(size = rel(1.5), colour = "black"),
-        axis.ticks = element_line(size = rel(3), colour = "black"))
+        axis.ticks = element_line(size = rel(3), colour = "black"),
+        axis.title.x = element_text(margin = margin(t = 30)),
+        axis.title.y = element_text(margin = margin(r = 20)),
+        plot.margin = unit(c(0.1,0.2,0.2,0.2), "in"))
 
 grid.arrange(beta_pcrit_low_temp_ctmax_plot, beta_pcrit_high_temp_ctmax_plot, ncol=2)
 # PNG exported: W = 1132 H = 654
@@ -890,7 +916,7 @@ pgls_bm_delta_pcrit_delta_smr_gls <-
 pgls_delta_pcrit_delta_smr_gls <- 
   gls(delta_pcrit_12_20 ~ delta_smr_12_20,
       data=lm_pcrit_vs_smr_delta_smr_data_spps_rn,
-      correlation=corPagel(value=1,phy=mandic_phy,fixed=TRUE),
+      correlation=corPagel(value=0,phy=mandic_phy,fixed=TRUE),
       method="ML")
 
 lambda <- seq(0,1, length.out = 500)
@@ -945,25 +971,25 @@ pgls_bm_beta_low_temps_ctmax_gls <- gls(slope_pcrit_low_temps ~ mean_ct_max,
 
 ## PGLS assuming a Pagel's lambda correlation
 ## Model does not converge with `fixed=FALSE` - had to fix `value`
+lambda <- seq(0,1, length.out = 500)
+lik <- sapply(lambda, function(lambda) logLik(gls(slope_pcrit_low_temps ~ mean_ct_max,
+                                                  correlation = 
+                                                    corPagel(value = lambda, 
+                                                             phy = mandic_ctmax_phy, 
+                                                             fixed = TRUE),
+                                                  data = data_beta_ctmax_gls)))
+plot(lik ~ lambda, type = "l", 
+     main = expression(paste("Likelihood Plot for ",lambda)), 
+     ylab = "Log Likelihood", 
+     xlab = expression(lambda))
+lk_plot_data <- tibble(lambda = lambda, likelihood = lik) 
+lk_plot_data %>% filter(likelihood == max(likelihood))
+
 pgls_lambda_beta_low_temps_ctmax_gls <- gls(slope_pcrit_low_temps ~ mean_ct_max,
       data=data_beta_ctmax_gls,
-      correlation=corPagel(value=0.5,phy=mandic_ctmax_phy,fixed=TRUE),
+      correlation=corPagel(value=0.343,phy=mandic_ctmax_phy,fixed=TRUE),
       method="ML")
 
-## Compare models using AIC (lower is beter)
-AIC(ols_beta_low_temps_ctmax_gls)
-AIC(pgls_bm_beta_low_temps_ctmax_gls)
-AIC(pgls_lambda_beta_low_temps_ctmax_gls)
-
-## Get the AIC weights
-## Create a named vector
-aic_all <- c(AIC(ols_beta_low_temps_ctmax_gls),
-             AIC(pgls_bm_beta_low_temps_ctmax_gls),
-             AIC(pgls_lambda_beta_low_temps_ctmax_gls))
-names(aic_all) <- c("ols", "bm", "lambda")
-aicw(aic_all)
-## More weight on bm BUT delta AIC < 2 for all, 
-## so no real difference bw models
 
 ## Using a likelihood ratio test to evaluate whether pgls is justified
 anova(ols_beta_low_temps_ctmax_gls, pgls_lambda_beta_low_temps_ctmax_gls)
@@ -971,6 +997,10 @@ anova(ols_beta_low_temps_ctmax_gls, pgls_lambda_beta_low_temps_ctmax_gls)
 plot(ols_beta_low_temps_ctmax_gls)
 summary(ols_beta_low_temps_ctmax_gls)
 anova(ols_beta_low_temps_ctmax_gls)
+logLik(ols_beta_low_temps_ctmax_gls)
+summary(pgls_lambda_beta_low_temps_ctmax_gls)
+anova(pgls_lambda_beta_low_temps_ctmax_gls)
+logLik(pgls_lambda_beta_low_temps_ctmax_gls)
 
 
 ## ************************************
@@ -990,39 +1020,6 @@ pgls_bm_beta_high_temps_ctmax_gls <- gls(slope_pcrit_high_temps ~ mean_ct_max,
 
 ## PGLS assuming a Pagel's lambda correlation
 ## Model does not converge with `fixed=FALSE` - had to fix `value`
-pgls_lambda_beta_high_temps_ctmax_gls <- gls(slope_pcrit_high_temps ~ mean_ct_max,
-                                            data=data_beta_ctmax_gls,
-                                            correlation=corPagel(value=0.864,
-                                                                 phy=mandic_ctmax_phy,
-                                                                 fixed=TRUE),
-                                            method="ML")
-
-## Compare models using AIC (lower is beter)
-AIC(ols_beta_high_temps_ctmax_gls)
-AIC(pgls_bm_beta_high_temps_ctmax_gls)
-AIC(pgls_lambda_beta_high_temps_ctmax_gls)
-
-## Get the AIC weights
-## Create a named vector
-aic_all <- c(AIC(ols_beta_high_temps_ctmax_gls),
-             AIC(pgls_bm_beta_high_temps_ctmax_gls),
-             AIC(pgls_lambda_beta_high_temps_ctmax_gls))
-names(aic_all) <- c("ols", "bm", "lambda")
-aicw(aic_all)
-## More weight on bm BUT delta AIC < 2 for all, 
-## so no real difference bw models
-
-## Using a likelihood ratio test to evaluate whether pgls is justified
-anova(ols_beta_high_temps_ctmax_gls, pgls_lambda_beta_high_temps_ctmax_gls)
-
-plot(ols_beta_high_temps_ctmax_gls)
-summary(ols_beta_high_temps_ctmax_gls)
-anova(ols_beta_high_temps_ctmax_gls)
-anova(pgls_lambda_beta_high_temps_ctmax_gls)
-
-# Plot of log likelihood of Pagels Lambda
-#intervals(pgls_lambda_beta_high_temps_ctmax_gls,
-#          which = "var-cov")
 lambda <- seq(0,1, length.out = 500)
 lik <- sapply(lambda, function(lambda) logLik(gls(slope_pcrit_high_temps ~ mean_ct_max,
                                                   correlation = 
@@ -1034,6 +1031,24 @@ plot(lik ~ lambda, type = "l",
      main = expression(paste("Likelihood Plot for ",lambda)), 
      ylab = "Log Likelihood", 
      xlab = expression(lambda))
-tibble(lambda = lambda, likelihood = lik) %>% filter(likelihood == max(likelihood))
-abline(v = pgls_lambda_beta_high_temps_ctmax_gls$modelStruct$corStruct, col = "red")
+lk_plot_data <- tibble(lambda = lambda, likelihood = lik) 
+lk_plot_data %>% filter(likelihood == max(likelihood))
 
+pgls_lambda_beta_high_temps_ctmax_gls <- gls(slope_pcrit_high_temps ~ mean_ct_max,
+                                            data=data_beta_ctmax_gls,
+                                            correlation=corPagel(value=0.864,
+                                                                 phy=mandic_ctmax_phy,
+                                                                 fixed=FALSE),
+                                            method="ML")
+
+## Using a likelihood ratio test to evaluate whether pgls is justified
+anova(ols_beta_high_temps_ctmax_gls, pgls_lambda_beta_high_temps_ctmax_gls)
+
+plot(ols_beta_high_temps_ctmax_gls)
+summary(ols_beta_high_temps_ctmax_gls)
+anova(ols_beta_high_temps_ctmax_gls)
+logLik(ols_beta_high_temps_ctmax_gls)
+plot(pgls_lambda_beta_high_temps_ctmax_gls)
+summary(pgls_lambda_beta_high_temps_ctmax_gls)
+anova(pgls_lambda_beta_high_temps_ctmax_gls)
+logLik(pgls_lambda_beta_high_temps_ctmax_gls)
