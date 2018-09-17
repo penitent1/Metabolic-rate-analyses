@@ -9,6 +9,7 @@ library(gridExtra)
 library(ape)
 library(caper)
 library(geiger)
+library(phytools)
 library(MCMCglmm)
 library(visreg)
 library(nlme)
@@ -96,7 +97,10 @@ plot.phylo(mandic_phy)
 mandic_ctmax_phy <- drop.tip(mandic_phy, "Blepsias_cirrhosus") # No CTmax for BLCI
 plot.phylo(mandic_ctmax_phy)
 
-plot(mandic_phy, cex = 2, no.margin = TRUE, x.lim = 2, label.offset = 0.1, edge.width = 3.5)
+plot(mandic_phy, cex = 2, no.margin = TRUE, x.lim = 2, label.offset = 0.4, edge.width = 3.5,
+     use.edge.length = TRUE)
+
+# 
 # printed plot size: W = 1132 H = 932
 
 #######################
@@ -129,16 +133,23 @@ lm_scaling_smr_pcrit <- pcrit_smr_data_summary %>%
          tidy_smr_lm = spps_scaling_mod_smr %>% purrr::map(broom::tidy),
          tidy_pcrit_aov = aov_scaling_mod_pcrit %>% purrr::map(broom::tidy),
          tidy_pcrit_lm = spps_scaling_mod_pcrit %>% purrr::map(broom::tidy),
+         f_val_smr_aov = tidy_smr_aov %>% purrr::map_dbl(c(4,2)),
+         f_df_num_smr_aov = tidy_smr_aov %>% purrr::map_dbl(c(3,2)),
+         f_df_den_smr_aov = tidy_smr_aov %>% purrr::map_dbl(c(3,3)),
+         f_val_pcrit_aov = tidy_pcrit_aov %>% purrr::map_dbl(c(4,2)),
+         f_df_num_pcrit_aov = tidy_pcrit_aov %>% purrr::map_dbl(c(3,2)),
+         f_df_den_pcrit_aov = tidy_pcrit_aov %>% purrr::map_dbl(c(3,3)),
          p_val_smr_aov = tidy_smr_aov %>% purrr::map_dbl(c(5,2)),
          p_val_pcrit_aov = tidy_pcrit_aov %>% purrr::map_dbl(c(5,2)),
-         slope_smr = tidy_smr_lm %>% purrr::map_dbl(c(2,2)))
+         slope_smr = tidy_smr_lm %>% purrr::map_dbl(c(2,2)),
+         slope_pcrit = tidy_pcrit_lm %>% purrr::map_dbl(c(2,2)))
 
 ## Adjust smr for body mass effects on SMR:
 
 mass_corr_smr_pcrit_data <- 
   lm_scaling_smr_pcrit %>%
   dplyr::select(species, data, median_mass, mean_mass, range_mass, range_fold_mass, 
-                p_val_smr_aov, slope_smr) %>%
+                p_val_smr_aov, slope_smr, slope_pcrit) %>%
   unnest() %>%
   mutate(smr.mass.corr = if_else(p_val_smr_aov < 0.05,
                                  smr.raw*exp(slope_smr*log(mean_mass/mass.g)),
@@ -365,8 +376,15 @@ pcrit_vs_smr_aov_per_species_data <-
   mutate(pcrit_vs_smr_lm = data %>% purrr::map(~ lm(pcrit.r ~ smr.mass.corr.ms, 
                                                     data = .)),
          aov_pcrit_vs_smr_lm = pcrit_vs_smr_lm %>% purrr::map(~ Anova(., type = "III")),
-         tidy_pcrit_vs_smr_lm = aov_pcrit_vs_smr_lm %>% purrr::map(broom::tidy),
-         p_val_pcrit_smr = tidy_pcrit_vs_smr_lm %>% purrr::map_dbl(c(5,2)))
+         tidy_pcrit_vs_smr_lm = pcrit_vs_smr_lm %>% purrr::map(broom::tidy),
+         tidy_pcrit_vs_smr_aov = aov_pcrit_vs_smr_lm %>% purrr::map(broom::tidy),
+         slope_pcrit_smr = tidy_pcrit_vs_smr_lm %>% purrr::map_dbl(c(2,2)),
+         p_val_pcrit_smr = tidy_pcrit_vs_smr_aov %>% purrr::map_dbl(c(5,2)),
+         f_val = tidy_pcrit_vs_smr_aov %>% purrr::map_dbl(c(4,2)),
+         f_df_num = tidy_pcrit_vs_smr_aov %>% purrr::map_dbl(c(3,2)),
+         f_df_den = tidy_pcrit_vs_smr_aov %>% purrr::map_dbl(c(3,3)))
+
+pcrit_vs_smr_aov_per_species_data[,c("species","slope_pcrit_smr","f_val","f_df_num","f_df_den","p_val_pcrit_smr")]
   
 ## Artedius harringtoni is the only species 
 ## which does not have a significant relationship: Pcrit ~ Mo2 (all temp included):
@@ -1052,3 +1070,72 @@ plot(pgls_lambda_beta_high_temps_ctmax_gls)
 summary(pgls_lambda_beta_high_temps_ctmax_gls)
 anova(pgls_lambda_beta_high_temps_ctmax_gls)
 logLik(pgls_lambda_beta_high_temps_ctmax_gls)
+
+## ************************************************
+##
+## Phylogenetic ANOVA: Y ~ Tidepool occupancy
+##
+## ************************************************
+
+# phylogenetic anova: Pcrit ~ tidepool occupancy (effectively a phylogenetic t-test...???)
+sculpins_phy_data <- list(mandic_phy, lm_pcrit_smr_temp[,c("species","slope_pcrit_low_temps",
+                                                           "slope_pcrit_high_temps",
+                                                           "mean_pcrit_12")])
+sculpins_phy_data[[2]]$tp_occ <- c("Present",
+                                   "Present",
+                                   "Present",
+                                   "Present",
+                                   "Present",
+                                   "Absent",
+                                   "Absent",
+                                   "Absent",
+                                   "Absent")
+
+sculpins_phy_data[[2]] <- column_to_rownames(sculpins_phy_data[[2]], var = "species")
+sculpins_phy_data[[2]] <- as.data.frame(sculpins_phy_data[[2]])
+## Dependent variables
+pcrit12 <- sculpins_phy_data[[2]]$mean_pcrit_12
+names(pcrit12) <- rownames(sculpins_phy_data[[2]])
+beta_pcrit_12_16 <- sculpins_phy_data[[2]]$slope_pcrit_low_temps
+names(beta_pcrit_12_16) <- rownames(sculpins_phy_data[[2]])
+beta_pcrit_16_20 <- sculpins_phy_data[[2]]$slope_pcrit_high_temps
+names(beta_pcrit_16_20) <- rownames(sculpins_phy_data[[2]])
+## Independent variable
+tpo <- as.factor(sculpins_phy_data[[2]]$tp_occ)
+names(tpo) <- rownames(sculpins_phy_data[[2]])
+## Anova: Pcrit at 12C ~ Tidepool occupancy
+aov_phylo_pcrit_12_tp_occ <- aov.phylo(pcrit12 ~ tpo, sculpins_phy_data[[1]], nsim = 1000)
+
+## Anova: Beta_Pcrit_12-16C ~ Tidepool occupancy
+aov_phylo_beta_pcrit12_16_tp_occ <- aov.phylo(beta_pcrit_12_16 ~ tpo, sculpins_phy_data[[1]], nsim = 1000)
+
+## Anova: Beta_Pcrit_12-16C ~ Tidepool occupancy
+aov_phylo_beta_pcrit16_20_tp_occ <- aov.phylo(beta_pcrit_16_20 ~ tpo, sculpins_phy_data[[1]], nsim = 1000)
+
+## ***************************
+##     CT MAX ~ TPO
+##
+
+# phylogenetic anova: Pcrit ~ tidepool occupancy (effectively a phylogenetic t-test...???)
+data_beta_ctmax_gls <- as.data.frame(data_beta_ctmax_gls)
+sculpins_phy_ctmax_data <- list(mandic_ctmax_phy, data_beta_ctmax_gls)
+
+sculpins_phy_ctmax_data[[2]]$tp_occ <- c("Present",
+                                   "Present",
+                                   "Present",
+                                   "Present",
+                                   "Present",
+                                   "Absent",
+                                   "Absent",
+                                   "Absent")
+
+## Dependent
+ctmax <- sculpins_phy_ctmax_data[[2]]$mean_ct_max
+names(ctmax) <- rownames(sculpins_phy_ctmax_data[[2]])
+
+## Independent variable
+tpo <- as.factor(sculpins_phy_ctmax_data[[2]]$tp_occ)
+names(tpo) <- rownames(sculpins_phy_ctmax_data[[2]])
+## Anova: Pcrit at 12C ~ Tidepool occupancy
+aov_phylo_ctmax_tp_occ <- aov.phylo(ctmax ~ tpo, sculpins_phy_ctmax_data[[1]], nsim = 1000)
+
