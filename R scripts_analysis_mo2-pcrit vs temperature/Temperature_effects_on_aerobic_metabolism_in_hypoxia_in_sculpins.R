@@ -1114,7 +1114,7 @@ aov_phylo_beta_pcrit16_20_tp_occ <- aov.phylo(beta_pcrit_16_20 ~ tpo, sculpins_p
 
 ## ***************************
 ##     CT MAX ~ TPO
-##
+## ***************************
 
 # phylogenetic anova: Pcrit ~ tidepool occupancy (effectively a phylogenetic t-test...???)
 data_beta_ctmax_gls <- as.data.frame(data_beta_ctmax_gls)
