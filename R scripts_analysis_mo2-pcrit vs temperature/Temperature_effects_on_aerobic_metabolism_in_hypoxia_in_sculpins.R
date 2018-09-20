@@ -1139,3 +1139,57 @@ names(tpo) <- rownames(sculpins_phy_ctmax_data[[2]])
 ## Anova: Pcrit at 12C ~ Tidepool occupancy
 aov_phylo_ctmax_tp_occ <- aov.phylo(ctmax ~ tpo, sculpins_phy_ctmax_data[[1]], nsim = 1000)
 
+## ************************************************
+##
+## Phylogenetic signal in Traits and phenograms
+##
+## ************************************************
+
+# phylogenetic anova: Pcrit ~ tidepool occupancy (effectively a phylogenetic t-test...???)
+sculpins_phy_data <- list(mandic_phy, lm_pcrit_smr_temp[,c("species","slope_pcrit_low_temps",
+                                                           "slope_pcrit_high_temps",
+                                                           "mean_pcrit_12")])
+sculpins_phy_data[[2]]$tp_occ <- c("Present",
+                                   "Present",
+                                   "Present",
+                                   "Present",
+                                   "Present",
+                                   "Absent",
+                                   "Absent",
+                                   "Absent",
+                                   "Absent")
+
+sculpins_phy_data[[2]] <- column_to_rownames(sculpins_phy_data[[2]], var = "species")
+sculpins_phy_data[[2]] <- as.data.frame(sculpins_phy_data[[2]])
+## Dependent variables
+pcrit12 <- sculpins_phy_data[[2]]$mean_pcrit_12
+names(pcrit12) <- rownames(sculpins_phy_data[[2]])
+beta_pcrit_12_16 <- sculpins_phy_data[[2]]$slope_pcrit_low_temps
+names(beta_pcrit_12_16) <- rownames(sculpins_phy_data[[2]])
+beta_pcrit_16_20 <- sculpins_phy_data[[2]]$slope_pcrit_high_temps
+names(beta_pcrit_16_20) <- rownames(sculpins_phy_data[[2]])
+## Independent variable
+tpo <- as.factor(sculpins_phy_data[[2]]$tp_occ)
+names(tpo) <- rownames(sculpins_phy_data[[2]])
+
+## ************************************************
+## Using lambda as indicator of phylogenetic signal
+## in traits; 
+## but see Kamilar and Cooper 2013 for caveats!
+## ************************************************
+
+## Test of phylogenetic signal in Pcrit
+fitContinuous(sculpins_phy_data[[1]], pcrit12, model = "lambda")
+# Phenogram for Pcrit at 12 degrees for all sculpins in this study
+phenogram(sculpins_phy_data[[1]], pcrit12) ## Zero evidence for phylo signal in Pcrit at 12 C
+## BUT low sample size (ie < 30) means very low power
+
+## Test of phylogenetic signal in Beta_Pcrit_low_temps
+fitContinuous(sculpins_phy_data[[1]], beta_pcrit_12_16, model = "lambda")
+# Phenogram for Pcrit at 12 degrees for all sculpins in this study
+phenogram(sculpins_phy_data[[1]], beta_pcrit_12_16)
+
+## Test of phylogenetic signal in Beta_Pcrit_high_temps
+fitContinuous(sculpins_phy_data[[1]], beta_pcrit_16_20, model = "lambda")
+# Phenogram for Pcrit at 12 degrees for all sculpins in this study
+phenogram(sculpins_phy_data[[1]], beta_pcrit_16_20)
