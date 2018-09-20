@@ -1193,3 +1193,30 @@ phenogram(sculpins_phy_data[[1]], beta_pcrit_12_16)
 fitContinuous(sculpins_phy_data[[1]], beta_pcrit_16_20, model = "lambda")
 # Phenogram for Pcrit at 12 degrees for all sculpins in this study
 phenogram(sculpins_phy_data[[1]], beta_pcrit_16_20)
+
+## *******************************
+##     CT MAX phylogenetic signal
+## *******************************
+
+# phylogenetic anova: Pcrit ~ tidepool occupancy (effectively a phylogenetic t-test...???)
+data_beta_ctmax_gls <- as.data.frame(data_beta_ctmax_gls)
+sculpins_phy_ctmax_data <- list(mandic_ctmax_phy, data_beta_ctmax_gls)
+
+sculpins_phy_ctmax_data[[2]]$tp_occ <- c("Present",
+                                         "Present",
+                                         "Present",
+                                         "Present",
+                                         "Present",
+                                         "Absent",
+                                         "Absent",
+                                         "Absent")
+
+## Dependent
+ctmax <- sculpins_phy_ctmax_data[[2]]$mean_ct_max
+names(ctmax) <- rownames(sculpins_phy_ctmax_data[[2]])
+
+## Test of phylogenetic signal in ctmax
+fitContinuous(sculpins_phy_ctmax_data[[1]], ctmax, model = "lambda")
+# Phenogram for Pcrit at 12 degrees for all sculpins in this study
+phenogram(sculpins_phy_ctmax_data[[1]], ctmax)
+
