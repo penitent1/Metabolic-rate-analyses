@@ -63,6 +63,7 @@ is.rooted(mandic_2013_tree) ## It's rooted!!
 mandic_2013_tree_no_out <- drop.tip(mandic_2013_tree, "Satyrichthys_amiscus")
 
 mandic_um <- chronopl(mandic_2013_tree_no_out, 1)
+mandic_um <- chronos(mandic_2013_tree_no_out, 1)
 ## Fix tip names so they actually give species names
 mandic_um$tip.label[mandic_um$tip.label == "EF521369.1_Hemilepidotus_hemilep"] <- "Hemilepidotus_hemilepidotus"
 mandic_um$tip.label[mandic_um$tip.label == "Fluffy"] <- "Oligocottus_snyderi"
@@ -308,8 +309,8 @@ mass_corr_smr_pcrit_data %>%
                                       species == "Scorpaenichthys_marmoratus" ~ "Scorpaenichthys marmoratus")) %>%
   ggplot() +
   #stat_smooth(aes(x = smr.mass.corr.ms, y = pcrit.r), method = "lm", color = "black") +
-  stat_smooth(aes(x = smr.mass.corr.ms, y = pcrit.r, group = species_plotting), 
-              method = "lm", se = FALSE, size = rel(2), colour = "black") +
+  stat_smooth(aes(x = smr.mass.corr.ms, y = pcrit.r, colour = species_plotting), 
+              method = "lm", se = FALSE, size = rel(2)) + #, colour = "black"
   scale_x_continuous(name = expression(paste(dot(M),"o"[2][",standard*"]," (",mu,"mol ",O[2]," g"^-1," hr"^-1,")")),
                      limits = c(0,6),
                      breaks = seq(0,6,1)) +

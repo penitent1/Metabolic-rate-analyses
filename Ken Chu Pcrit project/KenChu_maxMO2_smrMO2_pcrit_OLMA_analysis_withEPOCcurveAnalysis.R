@@ -6,7 +6,7 @@ md <- read_csv(file.choose()) %>%
   mutate(time_hrs = time_min/60,
          o2_kpa = o2_torr/0.133,
          mo2 = -1*umol_per_sec*3600,
-         mo2_ms = mo2/4.5) %>% # 4.4 g = body mass
+         mo2_ms = mo2/2) %>% # 4.4 g = body mass
   group_by(experiment_period)
 
 ggplot(md, aes(x = time_hrs, y = mo2_ms, colour = experiment_period)) +
@@ -17,11 +17,11 @@ ggplot(md, aes(x = time_hrs, y = mo2_ms, colour = experiment_period)) +
 md_smr <- md %>%
   filter(experiment_period == "mmr_smr",
          time_hrs > 10) %>%
-  select(experiment_period, time_hrs, o2_torr, o2_kpa, mo2, mo2_ms)
+  dplyr::select(experiment_period, time_hrs, o2_torr, o2_kpa, mo2, mo2_ms)
 
 ggplot(md_smr, aes(x = time_hrs, y = mo2_ms, colour = experiment_period)) +
   geom_point() +
-  geom_hline(aes(yintercept = 2.08)) +
+  geom_hline(aes(yintercept = 2.16)) +
   theme_classic()
 
 calcSMR(md_smr$mo2_ms)
@@ -43,16 +43,16 @@ ggplot(md_smr, aes(x = time_hrs, y = mo2_ms, colour = experiment_period)) +
   theme_classic()
   
 md_pcrit <- md %>%
-  filter(experiment_period == "pcrit") %>%
-  select(experiment_period, time_hrs, o2_sat, mo2_ms) %>%
+  filter(experiment_period == "pcrit10min") %>%
+  dplyr::select(experiment_period, time_hrs, o2_sat, mo2_ms) %>%
   rename(DO = o2_sat,
          MO2 = mo2_ms)
 
-plotO2crit(calcO2crit(md_pcrit, SMR = 1.99, lowestMO2 = 1.99)) # 2.33 = Round 1 SMR
+plotO2crit(calcO2crit(md_pcrit, SMR = 1.9)) # 2.33 = Round 1 SMR
 
 ggplot(md_pcrit, aes(x = DO, y = MO2)) +
   geom_point() +
-  geom_vline(aes(xintercept = 13.4)) +
+  geom_vline(aes(xintercept = 29.4)) +
   theme_classic()
 
 # Note that SMR was estimated using mo2 values after 10 hrs, not after 5 hrs
