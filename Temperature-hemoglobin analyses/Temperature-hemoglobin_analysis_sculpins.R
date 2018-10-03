@@ -158,12 +158,31 @@ ggplot(pcrit_rmr_p50, aes(x = avg_p50, y = avg_pcrit, colour = species)) +
 
 
 ## Carrying capacity of sculpin blood at 12 degrees
-
+setwd("C:/Users/derek/Documents/Metabolic-rate-analyses/Temperature-hemoglobin analyses")
 blood_o2_capacity <- read_csv("Mandic_et_al_2009_blood_oxygen_capacity_sculpins.csv")
 
 blood_o2_capacity <- 
  blood_o2_capacity %>%
   mutate(max_ml_o2_100ml_blood = hct * mchc * 4 * 0.022391)
+
+## Get linear models of Pcrit vs temperature:
+## 1) lm for between 12-16 degrees
+## 2) lm for between 16-20 degrees
+
+lm_pcrit_smr_temp <- mass_corr_smr_pcrit_data %>%
+  group_by(species) %>%
+  nest() %>%
+  mutate(data_low_temps = data %>% purrr::map(~ filter(., temp != 20)),
+         data_high_temps = data %>% purrr::map(~ filter(., temp !=12)),
+         data_mean_pcrit_12 = data %>% purrr::map(~ filter(., temp == 12)),
+         lm_pcrit_low_temps = data_low_temps %>% purrr::map(~ lm(pcrit.r ~ temp, data=.)),
+         lm_pcrit_high_temps = data_high_temps %>% purrr::map(~ lm(pcrit.r ~ temp, data=.)),
+         tidy_pcrit_low_temps = lm_pcrit_low_temps %>% purrr::map(broom::tidy),
+         tidy_pcrit_high_temps = lm_pcrit_high_temps %>% purrr::map(broom::tidy),
+         slope_pcrit_low_temps = tidy_pcrit_low_temps %>% purrr::map_dbl(c(2,2)),
+         slope_pcrit_high_temps = tidy_pcrit_high_temps %>% purrr::map_dbl(c(2,2)),
+         mean_pcrit_12 = data_mean_pcrit_12 %>% purrr::map_dbl(~ mean(.$pcrit.r)))
+
 
 blood_o2_capacity_pcrit <- lm_pcrit_smr_temp[,c(1,10,11,12)] %>%
   filter(species %in% c("Artedius_fenestralis",
@@ -204,6 +223,74 @@ log_blood_o2_capacity_pcrit <- blood_o2_capacity_pcrit %>%
   mutate(log10_beta_pcrit = log10(slope_pcrit_high_temps),
          log10_blood_o2_capacity = log10(blood_ml_o2_capacity))
 
+## *****************************************************************
+##
+## Read sculpin phyologeny into R and prune for species in analysis
+##
+## *****************************************************************
+setwd("C:/Users/derek/Documents/Metabolic-rate-analyses/Phylogeny files")
+mandic_2013_tree <- read.nexus("Oct62009_Likelihood w branchlengths.tre")
+plot.phylo(mandic_2013_tree)
+is.ultrametric(mandic_2013_tree) ## It is not :(
+is.rooted(mandic_2013_tree) ## It's rooted!!
+
+mandic_2013_tree_no_out <- drop.tip(mandic_2013_tree, "Satyrichthys_amiscus")
+
+mandic_um <- chronopl(mandic_2013_tree_no_out, 1)
+#mandic_um <- chronos(mandic_2013_tree_no_out, 1)
+## Fix tip names so they actually give species names
+mandic_um$tip.label[mandic_um$tip.label == "EF521369.1_Hemilepidotus_hemilep"] <- "Hemilepidotus_hemilepidotus"
+mandic_um$tip.label[mandic_um$tip.label == "Fluffy"] <- "Oligocottus_snyderi"
+mandic_um$tip.label[mandic_um$tip.label == "Great_Sculpin_AB114909"] <- "Myoxocephalus_polyacanthocephalus"
+mandic_um$tip.label[mandic_um$tip.label == "Mosshead"] <- "Clinocottus_globiceps"
+mandic_um$tip.label[mandic_um$tip.label == "Pacific_Staghorn"] <- "Leptocottus_armatus"
+mandic_um$tip.label[mandic_um$tip.label == "Padded"] <- "Artedius_fenestralis"
+mandic_um$tip.label[mandic_um$tip.label == "Prickly"] <- "Cottus_asper"
+mandic_um$tip.label[mandic_um$tip.label == "Tidepool"] <- "Oligocottus_maculosus"
+mandic_um$tip.label[mandic_um$tip.label == "Scalyhead"] <- "Artedius_harringtoni"
+mandic_um$tip.label[mandic_um$tip.label == "Shorthorn"] <- "Myoxocephalus_scorpius"
+mandic_um$tip.label[mandic_um$tip.label == "Silverspotted"] <- "Blepsias_cirrhosus"
+mandic_um$tip.label[mandic_um$tip.label == "Smoothhead"] <- "Artedius_lateralis"
+mandic_um$tip.label[mandic_um$tip.label == "Cabezon"] <- "Scorpaenichthys_marmoratus"
+mandic_um$tip.label[mandic_um$tip.label == "Buffalo"] <- "Enophrys_bison"
+mandic_um$tip.label[mandic_um$tip.label == "cottus_bairdii"] <- "Cottus_bairdii"
+
+plot.phylo(mandic_um) ## Ultrametric!
+
+## Drop species not in my study:
+keepers_mandic <- c("Oligocottus_maculosus",
+                    "Clinocottus_globiceps",
+                    "Artedius_lateralis",
+                    "Artedius_fenestralis", ## Ramon tree has typo here, should be "fenestralis"
+                    "Enophrys_bison",
+                    "Blepsias_cirrhosus")
+mandic_phy <- drop.tip(mandic_um, setdiff(mandic_um$tip.label, keepers_mandic))
+plot.phylo(mandic_phy)
+#mandic_ctmax_phy <- drop.tip(mandic_phy, "Blepsias_cirrhosus") # No CTmax for BLCI
+#plot.phylo(mandic_ctmax_phy)
+
+## *********************************************
+## MCMCglmm model: Beta Pcrit vs blood capacity
+## *********************************************
+
+mcmcglmm_blood_o2_capacity_df <- log_blood_o2_capacity_pcrit %>% as.data.frame()
+
+inv_phylo_mandic <- inverseA(mandic_phy, nodes = "ALL")
+
+prior <- list(G=list(G1=list(V=1, nu=0.02)), R=list(V=1, nu=0.02))
+mcmcglmm_beta_high_temps_blood_O2_capacity <- MCMCglmm(log10_beta_pcrit ~ log10_blood_o2_capacity,
+                                            random = ~ species,
+                                            family = "gaussian",
+                                            ginverse = list(species=inv_phylo_mandic$Ainv),
+                                            prior = prior,
+                                            data = mcmcglmm_blood_o2_capacity_df,
+                                            nitt = 5000000, burnin = 1000, thin = 500)
+
+summary(mcmcglmm_beta_high_temps_blood_O2_capacity)
+
+mcmcglmm_beta_high_temps_blood_O2_capacity_lambda <- (mcmcglmm_beta_high_temps_blood_O2_capacity$VCV[,1])/(mcmcglmm_beta_high_temps_blood_O2_capacity$VCV[,1]+
+                                                                                                             mcmcglmm_beta_high_temps_blood_O2_capacity$VCV[,2])
+plot(mcmcglmm_beta_high_temps_blood_O2_capacity_lambda);mean(mcmcglmm_beta_high_temps_blood_O2_capacity_lambda)
 
 
 blood_o2_capacity_pcrit %>%
@@ -211,4 +298,9 @@ blood_o2_capacity_pcrit %>%
          log10_blood_o2_capacity = log10(blood_ml_o2_capacity)) %>%
   ggplot(aes(x = log10_blood_o2_capacity, y = log10_beta_pcrit)) +
   geom_point() +
-  stat_smooth(method = "lm")
+  geom_abline(intercept = 2.2108, slope = -1.8495) ## From MCMCglmm model
+
+blood_o2_capacity_pcrit %>%
+  ggplot(aes(x = blood_ml_o2_capacity, y = slope_pcrit_high_temps)) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ 162.48 + x^-1.8495)
