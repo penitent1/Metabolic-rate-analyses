@@ -63,7 +63,7 @@ is.rooted(mandic_2013_tree) ## It's rooted!!
 mandic_2013_tree_no_out <- drop.tip(mandic_2013_tree, "Satyrichthys_amiscus")
 
 mandic_um <- chronopl(mandic_2013_tree_no_out, 1)
-mandic_um <- chronos(mandic_2013_tree_no_out, 1)
+#mandic_um <- chronos(mandic_2013_tree_no_out, 1)
 ## Fix tip names so they actually give species names
 mandic_um$tip.label[mandic_um$tip.label == "EF521369.1_Hemilepidotus_hemilep"] <- "Hemilepidotus_hemilepidotus"
 mandic_um$tip.label[mandic_um$tip.label == "Fluffy"] <- "Oligocottus_snyderi"

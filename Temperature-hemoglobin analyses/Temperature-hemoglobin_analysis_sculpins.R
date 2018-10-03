@@ -199,3 +199,16 @@ ggplot(blood_o2_capacity_pcrit, aes(x = blood_ml_o2_capacity,
         axis.title.x = element_text(margin = margin(t = 30)),
         axis.title.y = element_text(margin = margin(r = 20))) +
   geom_smooth(method = "lm", formula = (y ~ exp(1/x)), size = rel(2))
+
+log_blood_o2_capacity_pcrit <- blood_o2_capacity_pcrit %>%
+  mutate(log10_beta_pcrit = log10(slope_pcrit_high_temps),
+         log10_blood_o2_capacity = log10(blood_ml_o2_capacity))
+
+
+
+blood_o2_capacity_pcrit %>%
+  mutate(log10_beta_pcrit = log10(slope_pcrit_high_temps),
+         log10_blood_o2_capacity = log10(blood_ml_o2_capacity)) %>%
+  ggplot(aes(x = log10_blood_o2_capacity, y = log10_beta_pcrit)) +
+  geom_point() +
+  stat_smooth(method = "lm")
