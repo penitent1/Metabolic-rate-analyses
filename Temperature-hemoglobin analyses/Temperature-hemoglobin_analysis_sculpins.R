@@ -109,3 +109,93 @@ mass_corr_smr_pcrit_data_spps_mean <- mass_corr_smr_pcrit_data %>%
   dplyr::select(species, temp, pcrit.r, smr.mass.corr.ms) %>%
   summarise(avg_pcrit = mean(pcrit.r),
             avg_rmr = mean(smr.mass.corr.ms))
+
+mass_corr_smr_pcrit_data_spps_mean_arfe_blci_olma <- mass_corr_smr_pcrit_data_spps_mean %>%
+  filter(species %in% c("Artedius_fenestralis",
+                        "Blepsias_cirrhosus",
+                        "Oligocottus_maculosus"),
+         temp %in% c(12,20)) %>%
+  ungroup()
+
+temp_hb_p50 <- temp_hb_p50_mean_co2_5 %>% dplyr::select(species, 
+                                                        temperature, 
+                                                        avg_p50)
+
+temp_hb_p50_12c_20c <- temp_hb_p50 %>% 
+  filter(temperature %in% c(18,23)) %>% 
+  spread(temperature, avg_p50) %>%
+  mutate(`20` = mean(c(`18`,`23`))) %>%
+  dplyr::select(species, `20`) %>%
+  rename(avg_p50 = `20`) %>%
+  mutate(temperature = 20) %>%
+  bind_rows(., temp_hb_p50 %>% filter(temperature == 12)) %>%
+  rename(temp = temperature) %>%
+  ungroup()
+
+pcrit_rmr_p50 <- left_join(mass_corr_smr_pcrit_data_spps_mean_arfe_blci_olma,
+                           temp_hb_p50_12c_20c,
+                           by = c("species", "temp"))
+
+ggplot(pcrit_rmr_p50, aes(x = avg_p50, y = avg_pcrit, colour = species)) +
+  geom_point(size = 5) +
+  geom_line(size = 2) +
+  geom_abline(slope = 1, intercept = 0, size = 1.2) +
+  scale_x_continuous(name = expression(paste("Hemoglobin-O"[2], " P"[50], " (Torr)")),
+                     limits = c(0,60)) +
+  scale_y_continuous(name = expression(paste("P"["crit"]," (Torr)")),
+                     limits = c(0,60)) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = NA),
+        axis.title = element_text(size = rel(2.5)),
+        axis.text.x = element_text(size = rel(2.25), colour = "black"),
+        axis.text.y = element_text(size = rel(1.5), colour = "black"),
+        axis.line = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks = element_line(size = rel(3), colour = "black"),
+        strip.text = element_text(face = "bold", size = rel(1.25)),
+        axis.title.x = element_text(margin = margin(t = 30)),
+        axis.title.y = element_text(margin = margin(r = 20)))
+
+
+## Carrying capacity of sculpin blood at 12 degrees
+
+blood_o2_capacity <- read_csv("Mandic_et_al_2009_blood_oxygen_capacity_sculpins.csv")
+
+blood_o2_capacity <- 
+ blood_o2_capacity %>%
+  mutate(max_ml_o2_100ml_blood = hct * mchc * 4 * 0.022391)
+
+blood_o2_capacity_pcrit <- lm_pcrit_smr_temp[,c(1,10,11,12)] %>%
+  filter(species %in% c("Artedius_fenestralis",
+                        "Blepsias_cirrhosus",
+                        "Oligocottus_maculosus",
+                        "Clinocottus_globiceps",
+                        "Enophrys_bison",
+                        "Artedius_lateralis")) %>%
+  mutate(blood_ml_o2_capacity = case_when(species == "Artedius_fenestralis" ~ 8.46,
+                                          species == "Oligocottus_maculosus" ~ 11.6,
+                                          species == "Blepsias_cirrhosus" ~ 7.01,
+                                          species == "Clinocottus_globiceps" ~ 10.7,
+                                          species == "Artedius_lateralis" ~ 7.52,
+                                          species == "Enophrys_bison" ~ 4.93))
+
+ggplot(blood_o2_capacity_pcrit, aes(x = blood_ml_o2_capacity, 
+                                    y = slope_pcrit_high_temps)) +
+  geom_point(size = 7) +
+  scale_x_continuous(name = expression(paste("Oxygen capacity (mL O"[2]," 100 mL blood"^-1,")")),
+                     limits = c(0,20),
+                     breaks = seq(0,20,5)) +
+  scale_y_continuous(name = expression(paste(beta["P"]["crit,16-20"][degree]["C"]," (Torr)")),
+                     limits = c(-2,14),
+                     breaks = seq(-2,14,2)) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = NA),
+        axis.title = element_text(size = rel(2.75)),
+        axis.text.x = element_text(size = rel(3), colour = "black"),
+        axis.text.y = element_text(size = rel(3), colour = "black"),
+        axis.line = element_line(size = rel(2), colour = "black"),
+        axis.ticks = element_line(size = rel(3.5), colour = "black"),
+        axis.title.x = element_text(margin = margin(t = 30)),
+        axis.title.y = element_text(margin = margin(r = 20))) +
+  geom_smooth(method = "lm", formula = (y ~ exp(1/x)), size = rel(2))
