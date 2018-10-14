@@ -502,7 +502,7 @@ ct_max_df_scaling <- ct_max_df %>%
          slope_ctmax = tidy_ctmax_lm %>% purrr::map_dbl(c(2,2)))
 
 # P values and relevant info for ctmax ~ body mass
-ct_max_df_scaling[,c(1,5,6,7,8,14)]
+ct_max_df_scaling[,c(1,5,6,7,8,11,12,13,14)]
 
 ## Plot: CTmax for each species, all raw data WITH ENBI outlier
 ct_max_df %>%
