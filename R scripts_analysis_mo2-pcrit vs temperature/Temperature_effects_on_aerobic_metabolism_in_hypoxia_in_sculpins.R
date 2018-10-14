@@ -479,6 +479,31 @@ ggplot(lm_pcrit_vs_smr_delta_smr_data, aes(x = delta_smr_12_20, y = delta_pcrit_
 ##
 ## *******************************************
 
+## Body mass effects on CTmax
+
+ct_max_df_scaling <- ct_max_df %>%
+  filter(species != "olma",
+         mass != ".") %>%
+  mutate(mass_dbl = as.double(mass)) %>%
+  group_by(species) %>%
+  nest() %>%
+  mutate(spps_scaling_mod_ctmax = data %>% purrr::map(~ lm(loe_temp_corrected~mass_dbl, data=.)),
+         aov_scaling_mod_ctmax = spps_scaling_mod_ctmax %>% purrr::map(~ Anova(., type = "III")),
+         median_mass = data %>% purrr::map_dbl(~ median(.$mass_dbl)),
+         mean_mass = data %>% purrr::map_dbl(~ mean(.$mass_dbl)),
+         range_mass = data %>% purrr::map_dbl(~ (max(.$mass_dbl) - min(.$mass_dbl))),
+         range_fold_mass = data %>% purrr::map_dbl(~ (max(.$mass_dbl) / min(.$mass_dbl))),
+         tidy_ctmax_aov = aov_scaling_mod_ctmax %>% purrr::map(broom::tidy),
+         tidy_ctmax_lm = spps_scaling_mod_ctmax %>% purrr::map(broom::tidy),
+         f_val_ctmax_aov = tidy_ctmax_aov %>% purrr::map_dbl(c(4,2)),
+         f_df_num_ctmax_aov = tidy_ctmax_aov %>% purrr::map_dbl(c(3,2)),
+         f_df_den_ctmax_aov = tidy_ctmax_aov %>% purrr::map_dbl(c(3,3)),
+         p_val_ctmax_aov = tidy_ctmax_aov %>% purrr::map_dbl(c(5,2)),
+         slope_ctmax = tidy_ctmax_lm %>% purrr::map_dbl(c(2,2)))
+
+# P values and relevant info for ctmax ~ body mass
+ct_max_df_scaling[,c(1,5,6,7,8,14)]
+
 ## Plot: CTmax for each species, all raw data WITH ENBI outlier
 ct_max_df %>%
   mutate(species_plotting_abb = case_when(species=="arfe"~"A. fenestralis",
