@@ -192,7 +192,11 @@ pcrit_smr_data_summary %>%
   filter(species == "Artedius_harringtoni") %>%
   ggplot(aes(x = log(mass.g), y = log(pcrit.r))) +
   geom_point(size = 5) +
-  stat_smooth(method = "lm")
+  stat_smooth(method = "lm") +
+  scale_x_continuous(limits = c(0,3.25),
+                     breaks = seq(0,3.25,0.25)) +
+  scale_y_continuous(limits = c(0,4.5),
+                     breaks = seq(0,4.5,0.5))
 
 ## ******************************************************************
 ##
@@ -236,6 +240,185 @@ mass_corr_smr_pcrit_data %>%
 
 ## ******************************************************************
 ##
+## Figure 1.5:
+## Mass-adjusted MO2 vs temperature, every species in it's own plot
+##
+## ******************************************************************
+
+mass_corr_smr_pcrit_data %>%
+  group_by(species, temp) %>%
+  mutate(mean_pcrit = mean(pcrit.r),
+         mean_smr = mean(smr.mass.corr.ms),
+         species_plotting = case_when(species == "Oligocottus_maculosus" ~ "Oligocottus maculosus",
+                                      species == "Clinocottus_globiceps" ~ "Clinocottus globiceps",
+                                      species == "Artedius_harringtoni" ~ "Artedius harringtoni",
+                                      species == "Artedius_lateralis" ~ "Artedius lateralis",
+                                      species == "Artedius_fenestralis" ~ "Artedius fenestralis",
+                                      species == "Blepsias_cirrhosus" ~ "Blepsias cirrhosus",
+                                      species == "Enophrys_bison" ~ "Enophrys bison",
+                                      species == "Hemilepidotus_hemilepidotus" ~ "Hemilepidotus hemilepidotus",
+                                      species == "Scorpaenichthys_marmoratus" ~ "Scorpaenichthys marmoratus")) %>%
+  ggplot(aes(x = temp, y = smr.mass.corr.ms)) +
+  geom_jitter(width = 0.2, size = 3) +
+  geom_line(aes(x = temp, y = mean_smr), size = 1.5) +
+  scale_x_continuous(name = expression(paste("Temperature (",degree,C,")")),
+                     limits = c(9,23)) +
+  scale_y_continuous(name = expression(paste(dot(M),"o"[2][",standard*"]," (",mu,"mol ",O[2]," g"^-1," hr"^-1,")")),
+                     limits = c(0,6),
+                     breaks = seq(0,6,2)) +
+  facet_wrap("species_plotting") +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = NA),
+        axis.title = element_text(size = rel(2.5)),
+        axis.text.x = element_text(size = rel(2.25), colour = "black"),
+        axis.text.y = element_text(size = rel(1.5), colour = "black"),
+        axis.line = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks = element_line(size = rel(3), colour = "black"),
+        strip.text = element_text(face = "bold", size = rel(1.25)),
+        axis.title.x = element_text(margin = margin(t = 30)),
+        axis.title.y = element_text(margin = margin(r = 20)))
+
+## Arrhenius plot: MO2 vs temperature
+mass_corr_smr_pcrit_data %>%
+  group_by(species, temp) %>%
+  mutate(mean_pcrit = mean(pcrit.r),
+         mean_smr = mean(smr.mass.corr.ms),
+         species_plotting = case_when(species == "Oligocottus_maculosus" ~ "Oligocottus maculosus",
+                                      species == "Clinocottus_globiceps" ~ "Clinocottus globiceps",
+                                      species == "Artedius_harringtoni" ~ "Artedius harringtoni",
+                                      species == "Artedius_lateralis" ~ "Artedius lateralis",
+                                      species == "Artedius_fenestralis" ~ "Artedius fenestralis",
+                                      species == "Blepsias_cirrhosus" ~ "Blepsias cirrhosus",
+                                      species == "Enophrys_bison" ~ "Enophrys bison",
+                                      species == "Hemilepidotus_hemilepidotus" ~ "Hemilepidotus hemilepidotus",
+                                      species == "Scorpaenichthys_marmoratus" ~ "Scorpaenichthys marmoratus"),
+         temp_k = temp + 273.15) %>%
+  ggplot(aes(x = 1/temp_k, y = log(smr.mass.corr.ms))) +
+  geom_point() +
+  #geom_jitter(width = 0.2, size = 3) +
+  #geom_line(aes(x = temp, y = mean_smr), size = 1.5) +
+  stat_smooth(method = "lm") +
+  #scale_x_continuous(name = expression(paste("Temperature (",degree,C,")")),
+  #                   limits = c(9,23)) +
+  #scale_y_continuous(name = expression(paste(dot(M),"o"[2][",standard*"]," (",mu,"mol ",O[2]," g"^-1," hr"^-1,")")),
+  #                   limits = c(0,6),
+  #                   breaks = seq(0,6,2)) +
+  facet_wrap("species_plotting") +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = NA),
+        axis.title = element_text(size = rel(2.5)),
+        axis.text.x = element_text(size = rel(2.25), colour = "black"),
+        axis.text.y = element_text(size = rel(1.5), colour = "black"),
+        axis.line = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks = element_line(size = rel(3), colour = "black"),
+        strip.text = element_text(face = "bold", size = rel(1.25)),
+        axis.title.x = element_text(margin = margin(t = 30)),
+        axis.title.y = element_text(margin = margin(r = 20)))
+
+## Not facetted
+mass_corr_smr_pcrit_data %>%
+  group_by(species, temp) %>%
+  mutate(mean_pcrit = mean(pcrit.r),
+         mean_smr = mean(smr.mass.corr.ms),
+         species_plotting = case_when(species == "Oligocottus_maculosus" ~ "Oligocottus maculosus",
+                                      species == "Clinocottus_globiceps" ~ "Clinocottus globiceps",
+                                      species == "Artedius_harringtoni" ~ "Artedius harringtoni",
+                                      species == "Artedius_lateralis" ~ "Artedius lateralis",
+                                      species == "Artedius_fenestralis" ~ "Artedius fenestralis",
+                                      species == "Blepsias_cirrhosus" ~ "Blepsias cirrhosus",
+                                      species == "Enophrys_bison" ~ "Enophrys bison",
+                                      species == "Hemilepidotus_hemilepidotus" ~ "Hemilepidotus hemilepidotus",
+                                      species == "Scorpaenichthys_marmoratus" ~ "Scorpaenichthys marmoratus"),
+         tpo = case_when(species == "Oligocottus_maculosus" ~ "Present",
+                         species == "Clinocottus_globiceps" ~ "Present",
+                         species == "Artedius_harringtoni" ~ "Present",
+                         species == "Artedius_lateralis" ~ "Present",
+                         species == "Artedius_fenestralis" ~ "Present",
+                         species == "Blepsias_cirrhosus" ~ "Absent",
+                         species == "Enophrys_bison" ~ "Absent",
+                         species == "Hemilepidotus_hemilepidotus" ~ "Absent",
+                         species == "Scorpaenichthys_marmoratus" ~ "Absent")) %>%
+  ggplot() +
+  geom_jitter(aes(x = temp, y = smr.mass.corr.ms, colour = tpo, shape = species_plotting), width = 0.2, size = 3, alpha = 0.75) +
+  geom_line(aes(x = temp, y = mean_smr, group = species_plotting, colour = tpo), size = 1.5) +
+  scale_x_continuous(name = expression(paste("Temperature (",degree,C,")")),
+                     limits = c(9,23)) +
+  scale_y_continuous(name = expression(paste(dot(M),"o"[2][",standard*"]," (",mu,"mol ",O[2]," g"^-1," hr"^-1,")")),
+                     limits = c(0,6),
+                     breaks = seq(0,6,2)) +
+  #facet_wrap("species_plotting") +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = NA),
+        axis.title = element_text(size = rel(2.5)),
+        axis.text.x = element_text(size = rel(2.25), colour = "black"),
+        axis.text.y = element_text(size = rel(1.5), colour = "black"),
+        axis.line = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks = element_line(size = rel(3), colour = "black"),
+        #strip.text = element_text(face = "bold", size = rel(1.25)),
+        axis.title.x = element_text(margin = margin(t = 30)),
+        axis.title.y = element_text(margin = margin(r = 20)))
+
+## Checking sample size per spps per temp
+smr_pcrit_temp_data_check <- 
+  mass_corr_smr_pcrit_data %>%
+  group_by(species, temp) %>%
+  nest()
+
+#################################################################################
+##
+## Figure(# ?) Comparing Q10 values between species based on tidepool occupancy
+##
+#################################################################################
+
+## First plot out Arrhenius plot of MEAN mo2 at each temp to see if Q10 appropriate
+mass_corr_smr_pcrit_data %>%
+  group_by(species,temp) %>%
+  dplyr::select(species, temp, smr.mass.corr.ms) %>%
+  summarise(mo2_mean = mean(smr.mass.corr.ms),
+            mo2_sd = sd(smr.mass.corr.ms)) %>%
+  ggplot(aes(x = 1/((temp+273.15)*1000), y = log(mo2_mean))) +
+  geom_point() +
+  stat_smooth(method = "lm") +
+  facet_wrap("species")
+  
+mass_corr_smr_pcrit_data %>%
+  group_by(species,temp) %>%
+  dplyr::select(species, temp, smr.mass.corr.ms) %>%
+  summarise(mo2_mean = mean(smr.mass.corr.ms)) %>%
+  spread(temp, mo2_mean) %>%
+  mutate(q10_mo2 = (`20`/`12`)^(10/(20-12)),
+         tpo = case_when(species == "Artedius_fenestralis"~"yes",
+                         species == "Artedius_harringtoni"~"yes",
+                         species == "Artedius_lateralis"~"yes",
+                         species == "Blepsias_cirrhosus"~"no",
+                         species == "Clinocottus_globiceps"~"yes",
+                         species == "Enophrys_bison"~"no",
+                         species == "Hemilepidotus_hemilepidotus"~"no",
+                         species == "Oligocottus_maculosus"~"yes",
+                         species == "Scorpaenichthys_marmoratus"~"no")) %>%
+  ggplot(aes(x = tpo, y = q10_mo2)) +
+  geom_jitter(width = 0.05, size = 4) +
+  scale_x_discrete(name = expression(paste("Tidepool occupancy"))) +
+  scale_y_continuous(name = expression(paste("Q"[10]," of ",dot(M)["o"][2][",routine"])),
+                     limits = c(0,4),
+                     breaks = seq(0,4,0.5)) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = NA),
+        axis.title = element_text(size = rel(2.5)),
+        axis.text.x = element_text(size = rel(2.25), colour = "black"),
+        axis.text.y = element_text(size = rel(1.5), colour = "black"),
+        axis.line = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks = element_line(size = rel(3), colour = "black"),
+        axis.title.x = element_text(margin = margin(t = 30)),
+        axis.title.y = element_text(margin = margin(r = 20)))
+
+
+## ******************************************************************
+##
 ## Figure 2:
 ## Beta-Pcrit-low_temps vs Pcrit at 12 C
 ##
@@ -250,14 +433,21 @@ lm_pcrit_smr_temp <- mass_corr_smr_pcrit_data %>%
   nest() %>%
   mutate(data_low_temps = data %>% purrr::map(~ filter(., temp != 20)),
          data_high_temps = data %>% purrr::map(~ filter(., temp !=12)),
-         data_mean_pcrit_12 = data %>% purrr::map(~ filter(., temp == 12)),
+         data_mean_pcrit_mo2_12 = data %>% purrr::map(~ filter(., temp == 12)),
          lm_pcrit_low_temps = data_low_temps %>% purrr::map(~ lm(pcrit.r ~ temp, data=.)),
          lm_pcrit_high_temps = data_high_temps %>% purrr::map(~ lm(pcrit.r ~ temp, data=.)),
          tidy_pcrit_low_temps = lm_pcrit_low_temps %>% purrr::map(broom::tidy),
          tidy_pcrit_high_temps = lm_pcrit_high_temps %>% purrr::map(broom::tidy),
          slope_pcrit_low_temps = tidy_pcrit_low_temps %>% purrr::map_dbl(c(2,2)),
          slope_pcrit_high_temps = tidy_pcrit_high_temps %>% purrr::map_dbl(c(2,2)),
-         mean_pcrit_12 = data_mean_pcrit_12 %>% purrr::map_dbl(~ mean(.$pcrit.r)))
+         mean_pcrit_12 = data_mean_pcrit_mo2_12 %>% purrr::map_dbl(~ mean(.$pcrit.r)),
+         lm_mo2_low_temps = data_low_temps %>% purrr::map(~ lm(smr.mass.corr.ms ~ temp, data=.)),
+         lm_mo2_high_temps = data_high_temps %>% purrr::map(~ lm(smr.mass.corr.ms ~ temp, data=.)),
+         tidy_mo2_low_temps = lm_mo2_low_temps %>% purrr::map(broom::tidy),
+         tidy_mo2_high_temps = lm_mo2_high_temps %>% purrr::map(broom::tidy),
+         slope_mo2_low_temps = tidy_mo2_low_temps %>% purrr::map_dbl(c(2,2)),
+         slope_mo2_high_temps = tidy_mo2_high_temps %>% purrr::map_dbl(c(2,2)),
+         mean_mo2_12 = data_mean_pcrit_mo2_12 %>% purrr::map_dbl(~ mean(.$smr.mass.corr.ms)))
 
 ## Beta pcrit: 12-16 degrees ~ Pcrit at 12 degrees
 beta_pcrit_low_temp_plot <- 
@@ -341,6 +531,109 @@ mass_corr_smr_pcrit_data %>%
         axis.text = element_text(size = rel(2.25), colour = "black"),
         axis.line = element_line(size = rel(1.5), colour = "black"),
         axis.ticks = element_line(size = rel(3), colour = "black"),
+        legend.title = element_text(size = rel(1.5)),
+        legend.text = element_text(size = rel(1.5))) +
+  labs(colour = "Species")
+
+###################################
+
+# Version 1.5: Po2 on X, Mo2 on Y
+
+###################################
+
+## Colored by Tidepool occupancy
+mass_corr_smr_pcrit_data %>%
+  mutate(species_plotting = case_when(species == "Oligocottus_maculosus" ~ "Oligocottus maculosus",
+                                      species == "Clinocottus_globiceps" ~ "Clinocottus globiceps",
+                                      species == "Artedius_harringtoni" ~ "Artedius harringtoni",
+                                      species == "Artedius_lateralis" ~ "Artedius lateralis",
+                                      species == "Artedius_fenestralis" ~ "Artedius fenestralis",
+                                      species == "Blepsias_cirrhosus" ~ "Blepsias cirrhosus",
+                                      species == "Enophrys_bison" ~ "Enophrys bison",
+                                      species == "Hemilepidotus_hemilepidotus" ~ "Hemilepidotus hemilepidotus",
+                                      species == "Scorpaenichthys_marmoratus" ~ "Scorpaenichthys marmoratus")) %>%
+  group_by(species_plotting,temp) %>%
+  dplyr::select(species_plotting,temp,pcrit.r,smr.mass.corr.ms) %>%
+  summarise(mean_mo2 = mean(smr.mass.corr.ms),
+            sd_mo2 = sd(smr.mass.corr.ms),
+            n_mo2 = length(smr.mass.corr.ms),
+            sem_mo2 = sd_mo2/sqrt(n_mo2),
+            mean_pcrit = mean(pcrit.r),
+            sd_pcrit = sd(pcrit.r),
+            n_pcrit = length(pcrit.r),
+            sem_pcrit = sd_pcrit/sqrt(n_pcrit)) %>%
+  mutate(tpo = case_when(species_plotting == "Oligocottus maculosus" ~ "yes",
+                         species_plotting == "Clinocottus globiceps" ~ "yes",
+                         species_plotting == "Artedius harringtoni" ~ "yes",
+                         species_plotting == "Artedius lateralis" ~ "yes",
+                         species_plotting == "Artedius fenestralis" ~ "yes",
+                         species_plotting == "Blepsias cirrhosus" ~ "no",
+                         species_plotting == "Enophrys bison" ~ "no",
+                         species_plotting == "Hemilepidotus hemilepidotus" ~ "no",
+                         species_plotting == "Scorpaenichthys marmoratus" ~ "no")) %>%
+  ggplot() +
+  geom_point(aes(x = mean_pcrit, y = mean_mo2, group = species_plotting, colour = tpo), size = 5) +
+  geom_errorbar(aes(x = mean_pcrit, y = mean_mo2, group = species_plotting, colour = tpo,
+                    ymin = mean_mo2-sem_mo2, ymax = mean_mo2+sem_mo2), size = 1.5) +
+  geom_errorbarh(aes(x = mean_pcrit, y = mean_mo2, group = species_plotting, colour = tpo,
+                     xmin = mean_pcrit-sem_pcrit, xmax = mean_pcrit+sem_pcrit), size = 1.5) +
+  geom_line(aes(x = mean_pcrit, y = mean_mo2, group = species_plotting, colour = tpo), size = 1.25) +
+  scale_y_continuous(name = expression(paste(dot(M),"o"[2][",routine"]," (",mu,"mol ",O[2]," g"^-1," hr"^-1,")")),
+                     limits = c(0,6),
+                     breaks = seq(0,6,1)) +
+  scale_x_continuous(name = expression(paste("P"["crit"]," (Torr)")),
+                     limits = c(0,100)) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = NA),
+        axis.title = element_text(size = rel(2.5)),
+        axis.text = element_text(size = rel(2.25), colour = "black"),
+        axis.line = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks = element_line(size = rel(3), colour = "black"),
+        legend.title = element_text(size = rel(1.5)),
+        legend.text = element_text(size = rel(1.5))) +
+  labs(colour = "Tidepool occupancy")
+
+## Colored by Tidepool occupancy
+mass_corr_smr_pcrit_data %>%
+  mutate(species_plotting = case_when(species == "Oligocottus_maculosus" ~ "Oligocottus maculosus",
+                                      species == "Clinocottus_globiceps" ~ "Clinocottus globiceps",
+                                      species == "Artedius_harringtoni" ~ "Artedius harringtoni",
+                                      species == "Artedius_lateralis" ~ "Artedius lateralis",
+                                      species == "Artedius_fenestralis" ~ "Artedius fenestralis",
+                                      species == "Blepsias_cirrhosus" ~ "Blepsias cirrhosus",
+                                      species == "Enophrys_bison" ~ "Enophrys bison",
+                                      species == "Hemilepidotus_hemilepidotus" ~ "Hemilepidotus hemilepidotus",
+                                      species == "Scorpaenichthys_marmoratus" ~ "Scorpaenichthys marmoratus")) %>%
+  group_by(species_plotting,temp) %>%
+  dplyr::select(species_plotting,temp,pcrit.r,smr.mass.corr.ms) %>%
+  summarise(mean_mo2 = mean(smr.mass.corr.ms),
+            sd_mo2 = sd(smr.mass.corr.ms),
+            n_mo2 = length(smr.mass.corr.ms),
+            sem_mo2 = sd_mo2/sqrt(n_mo2),
+            mean_pcrit = mean(pcrit.r),
+            sd_pcrit = sd(pcrit.r),
+            n_pcrit = length(pcrit.r),
+            sem_pcrit = sd_pcrit/sqrt(n_pcrit)) %>%
+  ggplot() +
+  geom_point(aes(x = mean_pcrit, y = mean_mo2, group = species_plotting, colour = species_plotting), size = 5) +
+  geom_errorbar(aes(x = mean_pcrit, y = mean_mo2, group = species_plotting, colour = species_plotting,
+                    ymin = mean_mo2-sem_mo2, ymax = mean_mo2+sem_mo2), size = 1.5) +
+  geom_errorbarh(aes(x = mean_pcrit, y = mean_mo2, group = species_plotting, colour = species_plotting,
+                     xmin = mean_pcrit-sem_pcrit, xmax = mean_pcrit+sem_pcrit), size = 1.5) +
+  geom_line(aes(x = mean_pcrit, y = mean_mo2, group = species_plotting, colour = species_plotting), size = 1.25) +
+  scale_y_continuous(name = expression(paste(dot(M),"o"[2][",routine"]," (",mu,"mol ",O[2]," g"^-1," hr"^-1,")")),
+                     limits = c(0,5),
+                     breaks = seq(0,5,1)) +
+  scale_x_continuous(name = expression(paste("Po"["2"]," (Torr)")),
+                     limits = c(0,100)) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = NA),
+        axis.title = element_text(size = rel(2.5)),
+        axis.text = element_text(size = rel(2.25), colour = "black"),
+        axis.line = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks = element_line(size = rel(5), colour = "black"),
         legend.title = element_text(size = rel(1.5)),
         legend.text = element_text(size = rel(1.5))) +
   labs(colour = "Species")
@@ -1122,9 +1415,13 @@ logLik(pgls_lambda_beta_high_temps_ctmax_gls)
 ## ************************************************
 
 # phylogenetic anova: Pcrit ~ tidepool occupancy (effectively a phylogenetic t-test...???)
-sculpins_phy_data <- list(mandic_phy, lm_pcrit_smr_temp[,c("species","slope_pcrit_low_temps",
+sculpins_phy_data <- list(mandic_phy, lm_pcrit_smr_temp[,c("species",
+                                                           "slope_pcrit_low_temps",
                                                            "slope_pcrit_high_temps",
-                                                           "mean_pcrit_12")])
+                                                           "mean_pcrit_12",
+                                                           "slope_mo2_low_temps",
+                                                           "slope_mo2_high_temps",
+                                                           "mean_mo2_12")])
 sculpins_phy_data[[2]]$tp_occ <- c("Present",
                                    "Present",
                                    "Present",
@@ -1144,6 +1441,12 @@ beta_pcrit_12_16 <- sculpins_phy_data[[2]]$slope_pcrit_low_temps
 names(beta_pcrit_12_16) <- rownames(sculpins_phy_data[[2]])
 beta_pcrit_16_20 <- sculpins_phy_data[[2]]$slope_pcrit_high_temps
 names(beta_pcrit_16_20) <- rownames(sculpins_phy_data[[2]])
+mo2_12 <- sculpins_phy_data[[2]]$mean_mo2_12
+names(mo2_12) <- rownames(sculpins_phy_data[[2]])
+beta_mo2_12_16 <- sculpins_phy_data[[2]]$slope_mo2_low_temps
+names(beta_mo2_12_16) <- rownames(sculpins_phy_data[[2]])
+beta_mo2_16_20 <- sculpins_phy_data[[2]]$slope_mo2_high_temps
+names(beta_mo2_16_20) <- rownames(sculpins_phy_data[[2]])
 ## Independent variable
 tpo <- as.factor(sculpins_phy_data[[2]]$tp_occ)
 names(tpo) <- rownames(sculpins_phy_data[[2]])
@@ -1155,6 +1458,16 @@ aov_phylo_beta_pcrit12_16_tp_occ <- aov.phylo(beta_pcrit_12_16 ~ tpo, sculpins_p
 
 ## Anova: Beta_Pcrit_12-16C ~ Tidepool occupancy
 aov_phylo_beta_pcrit16_20_tp_occ <- aov.phylo(beta_pcrit_16_20 ~ tpo, sculpins_phy_data[[1]], nsim = 1000)
+
+## Anova: MO2 at 12C ~ Tidepool occupancy
+aov_phylo_mo2_12_tp_occ <- aov.phylo(mo2_12 ~ tpo, sculpins_phy_data[[1]], nsim = 1000)
+
+## Anova: Beta_mo2_12_16C ~ Tidepool occupancy
+aov_phylo_beta_mo2_12_16_tp_occ <- aov.phylo(beta_mo2_12_16 ~ tpo, sculpins_phy_data[[1]], nsim = 1000)
+
+## Anova: Beta_mo2_12-16C ~ Tidepool occupancy
+aov_phylo_beta_mo2_16_20_tp_occ <- aov.phylo(beta_mo2_16_20 ~ tpo, sculpins_phy_data[[1]], nsim = 1000)
+
 
 ## ***************************
 ##     CT MAX ~ TPO
@@ -1264,3 +1577,29 @@ fitContinuous(sculpins_phy_ctmax_data[[1]], ctmax, model = "lambda")
 # Phenogram for Pcrit at 12 degrees for all sculpins in this study
 phenogram(sculpins_phy_ctmax_data[[1]], ctmax)
 
+################################################################
+##
+## Potential new figure?
+##
+################################################################
+mass_corr_smr_pcrit_data %>% 
+  filter(species %in% c("Enophrys_bison","Oligocottus_maculosus")) %>%
+  dplyr::select(species,pcrit.r,smr.mass.corr.ms, temp) %>%
+  group_by(species, temp) %>%
+  mutate(mean_smr = mean(smr.mass.corr.ms),
+         sd_smr = sd(smr.mass.corr.ms),
+         n_smr = length(smr.mass.corr.ms),
+         sem_smr = sd_smr/sqrt(n_smr),
+         mean_pcrit = mean(pcrit.r),
+         sd_pcrit = sd(pcrit.r),
+         n_pcrit = length(pcrit.r),
+         sem_pcrit = sd_pcrit/sqrt(n_pcrit)) %>%
+  ggplot() + 
+  geom_point(aes(x = pcrit.r, y = smr.mass.corr.ms, shape = species, colour = temp), size = 2) +
+  geom_line(aes(x = mean_pcrit, y = mean_smr, colour = temp, group = species), size = 2) +
+  scale_x_continuous(name = expression(paste("Po"[2]," (torr)")),
+                     limits = c(0,160),
+                     breaks = seq(0,160,20)) +
+  scale_y_continuous(name = expression(paste(dot(M),"o"[2]," (",mu,"mol O"[2]," g"^-1," hr"^-1,")")),
+                     limits = c(0,6),
+                     breaks = seq(0,6,1))

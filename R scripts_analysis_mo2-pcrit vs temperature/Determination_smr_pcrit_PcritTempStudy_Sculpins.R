@@ -3,6 +3,7 @@
 ##################################
 library(tidyverse)
 library(broom)
+library(lubridate)
 library(mclust)
 library(shape)
 library(StreamMetabolism)
