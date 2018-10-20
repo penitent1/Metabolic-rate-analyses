@@ -175,6 +175,24 @@ lm_scaling_smr_pcrit[,c("species","p_val_smr_aov","p_val_pcrit_aov")] %>%
 
 summary(lm_scaling_smr_pcrit$spps_scaling_mod_pcrit[[3]])
 
+lm_scaling_smr_pcrit[3,]
+
+## Looks like there's only 3 data points for ARHA at 16 degrees - need to double check this
+lm_scaling_smr_pcrit[3,2][[1]]
+
+# Plot of Pcrit vs mass for ARHA - consider log-log plot?
+pcrit_smr_data_summary %>%
+  filter(species == "Artedius_harringtoni") %>%
+  ggplot(aes(x = mass.g, y = pcrit.r)) +
+  geom_point(size = 5) +
+  stat_smooth(method = "lm")
+
+# No real difference with log-log plot so probably stick with linear plot
+pcrit_smr_data_summary %>%
+  filter(species == "Artedius_harringtoni") %>%
+  ggplot(aes(x = log(mass.g), y = log(pcrit.r))) +
+  geom_point(size = 5) +
+  stat_smooth(method = "lm")
 
 ## ******************************************************************
 ##
