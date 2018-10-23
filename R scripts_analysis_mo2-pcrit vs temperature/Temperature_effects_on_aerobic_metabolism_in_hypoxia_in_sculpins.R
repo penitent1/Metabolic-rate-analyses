@@ -535,11 +535,153 @@ mass_corr_smr_pcrit_data %>%
         legend.text = element_text(size = rel(1.5))) +
   labs(colour = "Species")
 
-###################################
+#######################################
+#######################################
 
+# NEW FIGURE 4
 # Version 1.5: Po2 on X, Mo2 on Y
+# Raw data colour coded by temperature
 
-###################################
+#######################################
+#######################################
+
+## Facetted on species
+## MO2 ~ Pcrit AS PO2! has color coded data for EACH INDIVIDUAL
+lol_curve_mean_data <- mass_corr_smr_pcrit_data %>%
+  mutate(species_plotting = case_when(species == "Oligocottus_maculosus" ~ "Oligocottus maculosus",
+                                      species == "Clinocottus_globiceps" ~ "Clinocottus globiceps",
+                                      species == "Artedius_harringtoni" ~ "Artedius harringtoni",
+                                      species == "Artedius_lateralis" ~ "Artedius lateralis",
+                                      species == "Artedius_fenestralis" ~ "Artedius fenestralis",
+                                      species == "Blepsias_cirrhosus" ~ "Blepsias cirrhosus",
+                                      species == "Enophrys_bison" ~ "Enophrys bison",
+                                      species == "Hemilepidotus_hemilepidotus" ~ "Hemilepidotus hemilepidotus",
+                                      species == "Scorpaenichthys_marmoratus" ~ "Scorpaenichthys marmoratus")) %>%
+  group_by(species_plotting,temp) %>%
+  dplyr::select(species_plotting,temp,pcrit.r,smr.mass.corr.ms) %>%
+  summarise(mean_mo2 = mean(smr.mass.corr.ms),
+            sd_mo2 = sd(smr.mass.corr.ms),
+            n_mo2 = length(smr.mass.corr.ms),
+            sem_mo2 = sd_mo2/sqrt(n_mo2),
+            mean_pcrit = mean(pcrit.r),
+            sd_pcrit = sd(pcrit.r),
+            n_pcrit = length(pcrit.r),
+            sem_pcrit = sd_pcrit/sqrt(n_pcrit))
+
+## Fold increase in MO2 and Pcrit among species
+lol_curve_mean_data %>%
+  ungroup() %>%
+  dplyr::select(species_plotting, temp, mean_mo2) %>%
+  group_by(species_plotting, temp) %>%
+  spread(temp, mean_mo2) %>%
+  mutate(fold_12_16 = `16`/`12`,
+         fold_12_20 = `20`/`12`) %>%
+  ungroup() %>%
+  summarise(mean_fold_12_20 = mean(fold_12_20),
+            sd_fold_12_20 = sd(fold_12_20))
+
+lol_curve_mean_data %>%
+  ungroup() %>%
+  dplyr::select(species_plotting, temp, mean_pcrit) %>%
+  group_by(species_plotting, temp) %>%
+  spread(temp, mean_pcrit) %>%
+  mutate(fold_12_16 = `16`/`12`,
+         fold_12_20 = `20`/`12`) %>%
+  ungroup() %>%
+  summarise(mean_fold_12_20 = mean(fold_12_20),
+            sd_fold_12_20 = sd(fold_12_20))
+  
+lol_curve_all_data <- 
+  mass_corr_smr_pcrit_data %>%
+  mutate(species_plotting = case_when(species == "Oligocottus_maculosus" ~ "Oligocottus maculosus",
+                                      species == "Clinocottus_globiceps" ~ "Clinocottus globiceps",
+                                      species == "Artedius_harringtoni" ~ "Artedius harringtoni",
+                                      species == "Artedius_lateralis" ~ "Artedius lateralis",
+                                      species == "Artedius_fenestralis" ~ "Artedius fenestralis",
+                                      species == "Blepsias_cirrhosus" ~ "Blepsias cirrhosus",
+                                      species == "Enophrys_bison" ~ "Enophrys bison",
+                                      species == "Hemilepidotus_hemilepidotus" ~ "Hemilepidotus hemilepidotus",
+                                      species == "Scorpaenichthys_marmoratus" ~ "Scorpaenichthys marmoratus")) %>%
+  dplyr::select(species_plotting, temp, pcrit.r, smr.mass.corr.ms)
+
+
+ggplot(lol_curve_mean_data) +
+  facet_wrap("species_plotting") +
+  geom_point(data = lol_curve_all_data, aes(x = pcrit.r, 
+                                            y = smr.mass.corr.ms, 
+                                            group = species_plotting, 
+                                            colour = temp),
+             size = 2) +
+  scale_colour_gradient(low = "blue", high = "red", breaks = c(12,16,20)) +
+  labs(colour = expression(paste("Temperature (",degree,C,")"))) +
+  geom_point(aes(x = mean_pcrit, y = mean_mo2, group = species_plotting), 
+             size = 2, stroke = 1.5) +
+  geom_errorbar(aes(x = mean_pcrit, y = mean_mo2, group = species_plotting,
+                    ymin = mean_mo2-sem_mo2, ymax = mean_mo2+sem_mo2),
+                size = 1.5) +
+  geom_errorbarh(aes(x = mean_pcrit, y = mean_mo2, group = species_plotting,
+                     xmin = mean_pcrit-sem_pcrit, xmax = mean_pcrit+sem_pcrit),
+                 size = 1.5) +
+  geom_line(aes(x = mean_pcrit, y = mean_mo2, group = species_plotting),
+            size = 1.25) +
+  scale_y_continuous(name = expression(paste(dot(M),"o"[2][",routine"]," (",mu,"mol ",O[2]," g"^-1," hr"^-1,")")),
+                     limits = c(0,5),
+                     breaks = seq(0,5,1)) +
+  scale_x_continuous(name = expression(paste("Po"["2"]," (Torr)")),
+                     limits = c(0,100)) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = NA),
+        axis.title = element_text(size = rel(2.5)),
+        axis.text = element_text(size = rel(2.25), colour = "black"),
+        axis.line = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks = element_line(size = rel(5), colour = "black"),
+        strip.text = element_text(face = "bold", size = rel(1.25)),
+        legend.title = element_text(size = rel(1.5)),
+        legend.text = element_text(size = rel(1.5)))
+
+## Example of 
+lol_curve_mean_data_example <- lol_curve_mean_data %>%
+  filter(species_plotting %in% c("Oligocottus maculosus", "Scorpaenichthys marmoratus"))
+
+lol_curve_all_data_example <- lol_curve_all_data %>%
+  filter(species_plotting %in% c("Oligocottus maculosus", "Scorpaenichthys marmoratus"))
+
+ggplot(lol_curve_mean_data_example) +
+  facet_wrap("species_plotting") +
+  geom_point(data = lol_curve_all_data_example, aes(x = pcrit.r, 
+                                            y = smr.mass.corr.ms, 
+                                            group = species_plotting, 
+                                            colour = temp),
+             size = 2) +
+  scale_colour_gradient(low = "blue", high = "red", breaks = c(12,16,20)) +
+  labs(colour = expression(paste("Temperature (",degree,C,")"))) +
+  geom_point(aes(x = mean_pcrit, y = mean_mo2, group = species_plotting), 
+             size = 2, stroke = 1.5) +
+  geom_errorbar(aes(x = mean_pcrit, y = mean_mo2, group = species_plotting,
+                    ymin = mean_mo2-sem_mo2, ymax = mean_mo2+sem_mo2),
+                size = 1.5) +
+  geom_errorbarh(aes(x = mean_pcrit, y = mean_mo2, group = species_plotting,
+                     xmin = mean_pcrit-sem_pcrit, xmax = mean_pcrit+sem_pcrit),
+                 size = 1.5) +
+  geom_line(aes(x = mean_pcrit, y = mean_mo2, group = species_plotting),
+            size = 1.25) +
+  scale_y_continuous(name = expression(paste(dot(M),"o"[2][",routine"]," (",mu,"mol ",O[2]," g"^-1," hr"^-1,")")),
+                     limits = c(0,5),
+                     breaks = seq(0,5,1)) +
+  scale_x_continuous(name = expression(paste("Po"["2"]," (Torr)")),
+                     limits = c(0,100)) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = NA),
+        axis.title = element_text(size = rel(2.5)),
+        axis.text = element_text(size = rel(2.25), colour = "black"),
+        axis.line = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks = element_line(size = rel(5), colour = "black"),
+        strip.text = element_text(face = "bold", size = rel(2)),
+        legend.title = element_text(size = rel(1.5)),
+        legend.text = element_text(size = rel(1.5)))
+
 
 ## Colored by Tidepool occupancy
 mass_corr_smr_pcrit_data %>%
@@ -638,77 +780,6 @@ mass_corr_smr_pcrit_data %>%
         legend.text = element_text(size = rel(1.5))) +
   labs(colour = "Species")
 
-## Facetted on species
-## MO2 ~ Pcrit AS PO2! has color coded data for EACH INDIVIDUAL
-lol_curve_mean_data <- mass_corr_smr_pcrit_data %>%
-  mutate(species_plotting = case_when(species == "Oligocottus_maculosus" ~ "Oligocottus maculosus",
-                                      species == "Clinocottus_globiceps" ~ "Clinocottus globiceps",
-                                      species == "Artedius_harringtoni" ~ "Artedius harringtoni",
-                                      species == "Artedius_lateralis" ~ "Artedius lateralis",
-                                      species == "Artedius_fenestralis" ~ "Artedius fenestralis",
-                                      species == "Blepsias_cirrhosus" ~ "Blepsias cirrhosus",
-                                      species == "Enophrys_bison" ~ "Enophrys bison",
-                                      species == "Hemilepidotus_hemilepidotus" ~ "Hemilepidotus hemilepidotus",
-                                      species == "Scorpaenichthys_marmoratus" ~ "Scorpaenichthys marmoratus")) %>%
-  group_by(species_plotting,temp) %>%
-  dplyr::select(species_plotting,temp,pcrit.r,smr.mass.corr.ms) %>%
-  summarise(mean_mo2 = mean(smr.mass.corr.ms),
-            sd_mo2 = sd(smr.mass.corr.ms),
-            n_mo2 = length(smr.mass.corr.ms),
-            sem_mo2 = sd_mo2/sqrt(n_mo2),
-            mean_pcrit = mean(pcrit.r),
-            sd_pcrit = sd(pcrit.r),
-            n_pcrit = length(pcrit.r),
-            sem_pcrit = sd_pcrit/sqrt(n_pcrit))
-
-lol_curve_all_data <- 
-  mass_corr_smr_pcrit_data %>%
-  mutate(species_plotting = case_when(species == "Oligocottus_maculosus" ~ "Oligocottus maculosus",
-                                      species == "Clinocottus_globiceps" ~ "Clinocottus globiceps",
-                                      species == "Artedius_harringtoni" ~ "Artedius harringtoni",
-                                      species == "Artedius_lateralis" ~ "Artedius lateralis",
-                                      species == "Artedius_fenestralis" ~ "Artedius fenestralis",
-                                      species == "Blepsias_cirrhosus" ~ "Blepsias cirrhosus",
-                                      species == "Enophrys_bison" ~ "Enophrys bison",
-                                      species == "Hemilepidotus_hemilepidotus" ~ "Hemilepidotus hemilepidotus",
-                                      species == "Scorpaenichthys_marmoratus" ~ "Scorpaenichthys marmoratus")) %>%
-  dplyr::select(species_plotting, temp, pcrit.r, smr.mass.corr.ms)
-
-
-  ggplot(lol_curve_mean_data) +
-  facet_wrap("species_plotting") +
-  geom_point(data = lol_curve_all_data, aes(x = pcrit.r, 
-                                              y = smr.mass.corr.ms, 
-                                              group = species_plotting, 
-                                              colour = temp),
-               size = 2) +
-  scale_colour_gradient(low = "blue", high = "red", breaks = c(12,16,20)) +
-  labs(colour = expression(paste("Temperature (",degree,C,")"))) +
-  geom_point(aes(x = mean_pcrit, y = mean_mo2, group = species_plotting), 
-             size = 2, stroke = 1.5) +
-  geom_errorbar(aes(x = mean_pcrit, y = mean_mo2, group = species_plotting,
-                    ymin = mean_mo2-sem_mo2, ymax = mean_mo2+sem_mo2),
-                size = 1.5) +
-  geom_errorbarh(aes(x = mean_pcrit, y = mean_mo2, group = species_plotting,
-                     xmin = mean_pcrit-sem_pcrit, xmax = mean_pcrit+sem_pcrit),
-                 size = 1.5) +
-  geom_line(aes(x = mean_pcrit, y = mean_mo2, group = species_plotting),
-            size = 1.25) +
-  scale_y_continuous(name = expression(paste(dot(M),"o"[2][",routine"]," (",mu,"mol ",O[2]," g"^-1," hr"^-1,")")),
-                     limits = c(0,5),
-                     breaks = seq(0,5,1)) +
-  scale_x_continuous(name = expression(paste("Po"["2"]," (Torr)")),
-                     limits = c(0,100)) +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.background = element_rect(fill = NA),
-        axis.title = element_text(size = rel(2.5)),
-        axis.text = element_text(size = rel(2.25), colour = "black"),
-        axis.line = element_line(size = rel(1.5), colour = "black"),
-        axis.ticks = element_line(size = rel(5), colour = "black"),
-        strip.text = element_text(face = "bold", size = rel(1.25)),
-        legend.title = element_text(size = rel(1.5)),
-        legend.text = element_text(size = rel(1.5)))
 
 
 ###########################################
@@ -921,7 +992,7 @@ ggplot(aes(x = species_plotting_abb, y = loe_temp_corrected)) +
                                    colour = "black"))
 
 ## Plot: CTmax for each species, all raw data WITHOUT ENBI outlier
-ct_max_df_no_enbi_out <- ct_max_df[-37,]
+ct_max_df_no_enbi_out <- ct_max_df[-37,] # This fish died immediately following LOE
 View(ct_max_df)
 View(ct_max_df_no_enbi_out)
 
@@ -1612,7 +1683,9 @@ names(tpo) <- rownames(sculpins_phy_data[[2]])
 ## Test of phylogenetic signal in Pcrit
 fitContinuous(sculpins_phy_data[[1]], pcrit12, model = "lambda")
 # Phenogram for Pcrit at 12 degrees for all sculpins in this study
-phenogram(sculpins_phy_data[[1]], pcrit12) ## Zero evidence for phylo signal in Pcrit at 12 C
+phenogram(sculpins_phy_data[[1]], pcrit12,
+          ylab = expression(paste("P"["crit"]," (torr)")),
+          ylim = c(20,50)) ## Zero evidence for phylo signal in Pcrit at 12 C
 ## BUT low sample size (ie < 30) means very low power
 
 ## Test of phylogenetic signal in Beta_Pcrit_low_temps
@@ -1623,7 +1696,17 @@ phenogram(sculpins_phy_data[[1]], beta_pcrit_12_16)
 ## Test of phylogenetic signal in Beta_Pcrit_high_temps
 fitContinuous(sculpins_phy_data[[1]], beta_pcrit_16_20, model = "lambda")
 # Phenogram for Pcrit at 12 degrees for all sculpins in this study
-phenogram(sculpins_phy_data[[1]], beta_pcrit_16_20)
+phenogram(sculpins_phy_data[[1]], beta_pcrit_16_20,
+          ylab = expression(paste(beta["Pcrit,16-20"][degree][C]," (Torr C",degree^-1,")")),
+          ylim = c(0,12))
+
+phenogram(sculpins_phy_data[[1]], beta_pcrit_16_20,
+          ylab = expression(paste(beta["Pcrit,12-16"][degree][C]," (Torr C",degree^-1,")")),
+          xlab = NULL, fsize = 1.5, no.margin = TRUE, x.lim = 2, label.offset = 0.4,
+          edge.width = 3.5)
+
+plot(mandic_phy, cex = 2, no.margin = TRUE, x.lim = 2, label.offset = 0.4, edge.width = 3.5,
+     use.edge.length = TRUE)
 
 ## *******************************
 ##     CT MAX phylogenetic signal
@@ -1648,8 +1731,10 @@ names(ctmax) <- rownames(sculpins_phy_ctmax_data[[2]])
 
 ## Test of phylogenetic signal in ctmax
 fitContinuous(sculpins_phy_ctmax_data[[1]], ctmax, model = "lambda")
-# Phenogram for Pcrit at 12 degrees for all sculpins in this study
-phenogram(sculpins_phy_ctmax_data[[1]], ctmax)
+# Phenogram for CTmax for all sculpins in this study
+phenogram(sculpins_phy_ctmax_data[[1]], ctmax,
+          ylab = expression(paste("CT"["max"]," (",degree,C,")")),
+          ylim = c(21.5,30))
 
 ################################################################
 ##
