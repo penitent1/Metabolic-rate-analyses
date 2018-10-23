@@ -37,7 +37,8 @@ md_lc <- read_csv("Ken_Tidepool_CollatedMO2Data_MMR-SMR-Pcrit_PostLabChart.csv")
 md_lc <- md_lc %>%
   mutate(mo2_raw = umol_o2_per_sec*3600*-1) %>%
   group_by(finclip_id) %>%
-  filter(finclip_id == "bottom") # Update per fish
+  filter(finclip_id == "top",
+         probe == "NFB0008") # Update per fish
 
 # Add "time order" bc I did not add a time column for labchart :)
 md_lc_mmr_smr <- md_lc %>%
@@ -62,7 +63,7 @@ smr_best <- ifelse(smr$CVmlnd > 5.4, smr$quant[4], smr$mlnd)
 # For Pcrit estimate
 md_lc_pcrit_pretibble <- md_lc %>% filter(expt_period != "mmr_at_pcrit")
 md_lc_pcrit <- tibble(MO2 = md_lc_pcrit_pretibble$mo2_raw, DO = md_lc_pcrit_pretibble$do_percent_sat)
-plotO2crit(calcO2crit(md_lc_pcrit, SMR = 8.28))
+plotO2crit(calcO2crit(md_lc_pcrit, SMR = 4.32))
 
 ggplot() +
   geom_point(md_lc_pcrit, aes(x = DO, y = MO2)) +
