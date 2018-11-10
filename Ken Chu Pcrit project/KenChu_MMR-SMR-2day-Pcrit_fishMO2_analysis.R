@@ -35,52 +35,54 @@ lm(post ~ pre, data = probe10_data)
 setwd("C:/Users/derek/Documents/Metabolic-rate-analyses/Ken Chu Pcrit project/raw foxy csv files/MMR-2daySMR-Pcrit_MMRatPcrit")
 md_lc <- read_csv("Ken_Tidepool_CollatedMO2Data_MMR-SMR-Pcrit_PostLabChart.csv") # Time not importing properly from weird foxy format, use seq()
 md_lc <- md_lc %>%
-  mutate(mo2_raw = umol_o2_per_sec*3600*-1) %>%
-  group_by(finclip_id) %>%
-  filter(finclip_id == "top",
-         probe == "NFB0008") # Update per fish
+  mutate(mo2_raw = umol_o2_per_sec*3600*-1,
+         time = as.double(time)) %>%
+  group_by(date, finclip_id, expt_period) %>%
+  nest()
 
-# Add "time order" bc I did not add a time column for labchart :)
-md_lc_mmr_smr <- md_lc %>%
-  filter(expt_period == "mmr_smr") %>%
-  mutate(time = as.double(Time))
-  #mutate(time_order = 1:n())
+## Take a look at the dataframe
+md_lc
 
-# Visual estimate of when to cut off MMR recovery
-ggplot(md_lc_mmr_smr, aes(x = time, y = mo2_raw)) +
-  geom_point()
+ggplot(md_lc$data[[13]], aes(x = time, y = mo2_raw/mass_g))+geom_point()+geom_line()
+ggplot(md_lc$data[[14]], aes(x = do_percent_sat, y = mo2_raw/mass_g))+geom_point(size = 3)
 
-# Max MO2
-max(md_lc_mmr_smr$mo2_raw)
+smr_data <- md_lc$data[[13]] %>% dplyr::select(do_percent_sat,po2_torr,mo2_raw,mass_g) %>% 
+  mutate(MO2 = mo2_raw/mass_g, DO = do_percent_sat) %>% as.data.frame(.)
+head(smr_data)
 
-# For SMR estimate
-md_lc_smr <- md_lc_mmr_smr %>%
-  filter(time > 800)
+max(smr_data$MO2)
 
-smr <- calcSMR(md_lc_smr$mo2_raw)
-smr_best <- ifelse(smr$CVmlnd > 5.4, smr$quant[4], smr$mlnd)
+smr_est <- calcSMR(smr_data$MO2) # Top-bottom SMR = 1.13
 
-# For Pcrit estimate
-md_lc_pcrit_pretibble <- md_lc %>% filter(expt_period != "mmr_at_pcrit")
-md_lc_pcrit <- tibble(MO2 = md_lc_pcrit_pretibble$mo2_raw, DO = md_lc_pcrit_pretibble$do_percent_sat)
-plotO2crit(calcO2crit(md_lc_pcrit, SMR = 4.32))
+ifelse(smr_est$CVmlnd > 5.4, smr_est$quant, smr_est$mlnd)
 
-ggplot() +
-  geom_point(md_lc_pcrit, aes(x = DO, y = MO2)) +
-  geom_point(md_lc_mmr_pcrit_summ, aes(x = mean_do, y = mean_mo2))
+ggplot(md_lc$data[[13]], aes(x = time, y = mo2_raw/mass_g))+
+  geom_point()+
+  geom_line()+
+  geom_hline(yintercept = 1.85)
 
-# For MMR at Pcrit
-md_lc_mmr_pcrit <- md_lc %>%
-  filter(expt_period == "mmr_at_pcrit")
-max(md_lc_mmr_pcrit$mo2_raw)
+pcrit_data <- md_lc$data[[14]] %>% dplyr::select(do_percent_sat,po2_torr,mo2_raw,mass_g) %>% 
+  mutate(MO2 = mo2_raw/mass_g, DO = do_percent_sat) %>% as.data.frame(.)
+head(pcrit_data)
 
-ggplot(md_lc_mmr_pcrit, aes(x = do_percent_sat, y = mo2_raw)) +
-  geom_point() +
-  geom_point(aes(x = mean(do_percent_sat), y = mean(mo2_raw)), colour = "red")
+#write_excel_csv(tibble(do = pcrit_data$DO, mo2 = pcrit_data$MO2),"C:/Users/derek/Documents/Metabolic-rate-analyses/Ken Chu Pcrit project/olma_pcrit_intop-inbottom.csv")
 
-md_lc_mmr_pcrit_summ <-  md_lc_mmr_pcrit %>% 
-  select(do_percent_sat, mo2_raw) %>% 
-  dplyr::summarise(mean_do = mean(do_percent_sat),
-                   mean_mo2 = mean(mo2_raw),
-                   max_mo2 = max(mo2_raw),
-                   max_do = 12.2)
+plotO2crit(calcO2crit(pcrit_data, SMR = 1.85))
+
+smr_pcrit_data <- bind_rows(smr_data, pcrit_data)
+head(smr_pcrit_data)
+
+plotO2crit(calcO2crit(smr_pcrit_data, SMR = 1.85))
+
+## MMR at pcrit
+
+mmr_at_pcrit <- md_lc$data[[12]] %>% 
+  mutate(mo2_ms = mo2_raw/mass_g) %>% 
+  dplyr::select(mass_g, time, mo2_raw, mo2_ms)
+
+ggplot(mmr_at_pcrit, aes(x = time, y = mo2_ms)) +
+  geom_point(size = 3)
+
+mmr_at_pcrit
+
+mean(mmr_at_pcrit$mo2_ms)

@@ -26,7 +26,7 @@ smr_data_post5hr <- smr_data %>%
   mutate(smr_ms_list = data %>% purrr::map(~ fishMO2::calcSMR(.$mo2.ms)),
          smr_ms_cv_mlnd = smr_ms_list %>% purrr::map_dbl("CVmlnd"),
          smr_ms_quantiles = smr_ms_list %>% purrr::map("quant"),
-         smr_ms_smr_q2 = smr_ms_list %>% purrr::map_dbl(4),
+         smr_ms_smr_q2 = smr_ms_quantiles %>% purrr::map_dbl(4),
          smr_ms_smr_mlnd = smr_ms_list %>% purrr::map_dbl("mlnd"),
          smr_ms = if_else(smr_ms_cv_mlnd > 5.4, smr_ms_smr_q2, smr_ms_smr_mlnd))
 
