@@ -43,10 +43,10 @@ md_lc <- md_lc %>%
 ## Take a look at the dataframe
 md_lc
 
-ggplot(md_lc$data[[13]], aes(x = time, y = mo2_raw/mass_g))+geom_point()+geom_line()
-ggplot(md_lc$data[[14]], aes(x = do_percent_sat, y = mo2_raw/mass_g))+geom_point(size = 3)
+ggplot(md_lc$data[[16]], aes(x = time, y = mo2_raw/mass_g))+geom_point()+geom_line()
+ggplot(md_lc$data[[17]], aes(x = do_percent_sat, y = mo2_raw/mass_g))+geom_point(size = 3)
 
-smr_data <- md_lc$data[[13]] %>% dplyr::select(do_percent_sat,po2_torr,mo2_raw,mass_g) %>% 
+smr_data <- md_lc$data[[16]] %>% dplyr::select(do_percent_sat,po2_torr,mo2_raw,mass_g) %>% 
   mutate(MO2 = mo2_raw/mass_g, DO = do_percent_sat) %>% as.data.frame(.)
 head(smr_data)
 
@@ -56,29 +56,29 @@ smr_est <- calcSMR(smr_data$MO2) # Top-bottom SMR = 1.13
 
 ifelse(smr_est$CVmlnd > 5.4, smr_est$quant, smr_est$mlnd)
 
-ggplot(md_lc$data[[13]], aes(x = time, y = mo2_raw/mass_g))+
+ggplot(md_lc$data[[16]], aes(x = time, y = mo2_raw/mass_g))+
   geom_point()+
   geom_line()+
-  geom_hline(yintercept = 1.85)
+  geom_hline(yintercept = 1.33)
 
-pcrit_data <- md_lc$data[[14]] %>% dplyr::select(do_percent_sat,po2_torr,mo2_raw,mass_g) %>% 
+pcrit_data <- md_lc$data[[17]] %>% dplyr::select(do_percent_sat,po2_torr,mo2_raw,mass_g) %>% 
   mutate(MO2 = mo2_raw/mass_g, DO = do_percent_sat) %>% as.data.frame(.)
 head(pcrit_data)
 
 #write_excel_csv(tibble(do = pcrit_data$DO, mo2 = pcrit_data$MO2),"C:/Users/derek/Documents/Metabolic-rate-analyses/Ken Chu Pcrit project/olma_pcrit_intop-inbottom.csv")
 
-plotO2crit(calcO2crit(pcrit_data, SMR = 1.85))
+plotO2crit(calcO2crit(pcrit_data, SMR = 1.14))
 
 smr_pcrit_data <- bind_rows(smr_data, pcrit_data)
 head(smr_pcrit_data)
 
-plotO2crit(calcO2crit(smr_pcrit_data, SMR = 1.85))
+plotO2crit(calcO2crit(smr_pcrit_data, SMR = 1.33))
 
 ## MMR at pcrit
 
-mmr_at_pcrit <- md_lc$data[[12]] %>% 
+mmr_at_pcrit <- md_lc$data[[15]] %>% 
   mutate(mo2_ms = mo2_raw/mass_g) %>% 
-  dplyr::select(mass_g, time, mo2_raw, mo2_ms)
+  dplyr::select(mass_g, time, mo2_raw, mo2_ms, do_percent_sat, po2_torr)
 
 ggplot(mmr_at_pcrit, aes(x = time, y = mo2_ms)) +
   geom_point(size = 3)
