@@ -76,7 +76,7 @@ plotO2crit(calcO2crit(smr_pcrit_data, SMR = 1.33))
 
 ## MMR at pcrit
 
-mmr_at_pcrit <- md_lc$data[[15]] %>% 
+mmr_at_pcrit <- md_lc$data[[18]] %>% 
   mutate(mo2_ms = mo2_raw/mass_g) %>% 
   dplyr::select(mass_g, time, mo2_raw, mo2_ms, do_percent_sat, po2_torr)
 
@@ -86,3 +86,54 @@ ggplot(mmr_at_pcrit, aes(x = time, y = mo2_ms)) +
 mmr_at_pcrit
 
 mean(mmr_at_pcrit$mo2_ms)
+
+## MMR at Pcrit: Mo2 vs time for all trials
+
+mmr_at_pcrit_vs_time <- md_lc %>%
+  filter(expt_period == "mmr_at_pcrit")
+
+# Look at dataset
+mmr_at_pcrit_vs_time
+
+# Unnest
+mmr_at_pcrit_vs_time <- mmr_at_pcrit_vs_time %>% unnest() %>% 
+  mutate(mo2_ms = mo2_raw/mass_g,
+         smr_ms = case_when(finclip_id == "bottom" ~ 1.87,
+                            finclip_id == "top" ~ 1.42,
+                            finclip_id == "top_bottom" ~ 1.13,
+                            finclip_id == "intop_inbottom" ~ 1.85,
+                            finclip_id == "middle_stumpy" ~ 1.33),
+         mmr_ms = case_when(finclip_id == "bottom" ~ 8.82,
+                            finclip_id == "top" ~ 7.75,
+                            finclip_id == "top_bottom" ~ 6.83,
+                            finclip_id == "intop_inbottom" ~ 8.71,
+                            finclip_id == "middle_stumpy" ~ 9.4),
+         fish_name = case_when(finclip_id == "bottom" ~ "Fish 1",
+                               finclip_id == "top" ~ "Fish 2",
+                               finclip_id == "top_bottom" ~ "Fish 3",
+                               finclip_id == "intop_inbottom" ~ "Fish 4",
+                               finclip_id == "middle_stumpy" ~ "Fish 5"))
+
+# Plot: MO2 vs time, facet by individual
+ggplot(mmr_at_pcrit_vs_time) +
+  facet_wrap("fish_name") +
+  geom_hline(aes(yintercept = mmr_ms), color = "red", size = 2.5) +
+  geom_hline(aes(yintercept = smr_ms), color = "blue", size = 2.5) +
+  geom_point(aes(x = time, y = mo2_ms), size = 7) +
+  geom_line(aes(x = time, y = mo2_ms), size = 2.5) +
+  scale_x_continuous(name = "Time post-chase (min)",
+                     limits = c(0,35),
+                     breaks = seq(0,30,10)) +
+  scale_y_continuous(name = expression(paste(dot(M),"o"[2]," (",mu,"mol O"[2]," g"^-1," h"^-1,")")),
+                     limits = c(0,10),
+                     breaks = seq(0,10,2)) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = NA),
+        strip.text = element_text(size = rel(3), face = "bold"),
+        axis.title.x = element_text(size = rel(5.5), margin = margin(t = 30)),
+        axis.title.y = element_text(size = rel(5.5), margin = margin(r = 30)),
+        axis.text = element_text(size = rel(3), colour = "black"),
+        axis.line = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks = element_line(size = rel(5), colour = "black"))
+## Print at W = 2000, H = 1239
