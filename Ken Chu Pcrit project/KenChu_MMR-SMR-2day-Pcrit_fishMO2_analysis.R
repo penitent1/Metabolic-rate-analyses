@@ -43,8 +43,8 @@ md_lc <- md_lc %>%
 ## Take a look at the dataframe
 md_lc
 
-ggplot(md_lc$data[[16]], aes(x = time, y = mo2_raw/mass_g))+geom_point()#+geom_line()
-ggplot(md_lc$data[[17]], aes(x = do_percent_sat, y = mo2_raw/mass_g))+geom_point()
+ggplot(md_lc$data[[19]], aes(x = time, y = mo2_raw/mass_g))+geom_point()#+geom_line()
+ggplot(md_lc$data[[20]], aes(x = do_percent_sat, y = mo2_raw/mass_g))+geom_point()
 
 smr_data <- md_lc$data[[19]] %>% dplyr::select(do_percent_sat,po2_torr,mo2_raw,mass_g) %>% 
   mutate(MO2 = mo2_raw/mass_g, DO = do_percent_sat) %>% as.data.frame(.)
@@ -76,7 +76,7 @@ plotO2crit(calcO2crit(smr_pcrit_data, SMR = 1.38))
 
 ## MMR at pcrit
 
-mmr_at_pcrit <- md_lc$data[[18]] %>% 
+mmr_at_pcrit <- md_lc$data[[21]] %>% 
   mutate(mo2_ms = mo2_raw/mass_g) %>% 
   dplyr::select(mass_g, time, mo2_raw, mo2_ms, do_percent_sat, po2_torr)
 

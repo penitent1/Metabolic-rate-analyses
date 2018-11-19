@@ -4,4 +4,4 @@ top,7.75,1.42,11.7,18.7,1.09,1.31,0.655,0.1219,0,0.99,Use all data (mmr-smr) wit
 top_bottom,6.83,1.13,11.5,18.4,1.71,2.07,1.38,0.1381,0.062,0.99,Used REGRESS program to estimate Pcrit - BSR
 intop_inbottom,8.71,1.85,13.3,21.3,1.93,2.2,1.67,0.1565,-0.2271,0.99,Use all data (mmr-smr) with pcrit data to estimate pcrit
 middle_stumpy,9.4,1.33,11.8,18.9,1.11,1.29,0.923,0.1252,-0.1452,0.99,Use all data (mmr-smr) with pcrit data to estimate pcrit
-intop_bottom,6.34,1.38,12.5,20,,,,0.11714,-0.07927,0.98,No difference in Pcrit estimate between using Pcrit trial data only vs using Pcrit + MMR-SMR data
+intop_bottom,6.34,1.38,12.5,20,1.25,1.42,1.04,0.11714,-0.07927,0.98,No difference in Pcrit estimate between using Pcrit trial data only vs using Pcrit + MMR-SMR data
