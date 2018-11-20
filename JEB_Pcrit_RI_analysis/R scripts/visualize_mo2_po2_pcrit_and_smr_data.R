@@ -90,3 +90,25 @@ md_o2 %>%
         axis.text.x = element_text(size = rel(1.25), colour = "black"),
         axis.line = element_line(size = rel(1.5), colour = "black"),
         axis.ticks = element_line(size = rel(5), colour = "black"))
+
+
+## Exporting csv file with individual MO2 vs PO2 data for Jeff: Pcrit data only
+
+# Remove outlier from OLMA finclip == top_tank10_other-bucket
+md_o2_outlierout_olma <- md_o2 %>% 
+  mutate(mo2_raw_per_hr = umol_o2_per_sec*-1*3600, 
+         mo2_ms_per_hr = mo2_raw_per_hr/mass_g) %>%
+  filter(mo2_ms_per_hr > 0.077) %>% ## Removing outlier from this data - but may not want to...?
+  dplyr::select(species,finclip_id,mass_g,po2_torr,mo2_ms_per_hr,expt_period)%>%
+  rename(fish_id = finclip_id)
+
+pcrit_md_jeff <- md_o2_outlierout_olma %>%
+  filter(expt_period == "pcrit",
+         species %in% c("Oligocottus_maculosus","Clinocottus_globiceps","Blepsias_cirrhosus"))
+
+
+ggplot(pcrit_md_jeff, aes(x = po2_torr, y = mo2_ms_per_hr))+
+  geom_point() +
+  facet_wrap(species ~ fish_id)
+
+#write_csv(pcrit_md_jeff, path = "C:/Users/derek/Documents/Metabolic-rate-analyses/JEB_Pcrit_RI_analysis/Data/Jeff_po2_mo2_pcrit_BLCI_CLGL_OLMA.csv")
