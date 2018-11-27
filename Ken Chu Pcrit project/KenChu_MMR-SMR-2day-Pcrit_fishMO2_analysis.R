@@ -185,3 +185,59 @@ ggplot(raw_po2_vs_mo2, aes(x = po2_torr, y = mo2_ms)) +
         axis.line = element_line(size = rel(1.5), colour = "black"),
         axis.ticks = element_line(size = rel(5), colour = "black"))
 ## Print at W = 2000, H = 1239
+
+## Summary figure for Jeff: MMR, SMR, MMR at Pcrit in tidepool sculpins
+mmr_at_pcrit_vs_time %>%
+  dplyr::select(fish_name,expt_period,mo2_ms,smr_ms,mmr_ms) %>%
+  group_by(fish_name) %>%
+  dplyr::summarise(mo2_ms_mean = mean(mo2_ms),
+                   smr_ms = mean(smr_ms),
+                   mmr_ms = mean (mmr_ms)) %>%
+  gather(key = expt,
+        value = mo2,
+        mo2_ms_mean, smr_ms, mmr_ms) %>%
+  mutate(expt_name = case_when(expt == "mo2_ms_mean" ~ "Max at Pcrit",
+                               expt == "smr_ms" ~ "SMR",
+                               expt == "mmr_ms" ~ "MMR")) %>%
+  ggplot() +
+  geom_point(aes(x = expt_name, y = mo2), size = 4) +
+  geom_line(aes(x = expt_name, y = mo2, group = fish_name)) +
+  scale_x_discrete(name = element_blank(),
+                   limits = c("MMR","SMR","Max at Pcrit")) +
+  scale_y_continuous(name = element_blank(),
+                     limits = c(0,10),
+                     breaks = seq(0,10,2)) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = NA),
+        #axis.title.x = element_text(size = rel(5.5), margin = margin(t = 30)),
+        axis.title.y = element_text(size = rel(5.5), margin = margin(r = 30)),
+        axis.text = element_text(size = rel(3), colour = "black"),
+        axis.line = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks.length = unit(0.5, "cm"))
+
+
+# Plot: MO2 vs time, facet by individual
+ggplot(mmr_at_pcrit_vs_time) +
+  facet_wrap("fish_name") +
+  geom_hline(aes(yintercept = mmr_ms), color = "red", size = 2.5) +
+  geom_hline(aes(yintercept = smr_ms), color = "blue", size = 2.5) +
+  geom_point(aes(x = time, y = mo2_ms), size = 7) +
+  geom_line(aes(x = time, y = mo2_ms), size = 2.5) +
+  scale_x_continuous(name = "Time post-chase (min)",
+                     limits = c(0,35),
+                     breaks = seq(0,30,10)) +
+  scale_y_continuous(name = expression(paste(dot(M),"o"[2]," (",mu,"mol O"[2]," g"^-1," h"^-1,")")),
+                     limits = c(0,10),
+                     breaks = seq(0,10,2)) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = NA),
+        strip.text = element_text(size = rel(3), face = "bold"),
+        axis.title.x = element_text(size = rel(5.5), margin = margin(t = 30)),
+        axis.title.y = element_text(size = rel(5.5), margin = margin(r = 30)),
+        axis.text = element_text(size = rel(3), colour = "black"),
+        axis.line = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks = element_line(size = rel(5), colour = "black"))
+## Print at W = 2000, H = 1239
