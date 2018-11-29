@@ -241,3 +241,64 @@ ggplot(mmr_at_pcrit_vs_time) +
         axis.line = element_line(size = rel(1.5), colour = "black"),
         axis.ticks = element_line(size = rel(5), colour = "black"))
 ## Print at W = 2000, H = 1239
+
+## Representative trace for Jeff: Using Middle fin clip fish ("Stumpy")
+md_lc_rep_trace <- read_csv("Ken_Tidepool_CollatedMO2Data_MMR-SMR-Pcrit_PostLabChart.csv")
+md_lc_rep_trace <- md_lc_rep_trace %>%
+  mutate(mo2_raw = umol_o2_per_sec*3600*-1,
+         time = as.double(time)) %>%
+  filter(finclip_id == "middle_stumpy") %>%
+  group_by(date, expt_period) %>%
+  nest() %>%
+  filter(date != "24-Oct-18")
+
+md_stumpy_mmr_smr <- md_lc_rep_trace %>%
+  unnest() %>%
+  filter(expt_period != "mmr_at_pcrit") %>%
+  mutate(mo2_ms = mo2_raw/mass_g,
+         expt_period_fig = if_else(expt_period == "mmr_smr", "MMR and SMR", "Pcrit"))
+
+md_stumpy_mmr_smr$time[md_stumpy_mmr_smr$expt_period=="pcrit"] <- (md_stumpy_mmr_smr$time[md_stumpy_mmr_smr$expt_period=="pcrit"])+2815.703
+
+expt_period_col <- c("blue", "red")
+
+ggplot(md_stumpy_mmr_smr) +
+  geom_point(aes(x = time/60, y = mo2_ms, colour = expt_period_fig), size = 4) +
+  scale_x_continuous(name = element_blank()) +
+  scale_y_continuous(name = element_blank(),
+                     limits = c(0,10),
+                     breaks = seq(0,10,2)) +
+  labs(colour = "Experimental period") +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = NA),
+        legend.title = element_text(size = rel(3), colour = "black"),
+        legend.text = element_text(size = rel(2.5), colour = "black"),
+        legend.spacing = unit(5, "cm"),
+        #strip.text = element_text(size = rel(3), face = "bold"),
+        #axis.title.x = element_text(size = rel(5.5), margin = margin(t = 30)),
+        #axis.title.y = element_text(size = rel(5.5), margin = margin(r = 30)),
+        axis.text = element_text(size = rel(3), colour = "black"),
+        axis.line = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks.length = unit(0.5, "cm"))
+
+## Representative pcrit from middle fin clip: "stumpy"
+ggplot(md_stumpy_mmr_smr[md_stumpy_mmr_smr$expt_period=="pcrit",]) +
+  geom_point(aes(x = po2_torr, y = mo2_ms), size = 4) +
+  scale_x_continuous(name = element_blank(),
+                     limits = c(0,165),
+                     breaks = seq(0,160,20)) +
+  scale_y_continuous(name = element_blank(),
+                     limits = c(0,2),
+                     breaks = seq(0,2,0.5)) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = NA),
+        #strip.text = element_text(size = rel(3), face = "bold"),
+        #axis.title.x = element_text(size = rel(5.5), margin = margin(t = 30)),
+        #axis.title.y = element_text(size = rel(5.5), margin = margin(r = 30)),
+        axis.text = element_text(size = rel(3), colour = "black"),
+        axis.line = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks.length = unit(0.5, "cm"))
