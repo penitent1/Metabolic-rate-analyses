@@ -12,27 +12,29 @@ library(fishMO2)
 ##################################
 # Import data: Pre Labchart
 ##################################
-setwd("C:/Users/derek/Documents/Metabolic-rate-analyses/Ken Chu Pcrit project/raw foxy csv files/MMR-2daySMR-Pcrit_MMRatPcrit")
-md <- read_csv("Ken_Tidepool_CollatedMO2Data_MMR-SMR-Pcrit.csv") # Time not importing properly from weird foxy format, use seq()
-md <- md %>%
-  select(species,finclip_id,probe,resp,date_start,sampling_rate_sec,
-         expt_po2_type,expt_period,Oxygen,`Air Pressure_GovCan`) %>%
-  group_by(finclip_id,probe,date_start,expt_po2_type,expt_period) %>%
-  mutate(time_sec = 1:n(),
-         time_hr = time_sec/3600) %>%
-  filter(row_number() %/% 15 == 0) %>%
-  nest()
-
-ggplot(md$data[[1]], aes(x = time, y = Oxygen)) +
-  geom_point()
-
-probe10_data <- tibble(pre = c(0,100), post = c(2.2,101.4))
-lm(post ~ pre, data = probe10_data)
+#setwd("C:/Users/derek/Documents/Metabolic-rate-analyses/Ken Chu Pcrit project/raw foxy csv files/MMR-2daySMR-Pcrit_MMRatPcrit")
+#setwd("C:/Users/derek/OneDrive/Documents/Metabolic-rate-analyses/Ken Chu Pcrit project/raw foxy csv files/MMR-2daySMR-Pcrit_MMRatPcrit")
+#md <- read_csv("Ken_Tidepool_CollatedMO2Data_MMR-SMR-Pcrit.csv") # Time not importing properly from weird foxy format, use seq()
+#md <- md %>%
+#  select(species,finclip_id,probe,resp,date_start,sampling_rate_sec,
+#         expt_po2_type,expt_period,Oxygen,`Air Pressure_GovCan`) %>%
+#  group_by(finclip_id,probe,date_start,expt_po2_type,expt_period) %>%
+#  mutate(time_sec = 1:n(),
+#         time_hr = time_sec/3600) %>%
+#  filter(row_number() %/% 15 == 0) %>%
+#  nest()
+#
+#ggplot(md$data[[1]], aes(x = time, y = Oxygen)) +
+#  geom_point()
+#
+#probe10_data <- tibble(pre = c(0,100), post = c(2.2,101.4))
+#lm(post ~ pre, data = probe10_data)
 
 ##################################
 # Import data: POST Labchart
 ##################################
-setwd("C:/Users/derek/Documents/Metabolic-rate-analyses/Ken Chu Pcrit project/raw foxy csv files/MMR-2daySMR-Pcrit_MMRatPcrit")
+#setwd("C:/Users/derek/Documents/Metabolic-rate-analyses/Ken Chu Pcrit project/raw foxy csv files/MMR-2daySMR-Pcrit_MMRatPcrit")
+setwd("C:/Users/derek/OneDrive/Documents/Metabolic-rate-analyses/Ken Chu Pcrit project/raw foxy csv files/MMR-2daySMR-Pcrit_MMRatPcrit")
 md_lc <- read_csv("Ken_Tidepool_CollatedMO2Data_MMR-SMR-Pcrit_PostLabChart.csv") # Time not importing properly from weird foxy format, use seq()
 md_lc <- md_lc %>%
   mutate(mo2_raw = umol_o2_per_sec*3600*-1,
@@ -42,6 +44,11 @@ md_lc <- md_lc %>%
 
 ## Take a look at the dataframe
 md_lc
+
+# Get (mean) mass of the fish in this study and the variation in mass over the course of the measurements
+md_lc %>% mutate(mass = data %>% purrr::map_dbl(~ mean(.$mass_g, data = .))) %>%
+  group_by(finclip_id) %>% dplyr::select(finclip_id, mass) %>% summarise(mass_mean = mean(mass),
+                                                                         mass_sd = sd(mass))
 
 ggplot(md_lc$data[[19]], aes(x = time, y = mo2_raw/mass_g))+geom_point()#+geom_line()
 ggplot(md_lc$data[[20]], aes(x = do_percent_sat, y = mo2_raw/mass_g))+geom_point()
