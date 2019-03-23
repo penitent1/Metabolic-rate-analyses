@@ -102,11 +102,73 @@ pcrit_md_lc <- md_lc %>%
                                             SMR_q20)),
             by = "finclip_id") %>%
   mutate(data_o2crit = data %>% purrr::map(~ dplyr::select(.,MO2,DO)),
+         mass_g = data %>% purrr::map_dbl(~ mean(.$mass_g)),
          pcrit_mlnd_object = purrr::map2(data_o2crit, SMR_mlnd, ~ calcO2crit(.x, .y, .y)),
          pcrit_mlnd = pcrit_mlnd_object %>% purrr::map_dbl("o2crit"),
          pcrit_q20_object = purrr::map2(data_o2crit, SMR_q20, ~ calcO2crit(.x, .y, .y)),
          pcrit_q20 = pcrit_q20_object %>% purrr::map_dbl("o2crit"))
 
-pcrit_md_lc %>% dplyr::select(MMR,SMR_mlnd,SMR_q20,pcrit_mlnd,pcrit_q20)
-pcrit_md_lc$pcrit_mlnd_object[[1]]
+## MMR, SMR_mlnd, SMR_q20, Pcrit_mlnd, and Pcrit_q20 data summarized in a table:
+pcrit_md_lc %>% dplyr::select(mass_g,MMR,SMR_mlnd,SMR_q20,pcrit_mlnd,pcrit_q20)
+
+## Visualizing all the Pcrit plots, for both Pcrit calculations
+plotO2crit(pcrit_md_lc$pcrit_mlnd_object[[1]])
 plotO2crit(pcrit_md_lc$pcrit_q20_object[[1]])
+
+plotO2crit(pcrit_md_lc$pcrit_mlnd_object[[2]])
+plotO2crit(pcrit_md_lc$pcrit_q20_object[[2]])
+
+plotO2crit(pcrit_md_lc$pcrit_mlnd_object[[3]])
+plotO2crit(pcrit_md_lc$pcrit_q20_object[[3]])
+
+plotO2crit(pcrit_md_lc$pcrit_mlnd_object[[4]])
+plotO2crit(pcrit_md_lc$pcrit_q20_object[[4]])
+
+plotO2crit(pcrit_md_lc$pcrit_mlnd_object[[5]])
+plotO2crit(pcrit_md_lc$pcrit_q20_object[[5]])
+
+plotO2crit(pcrit_md_lc$pcrit_mlnd_object[[6]])
+plotO2crit(pcrit_md_lc$pcrit_q20_object[[6]])
+
+# Visualizing relationship: log(Pcrit_mlnd or Pcrit_q20) ~ log(body mass)
+pcrit_md_lc %>% ggplot() +
+  geom_point(aes(x = log(mass_g), y = log(pcrit_mlnd)), size = 4, colour = "red") +
+  stat_smooth(aes(x = log(mass_g), y = log(pcrit_mlnd)), method = "lm", colour = "black") +
+  geom_point(aes(x = log(mass_g), y = log(pcrit_q20)), size = 4, colour = "blue") +
+  stat_smooth(aes(x = log(mass_g), y = log(pcrit_q20)), method = "lm", colour = "black") +
+  scale_x_continuous(name = expression(paste("ln(mass) (ln(g))")),
+                     limits = c(0,3),
+                     breaks = seq(0,3,1)) +
+  scale_y_continuous(name = expression(paste("ln(P"["crit"]," (ln(Torr))")),
+                     limits = c(0,5),
+                     breaks = seq(0,5,1)) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks = element_line(size = rel(5), colour = "black"),
+        axis.ticks.length = unit(0.25, "cm"),
+        axis.title = element_text(size = rel(2)),
+        axis.text = element_text(size = rel(2)))
+
+# Visualizing Pcrit vs SMR, Pcrit vs MMR
+pcrit_md_lc %>% ggplot() +
+  geom_point(aes(x = MMR, y = pcrit_mlnd), size = 4, colour = "red") +
+  geom_point(aes(x = SMR_mlnd, y = pcrit_mlnd), size = 4, colour = "blue") +
+  scale_x_continuous(name = expression(paste(dot(M),"o"[2]," (",mu,"mol O"[2]," h"^-1,")")),
+                     limits = c(0,50),
+                     breaks = seq(0,50,10)) +
+  scale_y_continuous(name = expression(paste("P"["crit"]," Torr)")),
+                     limits = c(0,40),
+                     breaks = seq(0,40,10)) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks = element_line(size = rel(5), colour = "black"),
+        axis.ticks.length = unit(0.25, "cm"),
+        axis.title = element_text(size = rel(2)),
+        axis.text = element_text(size = rel(2)))
+
+# Visualizing MMR, SMR(mlnd), and Pcrit(mlnd) on a single plot with MO2 on y axis
+pcrit_md_lc %>% gather()
