@@ -170,5 +170,30 @@ pcrit_md_lc %>% ggplot() +
         axis.title = element_text(size = rel(2)),
         axis.text = element_text(size = rel(2)))
 
-# Visualizing MMR, SMR(mlnd), and Pcrit(mlnd) on a single plot with MO2 on y axis
-pcrit_md_lc %>% gather()
+# Visualizing MMR, (MO2 @ Pcrit), and MMR at Pcrit on a single plot with MO2 on y axis
+mmr_at_pcrit_md_lc <- md_lc %>% filter(expt_period == "mmr_at_pcrit") %>% unnest() %>% group_by(finclip_id) %>%
+  summarise(mmr_at_pcrit_mo2_mean = mean(mo2_raw),
+            mmr_at_pcrit_mo2_sd = sd(mo2_raw))
+
+pd <- position_dodge(0.1)
+mmr_at_pcrit_md_lc %>% left_join(pcrit_md_lc, by = "finclip_id") %>% 
+  gather(key = metabolic_state, value = mo2, MMR, SMR_mlnd, mmr_at_pcrit_mo2_mean) %>%
+  mutate(met_state_plot_names = case_when(metabolic_state == "MMR" ~ paste("Mo"[2]["MAX"]),
+                                          metabolic_state == "mmr_at_pcrit_mo2_mean" ~ paste("Mo"[2]["MAX"],"at P"["crit"]),
+                                          metabolic_state == "SMR_mlnd" ~ paste("Mo"[2]["STANDARD"])))
+  ggplot(aes(x = met_state_plot_names, y = mo2, group = finclip_id)) +
+  geom_point(position = pd, size = 5, shape = 1, stroke = 2) +
+  geom_line(position = pd, size = 1.5) +
+  scale_x_discrete(name = expression(paste("Metabolic state"))) +
+  scale_y_continuous(name = expression(paste(dot(M),"o"[2]," (",mu,"mol O"[2]," h"^-1,")")),
+                     limits = c(0,50),
+                     breaks = seq(0,50,10)) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(size = rel(1.5), colour = "black"),
+        axis.ticks = element_line(size = rel(5), colour = "black"),
+        axis.ticks.length = unit(0.25, "cm"),
+        axis.title = element_text(size = rel(2)),
+        axis.text = element_text(size = rel(2), colour = "black"))
+
