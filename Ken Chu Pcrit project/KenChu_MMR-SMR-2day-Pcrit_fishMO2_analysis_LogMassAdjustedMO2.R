@@ -8,7 +8,7 @@ library(mclust)
 library(shape)
 library(StreamMetabolism)
 library(fishMO2)
-
+library(respR)
 ##################################
 # Import data: POST Labchart
 ##################################
@@ -130,6 +130,25 @@ plotO2crit(pcrit_md_lc$pcrit_q20_object[[5]])
 plotO2crit(pcrit_md_lc$pcrit_mlnd_object[[6]])
 plotO2crit(pcrit_md_lc$pcrit_q20_object[[6]])
 
+## Broken stick regression - Pcrit estimates
+pcrit_bsr_md_lc <- md_lc %>%
+  filter(expt_period == "pcrit") %>%
+  unnest() %>%
+  group_by(date, finclip_id, expt_period)  %>%
+  rename(MO2 = mo2_raw,
+         DO = po2_torr) %>%
+  nest() %>%
+  mutate(respr_pcrit_ob = data %>% dplyr::select(MO2, DO)) #%>%
+  #left_join((mmr_smr_md_lc %>% dplyr::select(finclip_id,MMR,SMR_mlnd,
+  #                                           SMR_q20)),
+  #          by = "finclip_id") %>%
+  mutate(data_o2crit = data %>% purrr::map(~ dplyr::select(.,MO2,DO)),
+         mass_g = data %>% purrr::map_dbl(~ mean(.$mass_g)),
+         pcrit_mlnd_object = purrr::map2(data_o2crit, SMR_mlnd, ~ calcO2crit(.x, .y, .y)),
+         pcrit_mlnd = pcrit_mlnd_object %>% purrr::map_dbl("o2crit"),
+         pcrit_q20_object = purrr::map2(data_o2crit, SMR_q20, ~ calcO2crit(.x, .y, .y)),
+         pcrit_q20 = pcrit_q20_object %>% purrr::map_dbl("o2crit"))
+
 # Visualizing relationship: log(Pcrit_mlnd or Pcrit_q20) ~ log(body mass)
 pcrit_md_lc %>% ggplot() +
   geom_point(aes(x = log(mass_g), y = log(pcrit_mlnd)), size = 4, colour = "red") +
@@ -176,11 +195,13 @@ mmr_at_pcrit_md_lc <- md_lc %>% filter(expt_period == "mmr_at_pcrit") %>% unnest
             mmr_at_pcrit_mo2_sd = sd(mo2_raw))
 
 pd <- position_dodge(0.1)
-mmr_at_pcrit_md_lc %>% left_join(pcrit_md_lc, by = "finclip_id") %>% 
+mmr_at_pcrit_plotting <- mmr_at_pcrit_md_lc %>% left_join(pcrit_md_lc, by = "finclip_id") %>% 
   gather(key = metabolic_state, value = mo2, MMR, SMR_mlnd, mmr_at_pcrit_mo2_mean) %>%
-  mutate(met_state_plot_names = case_when(metabolic_state == "MMR" ~ paste("Mo"[2]["MAX"]),
-                                          metabolic_state == "mmr_at_pcrit_mo2_mean" ~ paste("Mo"[2]["MAX"],"at P"["crit"]),
-                                          metabolic_state == "SMR_mlnd" ~ paste("Mo"[2]["STANDARD"])))
+  mutate(met_state_plot_names = case_when(metabolic_state == "MMR" ~ expression(paste("Mo"[2]["MAX"])),
+                                          metabolic_state == "mmr_at_pcrit_mo2_mean" ~ expression(paste("Mo"[2]["MAX"],"at P"["crit"])),
+                                          metabolic_state == "SMR_mlnd" ~ expression(paste("Mo"[2]["STANDARD"]))))
+
+mmr_at_pcrit_plotting %>%
   ggplot(aes(x = met_state_plot_names, y = mo2, group = finclip_id)) +
   geom_point(position = pd, size = 5, shape = 1, stroke = 2) +
   geom_line(position = pd, size = 1.5) +
