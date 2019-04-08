@@ -17,7 +17,8 @@ setwd("C:/Users/derek/OneDrive/Documents/Metabolic-rate-analyses/Ken Chu Pcrit p
 md_lc <- read_csv("Ken_Tidepool_CollatedMO2Data_MMR-SMR-Pcrit_PostLabChart.csv") # Time not importing properly from weird foxy format, use seq()
 md_lc <- md_lc %>%
   mutate(mo2_raw = umol_o2_per_sec*3600*-1,
-         time = as.double(time)) %>%
+         time = as.double(time),
+         mo2_ms = mo2_raw/mass_g) %>%
   group_by(date, finclip_id, expt_period) %>%
   filter(!(finclip_id == "middle_stumpy" & date == "24-Oct-18")) %>%
   filter(!(finclip_id == "top" & date == "3-Oct-18")) %>%
@@ -90,11 +91,19 @@ md_lc %>% dplyr::select(-c(date)) %>% filter(expt_period == "pcrit") %>% unnest(
   geom_line() +
   facet_wrap("finclip_id")
 
-## Caculate Pcrit!        
+## Visualize ms PCrit data
+md_lc %>% dplyr::select(-c(date)) %>% filter(expt_period == "pcrit") %>% unnest() %>%
+  ggplot(aes(x = po2_torr, y = mo2_ms)) +
+  geom_point() +
+  geom_line() +
+  facet_wrap("finclip_id")
+
+
+## Caculate Pcrit! - Both Claireaux-Chabot and BSR methods        
 pcrit_md_lc <- md_lc %>%
   filter(expt_period == "pcrit") %>%
   unnest() %>%
-  rename(MO2 = mo2_raw,
+  rename(MO2 = mo2_ms,
          DO = po2_torr) %>%
   group_by(date, finclip_id, expt_period) %>%
   nest() %>%
@@ -106,7 +115,9 @@ pcrit_md_lc <- md_lc %>%
          pcrit_mlnd_object = purrr::map2(data_o2crit, SMR_mlnd, ~ calcO2crit(.x, .y, .y)),
          pcrit_mlnd = pcrit_mlnd_object %>% purrr::map_dbl("o2crit"),
          pcrit_q20_object = purrr::map2(data_o2crit, SMR_q20, ~ calcO2crit(.x, .y, .y)),
-         pcrit_q20 = pcrit_q20_object %>% purrr::map_dbl("o2crit"))
+         pcrit_q20 = pcrit_q20_object %>% purrr::map_dbl("o2crit"),
+         pcrit_yu_object = data %>% purrr::map(~ dplyr::select(po2_torr, time)) %>%
+           purrr::map(~ pcrit(., has.rate = TRUE, plot = FALSE)))
 
 ## MMR, SMR_mlnd, SMR_q20, Pcrit_mlnd, and Pcrit_q20 data summarized in a table:
 pcrit_md_lc %>% dplyr::select(mass_g,MMR,SMR_mlnd,SMR_q20,pcrit_mlnd,pcrit_q20)
