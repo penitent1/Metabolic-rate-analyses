@@ -35,13 +35,21 @@ md_lc %>% dplyr::select(-c(date)) %>% filter(expt_period == "mmr_smr") %>% unnes
   geom_line() +
   facet_wrap("finclip_id")
 
+## Visualize MMR-SMR data: Mass-specific
+md_lc %>% dplyr::select(-c(date)) %>% filter(expt_period == "mmr_smr") %>% unnest() %>%
+  ggplot(aes(x = time, y = mo2_ms)) +
+  geom_point() +
+  geom_line() +
+  facet_wrap("finclip_id")
+
+
 ## Calculate MMR and SMR!
 mmr_smr_md_lc <- md_lc %>% 
   filter(expt_period == "mmr_smr") %>%
-  mutate(MMR = data %>% purrr::map_dbl(~ max(.$mo2_raw)),
+  mutate(MMR = data %>% purrr::map_dbl(~ max(.$mo2_ms)),
          mass_g = data %>% purrr::map_dbl(~ mean(.$mass_g)),
          smr_data = data %>% purrr::map(~ filter(., time > 1000)),
-         smr_object = smr_data %>% purrr::map(~ calcSMR(.$mo2_raw)),
+         smr_object = smr_data %>% purrr::map(~ calcSMR(.$mo2_ms)),
          SMR_mlnd = smr_object %>% purrr::map_dbl("mlnd"),
          SMR_quantiles = smr_object %>% purrr::map("quant"),
          SMR_q20 = SMR_quantiles %>% purrr::map_dbl(4))
